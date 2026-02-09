@@ -1,0 +1,71 @@
+# ----------------------------------------
+# Secrets / sensitive material
+# ----------------------------------------
+*.key
+*.pem
+*.crt
+*.pfx
+*.p12
+*.env
+.env.*
+secrets.yaml
+secrets.yml
+*secret*.yaml
+*secret*.yml
+*.enc.yaml
+*.enc.yml
+
+# SOPS / Sealed Secrets temp files
+.sops.yaml
+.sops
+*.dec.yaml
+*.dec.yml
+
+# ----------------------------------------
+# Local Kubernetes / Flux artifacts
+# ----------------------------------------
+.kube/
+kubeconfig
+kubeconfig.*
+flux-system/
+
+# ----------------------------------------
+# OS / editor noise
+# ----------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ----------------------------------------
+# CLI / tooling state
+# ----------------------------------------
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
+packer_cache/
+*.log
+
+# ----------------------------------------
+# Temporary files
+# ----------------------------------------
+tmp/
+temp/
+.cache/
+
+# ----------------------------------------
+# Archives
+# ----------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# --------------
+# Agents files
+# --------------
+CLAUDE.md
+AGENTS.md
