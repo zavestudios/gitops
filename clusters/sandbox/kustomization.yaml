@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # Platform resources (namespaces, RBAC, storage, ingress defaults)
+  # - ../../../platform
+
+  # Big Bang platform bundle (uncomment when ready)
+  # - ../../../bigbang
+
+  # Tenant applications (uncomment when ready)
+  # - ../../../tenants
