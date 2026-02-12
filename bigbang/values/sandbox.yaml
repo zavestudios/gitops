@@ -10,14 +10,42 @@ addons:
     enabled: false  # Too resource-intensive, using GitHub.com
   gitlabRunner:
     enabled: false
+  argocd:
+    enabled: true
+    values:
+      # Override Iron Bank images with public Quay.io images
+      global:
+        image:
+          repository: quay.io/argoproj/argocd
+          tag: v2.10.0
+      dex:
+        image:
+          repository: quay.io/dexidp/dex
+          tag: v2.37.0
+      redis:
+        image:
+          repository: docker.io/redis
+          tag: "7.0"
+      controller:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      server:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      repoServer:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
 
 # Enable minimal package set
 # Image overrides: Use public registries instead of Iron Bank
-istio:
+istiod:
   enabled: true
-  ingressGateways:
-    public-ingressgateway:
-      type: NodePort  # Use NodePort instead of LoadBalancer for libvirt
   values:
     global:
       # Override Iron Bank images with public Docker Hub images
@@ -32,38 +60,6 @@ istio:
       resources:
         requests:
           cpu: 100m
-          memory: 128Mi
-
-argocd:
-  enabled: true
-  values:
-    # Override Iron Bank images with public Quay.io images
-    global:
-      image:
-        repository: quay.io/argoproj/argocd
-        tag: v2.10.0
-    dex:
-      image:
-        repository: quay.io/dexidp/dex
-        tag: v2.37.0
-    redis:
-      image:
-        repository: docker.io/redis
-        tag: "7.0"
-    controller:
-      resources:
-        requests:
-          cpu: 100m
-          memory: 256Mi
-    server:
-      resources:
-        requests:
-          cpu: 50m
-          memory: 128Mi
-    repoServer:
-      resources:
-        requests:
-          cpu: 50m
           memory: 128Mi
 
 monitoring:
