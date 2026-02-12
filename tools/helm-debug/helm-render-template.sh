@@ -33,7 +33,14 @@ echo ""
 if [ "$TEMPLATE_FILE" == "--debug" ]; then
     helm template temp "$CHART_PATH" -f "$VALUES_FILE" --debug 2>&1 | less
 elif [ -n "$TEMPLATE_FILE" ]; then
-    helm template temp "$CHART_PATH" -f "$VALUES_FILE" -s "$TEMPLATE_FILE" 2>/dev/null
+    helm template temp "$CHART_PATH" -f "$VALUES_FILE" -s "$TEMPLATE_FILE"
 else
-    helm template temp "$CHART_PATH" -f "$VALUES_FILE" 2>/dev/null | less
+    # Check if output is being piped
+    if [ -t 1 ]; then
+        # Interactive terminal - use less
+        helm template temp "$CHART_PATH" -f "$VALUES_FILE" | less
+    else
+        # Being piped - output directly
+        helm template temp "$CHART_PATH" -f "$VALUES_FILE"
+    fi
 fi
