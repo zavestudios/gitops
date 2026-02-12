@@ -1,8 +1,8 @@
 # Big Bang values for sandbox environment
 # Minimal scope: Istio + ArgoCD + Monitoring (skip GitLab)
 
-# Domain configuration (placeholder for now, will update when Cloudflare Tunnel ready)
-domain: sandbox.local
+# Domain configuration - routed via Cloudflare Tunnel
+domain: sandbox.zavestudios.com
 
 # Disable packages we don't need yet
 addons:

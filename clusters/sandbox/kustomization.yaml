@@ -4,8 +4,8 @@ resources:
   # Platform resources (namespaces, RBAC, storage, ingress defaults)
   - ../../platform
 
-  # Big Bang platform bundle (uncomment when ready)
-  # - ../../../bigbang
+  # Big Bang platform bundle
+  - ../../bigbang
 
   # Tenant applications (uncomment when ready)
   # - ../../../tenants
