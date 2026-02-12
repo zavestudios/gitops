@@ -1,0 +1,11 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: bigbang
+  namespace: bigbang
+spec:
+  interval: 1m
+  url: https://repo1.dso.mil/big-bang/bigbang.git
+  ref:
+    tag: 2.19.0  # Pin to specific version for reproducibility

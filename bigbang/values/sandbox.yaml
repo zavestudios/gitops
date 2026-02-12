@@ -1,0 +1,66 @@
+# Big Bang values for sandbox environment
+# Minimal scope: Istio + ArgoCD + Monitoring (skip GitLab)
+
+# Domain configuration (placeholder for now, will update when Cloudflare Tunnel ready)
+domain: sandbox.local
+
+# Disable packages we don't need yet
+addons:
+  gitlab:
+    enabled: false  # Too resource-intensive, using GitHub.com
+  gitlabRunner:
+    enabled: false
+
+# Enable minimal package set
+istio:
+  enabled: true
+  ingressGateways:
+    public-ingressgateway:
+      type: NodePort  # Use NodePort instead of LoadBalancer for libvirt
+
+argocd:
+  enabled: true
+
+monitoring:
+  enabled: true
+
+kiali:
+  enabled: true
+
+# Resource tuning for 3-node cluster
+# Reduce resource requests to fit in sandbox
+istio:
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 40Mi
+
+argocd:
+  values:
+    controller:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    server:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+    repoServer:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+
+# Storage: use k3s local-path storage class
+istio:
+  values:
+    pilot:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
