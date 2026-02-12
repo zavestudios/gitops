@@ -22,7 +22,20 @@ spec:
         - tunnel
         - --config
         - /etc/cloudflared/config/config.yaml
+        - --no-autoupdate
         - run
+        - --token
+        - $(TUNNEL_TOKEN)
+        env:
+        - name: TUNNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: cloudflared-token
+              key: token
+        volumeMounts:
+        - name: config
+          mountPath: /etc/cloudflared/config
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /ready
@@ -30,13 +43,6 @@ spec:
           failureThreshold: 1
           initialDelaySeconds: 10
           periodSeconds: 10
-        volumeMounts:
-        - name: config
-          mountPath: /etc/cloudflared/config
-          readOnly: true
-        - name: token
-          mountPath: /etc/cloudflared
-          readOnly: true
       volumes:
       - name: config
         configMap:
@@ -44,9 +50,3 @@ spec:
           items:
           - key: config.yaml
             path: config.yaml
-      - name: token
-        secret:
-          secretName: cloudflared-token
-          items:
-          - key: token
-            path: token
