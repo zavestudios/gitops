@@ -1,0 +1,27 @@
+#!/bin/bash
+# Pre-commit hook to prevent committing unencrypted secrets
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Check for files being committed
+FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Look for unencrypted Secret resources
+for FILE in $FILES; do
+    if [[ -f "$FILE" ]]; then
+        # Check if file contains 'kind: Secret' but NOT 'kind: SealedSecret'
+        if grep -q "kind: Secret" "$FILE" && ! grep -q "kind: SealedSecret" "$FILE"; then
+            echo -e "${RED}ERROR: Attempting to commit unencrypted Secret!${NC}"
+            echo "File: $FILE"
+            echo ""
+            echo "You must encrypt secrets with kubeseal before committing:"
+            echo "  kubeseal --cert sealing-cert.pem --format=yaml < $FILE > \${FILE%.yaml}-sealed.yaml"
+            echo ""
+            echo "Then commit the sealed version instead."
+            exit 1
+        fi
+    fi
+done
+
+exit 0

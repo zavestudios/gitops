@@ -10,8 +10,13 @@
 .env.*
 secrets.yaml
 secrets.yml
-*secret*.yaml
-*secret*.yml
+secret.yaml
+secret.yml
+*-secret.yaml
+*-secret.yml
+# BUT allow sealed secrets
+!*sealed-secret.yaml
+!*sealed-secret.yml
 *.enc.yaml
 *.enc.yml
 
