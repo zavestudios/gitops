@@ -12,16 +12,28 @@ data:
     # Domain configuration - routed via Cloudflare Tunnel
     domain: sandbox.zavestudios.com
 
-    # Disable packages we don't need yet
+    # Enable Istio (old structure for BB 2.19.0)
+    istioOperator:
+      enabled: true
+
+    istio:
+      enabled: true
+      values:
+        # Override Iron Bank images with public Docker Hub images
+        global:
+          hub: docker.io/istio
+          tag: 1.20.0
+
+    # Addons
     addons:
       gitlab:
-        enabled: false  # Too resource-intensive, using GitHub.com
+        enabled: false
       gitlabRunner:
         enabled: false
       argocd:
         enabled: true
         values:
-          # Override Iron Bank images with public Quay.io images
+          # Override Iron Bank images with public images
           global:
             image:
               repository: quay.io/argoproj/argocd
@@ -34,45 +46,12 @@ data:
             image:
               repository: docker.io/redis
               tag: "7.0"
-          controller:
-            resources:
-              requests:
-                cpu: 100m
-                memory: 256Mi
-          server:
-            resources:
-              requests:
-                cpu: 50m
-                memory: 128Mi
-          repoServer:
-            resources:
-              requests:
-                cpu: 50m
-                memory: 128Mi
 
-    # Enable minimal package set
-    # Image overrides: Use public registries instead of Iron Bank
-    istiod:
-      enabled: true
-      values:
-        global:
-          # Override Iron Bank images with public Docker Hub images
-          hub: docker.io/istio
-          tag: 1.20.0
-          proxy:
-            resources:
-              requests:
-                cpu: 10m
-                memory: 40Mi
-        pilot:
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-
+    # Monitoring stack
     monitoring:
       enabled: true
       values:
+        # Override Iron Bank images with public images
         prometheus:
           prometheusSpec:
             image:
@@ -90,26 +69,6 @@ data:
             registry: docker.io
             repository: grafana/grafana
             tag: 10.3.0
-        prometheus-node-exporter:
-          image:
-            registry: docker.io
-            repository: prom/node-exporter
-            tag: v1.7.0
-        kube-state-metrics:
-          image:
-            registry: registry.k8s.io
-            repository: kube-state-metrics/kube-state-metrics
-            tag: v2.10.1
-        prometheusOperator:
-          image:
-            registry: quay.io
-            repository: prometheus-operator/prometheus-operator
-            tag: v0.71.0
-          prometheusConfigReloader:
-            image:
-              registry: quay.io
-              repository: prometheus-operator/prometheus-config-reloader
-              tag: v0.71.0
 
     kiali:
       enabled: true
