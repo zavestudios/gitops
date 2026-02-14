@@ -52,6 +52,11 @@ data:
     # Enable Istio with public images
     istioOperator:
       enabled: true
+      values:
+        # Override Iron Bank image with public Docker Hub image
+        image:
+          repository: docker.io/istio/operator
+          tag: 1.20.0
 
     istio:
       enabled: true
