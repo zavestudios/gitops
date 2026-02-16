@@ -10,6 +10,8 @@ data:
     # Minimal scope: Istio + ArgoCD + Monitoring
     # Disable packages requiring Iron Bank access
 
+    # MECHANIC'S NOTE: `enabled=true` causes the BigBang umbrella chart to emit a HelmRelease for the package. 
+
     # Domain configuration - routed via Cloudflare Tunnel
     domain: sandbox.zavestudios.com
 
@@ -50,13 +52,14 @@ data:
       enabled: false
 
     # Enable Istio with public images
+
     istioOperator:
       enabled: true
       values:
         # Override Iron Bank image with public Docker Hub image
-        image:
-          repository: docker.io/istio/operator
-          tag: 1.20.0
+        hub: docker.io/istio/operator
+        tag: 1.20.0
+        imagePullSecrets: []
 
     istio:
       enabled: true
@@ -65,6 +68,7 @@ data:
         global:
           hub: docker.io/istio
           tag: 1.20.0
+        imagePullSecrets: []
 
     # Addons
     addons:
