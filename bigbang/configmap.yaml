@@ -121,6 +121,11 @@ data:
                 registry: docker.io
                 repository: prom/prometheus
                 tag: v2.50.0
+          prometheus-node-exporter:
+            image:
+              registry: quay.io
+              repository: prometheus/node-exporter
+              tag: v1.8.2
           alertmanager:
             alertmanagerSpec:
               image:
