@@ -178,17 +178,8 @@ data:
                 repository: prom/alertmanager
                 tag: v0.27.0
           grafana:
-            image:
-              registry: docker.io
-              repository: grafana/grafana
-              tag: 11.4.0
-            initChownData:
-              enabled: false
-            sidecar:
-              image:
-                registry: quay.io
-                repository: kiwigrid/k8s-sidecar
-                tag: 1.28.0
+            # Disable grafana in monitoring package - use standalone grafana instead
+            enabled: false
 
     # Service mesh observability
     kiali:
