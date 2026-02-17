@@ -131,6 +131,8 @@ data:
     monitoring:
       enabled: true
       values:
+        # Override Big Bang monitoring package wrapper registry
+        registry: ""
         upstream:
           # Override Iron Bank images with public images
           prometheusOperator:
@@ -192,6 +194,8 @@ data:
     kiali:
       enabled: true
       values:
+        # Override Big Bang kiali package wrapper registry
+        registry: ""
         upstream:
           image:
             repo: quay.io/kiali/kiali-operator
@@ -206,6 +210,8 @@ data:
     grafana:
       enabled: true
       values:
+        # Override Big Bang grafana package wrapper registry
+        registry: ""
         upstream:
           global:
             imageRegistry: ""
@@ -225,6 +231,8 @@ data:
     tempo:
       enabled: true
       values:
+        # Override Big Bang tempo package wrapper registry
+        registry: ""
         upstream:
           tempo:
             image:
