@@ -108,6 +108,13 @@ data:
       values:
         upstream:
           # Override Iron Bank images with public images
+          prometheusOperator:
+            admissionWebhooks:
+              patch:
+                image:
+                  registry: registry.k8s.io
+                  repository: ingress-nginx/kube-webhook-certgen
+                  tag: v1.4.3
           prometheus:
             prometheusSpec:
               image:
