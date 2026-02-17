@@ -86,13 +86,13 @@ addons:
             - name: registry1.dso.mil/ironbank/big-bang/argocd
               newName: quay.io/argoproj/argocd
               newTag: v2.12.0
-            - name: registry1.dso.mil/ironbank/dso/dex
+            - name: registry1.dso.mil/ironbank/opensource/dexidp/dex
               newName: quay.io/dexidp/dex
               newTag: v2.38.0
-            - name: registry1.dso.mil/ironbank/bitnami/redis
+            - name: registry1.dso.mil/ironbank/opensource/redis/redis8-slim
               newName: docker.io/redis
               newTag: "7.4"
-            - name: registry1.dso.mil/ironbank/redis-exporter
+            - name: registry1.dso.mil/ironbank/bitnami/analytics/redis-exporter
               newName: docker.io/oliver006/redis_exporter
               newTag: v1.62.0
 
