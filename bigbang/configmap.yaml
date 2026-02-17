@@ -92,15 +92,20 @@ data:
             global:
               image:
                 repository: quay.io/argoproj/argocd
-                tag: v2.10.0
+                tag: v2.12.0
             dex:
               image:
                 repository: quay.io/dexidp/dex
-                tag: v2.37.0
-            redis:
+                tag: v2.38.0
+            redis-bb:
               image:
                 repository: docker.io/redis
-                tag: "7.0"
+                tag: "7.4"
+              metrics:
+                enabled: true
+                image:
+                  repository: docker.io/oliver006/redis_exporter
+                  tag: v1.62.0
 
     # Monitoring stack with public images
     monitoring:
@@ -154,7 +159,12 @@ data:
             image:
               registry: docker.io
               repository: grafana/grafana
-              tag: 10.3.0
+              tag: 11.4.0
+            sidecar:
+              image:
+                registry: quay.io
+                repository: kiwigrid/k8s-sidecar
+                tag: 1.28.0
 
     # Service mesh observability
     kiali:
@@ -163,4 +173,18 @@ data:
         upstream:
           deployment:
             image_name: quay.io/kiali/kiali
-            image_version: v1.79.0
+            image_version: v1.89.0
+          operator:
+            image:
+              repo: quay.io/kiali/kiali-operator
+              tag: v2.21.0
+
+    # Tempo distributed tracing
+    tempo:
+      enabled: true
+      values:
+        upstream:
+          tempo:
+            image:
+              repository: docker.io/grafana/tempo
+              tag: 2.6.0
