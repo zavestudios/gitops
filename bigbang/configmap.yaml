@@ -189,13 +189,29 @@ data:
       enabled: true
       values:
         upstream:
-          deployment:
-            image_name: quay.io/kiali/kiali
-            image_version: v1.89.0
-          operator:
+          image:
+            repo: quay.io/kiali/kiali-operator
+            tag: v2.21.0
+          cr:
+            spec:
+              deployment:
+                image_name: quay.io/kiali/kiali
+                image_version: v1.89.0
+
+    # Standalone Grafana (separate from monitoring)
+    grafana:
+      enabled: true
+      values:
+        upstream:
+          image:
+            repository: docker.io/grafana/grafana
+            tag: 11.4.0
+          initChownData:
+            enabled: false
+          sidecar:
             image:
-              repo: quay.io/kiali/kiali-operator
-              tag: v2.21.0
+              repository: quay.io/kiwigrid/k8s-sidecar
+              tag: 1.28.0
 
     # Tempo distributed tracing
     tempo:
