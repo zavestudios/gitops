@@ -133,11 +133,11 @@ monitoring:
           # Prometheus
           - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
             newName: docker.io/prom/prometheus
-            newTag: v2.50.0
+            newTag: v3.9.1
           # Alertmanager
           - name: registry1.dso.mil/ironbank/opensource/prometheus/alertmanager
             newName: docker.io/prom/alertmanager
-            newTag: v0.27.0
+            newTag: v0.30.0
           # Node exporter
           - name: registry1.dso.mil/ironbank/opensource/prometheus/node-exporter
             newName: quay.io/prometheus/node-exporter
