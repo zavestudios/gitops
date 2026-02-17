@@ -129,7 +129,7 @@ monitoring:
           # Webhook certgen
           - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
             newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
-            newTag: v1.4.3
+            newTag: v1.6.5
           # Prometheus
           - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
             newName: docker.io/prom/prometheus
