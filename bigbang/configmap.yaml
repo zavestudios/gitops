@@ -70,10 +70,17 @@ data:
         upgrade:
           disableHooks: true
       values:
-        upstream:
-          global:
-            hub: docker.io/istio
-            tag: 1.20.0
+        gateways:
+          public:
+            upstream:
+              global:
+                hub: docker.io/istio
+                tag: 1.20.0
+          passthrough:
+            upstream:
+              global:
+                hub: docker.io/istio
+                tag: 1.20.0
 
     # Addons
     addons:
