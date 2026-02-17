@@ -88,12 +88,24 @@ data:
         enabled: true
         values:
           upstream:
-            # Override Iron Bank images with public images
-            global:
+            # Override Iron Bank images with public images - must specify each component
+            controller:
+              image:
+                repository: quay.io/argoproj/argocd
+                tag: v2.12.0
+            server:
+              image:
+                repository: quay.io/argoproj/argocd
+                tag: v2.12.0
+            repoServer:
               image:
                 repository: quay.io/argoproj/argocd
                 tag: v2.12.0
             applicationSet:
+              image:
+                repository: quay.io/argoproj/argocd
+                tag: v2.12.0
+            notifications:
               image:
                 repository: quay.io/argoproj/argocd
                 tag: v2.12.0
