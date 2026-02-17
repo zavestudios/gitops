@@ -164,6 +164,8 @@ data:
               registry: docker.io
               repository: grafana/grafana
               tag: 11.4.0
+            initChownData:
+              enabled: false
             sidecar:
               image:
                 registry: quay.io
