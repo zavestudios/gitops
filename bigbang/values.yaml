@@ -83,6 +83,10 @@ addons:
     postRenderers:
       - kustomize:
           images:
+            # Istio sidecars
+            - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+              newName: docker.io/istio/proxyv2
+              newTag: 1.28.3
             - name: registry1.dso.mil/ironbank/big-bang/argocd
               newName: quay.io/argoproj/argocd
               newTag: v2.12.0
@@ -102,6 +106,10 @@ monitoring:
   postRenderers:
     - kustomize:
         images:
+          # Istio sidecars (injected into all pods including jobs)
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
           # Prometheus Operator
           - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-operator
             newName: quay.io/prometheus-operator/prometheus-operator
@@ -154,6 +162,10 @@ kiali:
   postRenderers:
     - kustomize:
         images:
+          # Istio sidecars
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/opensource/kiali/kiali-operator
             newName: quay.io/kiali/kiali-operator
             newTag: v2.21.0
@@ -167,6 +179,10 @@ grafana:
   postRenderers:
     - kustomize:
         images:
+          # Istio sidecars
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
             newName: docker.io/grafana/grafana
             newTag: 11.4.0
@@ -190,6 +206,10 @@ tempo:
   postRenderers:
     - kustomize:
         images:
+          # Istio sidecars
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/opensource/grafana/tempo
             newName: docker.io/grafana/tempo
             newTag: 2.6.0
