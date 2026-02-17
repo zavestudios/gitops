@@ -10,3 +10,5 @@ configMapGenerator:
     namespace: bigbang
     files:
       - values.yaml
+    options:
+      disableNameSuffixHash: true
