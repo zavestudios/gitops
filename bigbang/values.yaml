@@ -125,7 +125,7 @@ monitoring:
             newTag: v0.77.1
           - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
             newName: quay.io/prometheus-operator/prometheus-config-reloader
-            newTag: v0.77.1
+            newTag: v0.88.0
           # Webhook certgen
           - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
             newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
