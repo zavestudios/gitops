@@ -76,11 +76,7 @@ data:
               global:
                 hub: docker.io/istio
                 tag: 1.20.0
-          passthrough:
-            upstream:
-              global:
-                hub: docker.io/istio
-                tag: 1.20.0
+          passthrough: {}  # Disable passthrough gateway
 
     # Addons
     addons:
