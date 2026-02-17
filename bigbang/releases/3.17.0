@@ -1,0 +1,241 @@
+Big Bang 3.17.0
+Source code (zip)
+Source code (tar.gz)
+Source code (tar.bz2)
+Source code (tar)
+Other
+bigbang-3.17.0_checksums.txt
+images-v2-with-dependencies.txt
+oci_package_list.txt
+package-images.yaml
+images.tar.gz
+images-v2-dependencies.yaml
+repositories.tar.gz
+images.txt
+Evidence collection
+3.17.0-evidences-16740.json
+2f9fb6d4
+Collected 1 week ago
+Release notes
+Release Notes - 3.17.0
+Please see our documentation page for more information on how to consume and deploy BigBang.
+This release was primarily tested on Kubernetes 1.34.2 (EKS).
+
+Deprecations
+Nexus Repository Manager
+Big Bang team is planning to deprecate support for the Nexus Repository Manager package in BigBang. The upstream chart has been deprecated on October 24, 2023. Update (3.17.0): The removal of Nexus Repository Manager has been delayed beyond this release, and it is now expected that Nexus Repository Manager will be deprecated in release 3.18.0. The update in 3.14 remains the final update for Nexus Repository Manager. Our team has added a new Big Bang package, NXRM3-HA, this is the official high availability Nexus Repository Manager chart supported by Sonatype. This package will be updated and maintained by the Big Bang team for use on Repo1/Reg1 but will not be included in the Umbrella chart as an addon. See migration guide for details on how to install using the BYO packages: section of the umbrella. Migration detail for nxrm-ha can be found here
+Upgrade Notices
+Anchore Enterprise - MR
+This release of AnchoreEnterprise migrates the chart to the passthrough pattern.
+
+Value overrides that need to pass-through to the upstream chart will need to be nested under the upstream key.
+
+For example:
+
+addons:
+ anchoreEnterprise:
+   values:
+     key: value
+becomes:
+
+addons:
+ anchoreEnterprise:
+   values:
+     upstream:
+       key: value
+Fluentbit - MR
+Fluent Bit is now leveraging our bb-common integration for network policies and Istio-related resources. Please refer to this blog post for additional information on the integration. During this process, network policy definitions have been normalized and some keys are now in kebab-case (e.g. external-elastic, external-loki, external-fluentd), so any existing overrides using older names must be updated. Loki egress is now explicitly managed through the bb-common NetworkPolicy DSL (and enabled by default for in- cluster Loki), and AuthorizationPolicy generation (when Istio hardened is enabled) is tied to service account-qualified rules; if you rely on custom ingress/egress, ensure those rules include the correct namespace/service account identity to avoid unintended denies.
+
+Harbor - MR
+Harbor is now leveraging our bb-common integration for network policies and istio-related resources. Please refer to this blog post for additional information on the integration.
+
+The VirtualService for Harbor no longer includes a match on port 5000 for the registry. This port was not functional in typical deployments as no gateway was configured to listen on it, and all registry traffic (docker push/pull) routes through harbor-core.
+
+Mattermost - MR
+Mattermost 11.3.0-bb.2 upgrade updates Big Bang MinIO dependency chart to 7.1.1-bb.16. MinIO chart now follows a passthrough refactor which are included in this upgrade. If you are planning to use MinIO with Mattermost please see the breaking change for MinIO in the 7.1.1-bb.9 Upgrade Notice as shown below:
+
+MinIO 7.1.1-bb.9 Upgrade Notice
+This release of MinIO migrates the chart to the passthrough pattern.
+
+Values overrides are now nested under the upstream key. For example:
+
+mattermost:
+  values:
+    minio:
+      tenant:
+        pools:
+        - name: pool-0
+          servers: 3
+          volumesPerServer: 4
+becomes:
+
+mattermost:
+  values:
+    minio:
+      upstream:
+        tenant:
+          pools:
+          - name: pool-0
+            servers: 3
+            volumesPerServer: 4
+Twistlock - MR
+A few settings that were previously manually configured through the user interface are now configured with helm values. It is recommended to review your current settings and override as needed to avoid unexpected configuration changes. Note that basic authentication is enabled by default, because prometheus's metrics scraping depends on it. If you don't need those metrics, basic authentication can be disabled.
+
+Helm Value Default Corresponding Setting in Console UI
+console.options.intelligence.uploadDisabled true Allow admins and operators to upload logs to Customer Support directly from the Console UI
+console.options.scan.scanRunningImages false Only scan images with running containers
+console.options.logon.useSupportCredentials false Enable context sensitive help and single sign on to the Prisma Cloud Support site
+console.options.logon.requireStrongPassword true Require strong passwords for local accounts
+console.options.logon.basicAuthDisabled false Disable basic authentication for the API
+Example values for the Big Bang chart:
+
+twistlock:
+  values:
+    console:
+      options:
+        intelligence:
+          uploadDisabled: true
+        scan:
+          scanRunningImages: false
+        logon:
+          useSupportCredentials: false
+          requireStrongPassword: true
+          basicAuthDisabled: false
+Velero - MR
+Velero is now leveraging our bb-common integration for network policies and all istio-related resources. Please refer to this blog post for additional information on the integration.
+
+Known Issues
+bbctl Dashboards
+
+CRON job output longer than 16kb will be split into multiple log entries when using the dockerd CRI causing invalid JSON structures to be imported into Loki. Use containerd as the CRI to ensure long log lines are parsed correctly
+bbctl-violations-dashboard / bbctl-all-logs-dashboard(Violations Logs)
+These items will not populate if you have too large of a kubernetes cluster with too many violations. There is a limit to the amount of data that can be processed. If you hit this limit and need the information, you can still use the bbctl violations command to obtain the data.
+Headlamp
+
+Attempting to login using OIDC will create a login 'loop'. See upstream issue for further information.
+Loki/Elasticsearch-kibana
+
+if loki and EK are both enabled, drift detection will continually trigger as they share a peer authentication: default-peer-auth in the logging namespace. Issue
+Prometheus Target Scraping
+
+Package Target Issue
+Elasticsearch-Kibana podMonitor/monitoring/monitoring-monitoring-istio-envoy/0 Issue
+Upgrades from previous releases
+If coming from a version pre-3.15.0, note the additional upgrade notices in any release in between. The BB team doesn't test/guarantee upgrades from anything pre-3.15.0.
+
+Upgrades from previous releases
+If coming from a version pre-3.16.0, note the additional upgrade notices in any release in between. The BB team doesn't test/guarantee upgrades from anything pre-3.16.0.
+
+Packages
+Click to show Packages Version Updates
+Changes in 3.17.0
+Big Bang MRs
+!7328 (merged) add egress database subnets for harbor
+!7327 (merged) added port config to conditional block for anchore postgres
+!7294 (merged) Enhance network policies to allow scraping by alloy-metrics and Prometheus for...
+!7293 (merged) Updated commit used for Keycloak's dev files
+!7268 (merged) Quickstart bugfixes
+!7262 (merged) feat(template-all): add api-versions support to script
+!7257 (merged) docs(k3d-dev): create sane coredns config for bb domains
+!7252 (merged) Headlamp 61 keycloak integration
+Alloy
+!7313 (merged): alloy update to 3.7.2-bb.3
+!7246 (merged): alloy update to 3.7.2-bb.0
+Click to show Changelog
+Anchore Enterprise
+!7286 (merged): Merge branch 'fix-anchore-postgresql' into 'master'
+Click to show Changelog
+Argocd
+!7260 (merged): argocd update to 9.3.4-bb.0
+Click to show Changelog
+Bbctl
+!7315 (merged): bbctl update to 3.0.1-bb.2
+Click to show Changelog
+Elasticsearch Kibana
+!7292 (merged): elasticsearchKibana update to 1.35.0-bb.0
+Click to show Changelog
+External Secrets Operator
+!7277 (merged): externalSecrets update to 1.2.1-bb.0
+!7267 (merged): externalSecrets update to 0.20.4-bb.5
+!7216 (merged): externalSecrets update to 0.20.4-bb.4
+Click to show Changelog
+Fluentbit
+!7259 (merged): fluentbit update to 0.54.1-bb.1
+Click to show Changelog
+Fortify
+!7304 (merged): fortify update to 1.1.2320154-bb.40
+Click to show Changelog
+Gitlab
+!7312 (merged): gitlab update to 9.8.2-bb.1
+!7306 (merged): gitlab update to 9.8.2-bb.0
+!7280 (merged): gitlab update to 9.7.1-bb.0
+Click to show Changelog
+Gitlab Runner
+!7288 (merged): gitlabRunner update to 0.85.0-bb.0
+Click to show Changelog
+Grafana
+!7320 (merged): grafana update to 10.5.5-bb.1
+Click to show Changelog
+Harbor
+!7322 (merged): harbor update to 1.18.2-bb.0
+!7284 (merged): harbor update to 1.18.1-bb.4
+!7275 (merged): harbor update to 1.18.1-bb.3
+Click to show Changelog
+Headlamp
+!7309 (merged): Update headlamp tag 0.39.0 bb.2
+Click to show Changelog
+Istio Cni
+!7297 (merged): istioCNI update to 1.28.3-bb.0
+Click to show Changelog
+Istio Crds
+!7300 (merged): istioCRDs update to 1.28.3-bb.0
+Click to show Changelog
+Istio Gateway
+!7296 (merged): istioGateway update to 1.28.3-bb.0
+Click to show Changelog
+Istiod
+!7298 (merged): istiod update to 1.28.3-bb.0
+Click to show Changelog
+Kiali
+!7319 (merged): kiali update to 2.21.0-bb.0
+Click to show Changelog
+Kyverno
+!7307 (merged): kyverno update to 3.6.2-bb.1
+!7263 (merged): kyverno update to 3.6.2-bb.0
+Click to show Changelog
+Kyverno Policies
+!7279 (merged): kyvernoPolicies update to 3.3.4-bb.19
+!7273 (merged): kyvernoPolicies update to 3.3.4-bb.18
+Click to show Changelog
+Kyverno Reporter
+!7299 (merged): kyvernoReporter update to 3.7.1-bb.2
+Click to show Changelog
+Mattermost
+!7247 (merged): Mattermost minio fixes
+Click to show Changelog
+Neuvector
+!7301 (merged): neuvector update to 2.8.10-bb.2
+!7282 (merged): neuvector update to 2.8.10-bb.1
+Click to show Changelog
+Sonarqube
+!7276 (merged): sonarqube update to 2025.6.1-bb.3
+Click to show Changelog
+Thanos
+!7314 (merged): thanos update to 17.3.3-bb.2
+Click to show Changelog
+Twistlock
+!7317 (merged): twistlock update to 0.24.0-bb.3
+!7285 (merged): twistlock update to 0.24.0-bb.2
+Click to show Changelog
+Velero
+!7289 (merged): velero update to 11.3.2-bb.1
+Click to show Changelog
+Helpful Links
+As always, we welcome and appreciate feedback from our community of users. Please feel free to:
+
+Open issues here
+Join our Mattermost channel
+Join our Slack
+Check out the documentation for guidance on how to get started
+Future
+Don't see your feature and/or bug fix? Check out our epics for estimates on when you can expect things to drop, and as always, feel free to comment or create issues if you have questions, comments, or concerns.

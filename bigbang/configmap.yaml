@@ -57,8 +57,10 @@ data:
         upgrade:
           disableHooks: true
       values:
-        hub: docker.io/istio
-        tag: 1.20.0
+        upstream:
+          global:
+            hub: docker.io/istio
+            tag: 1.20.0
 
     istioGateway:
       enabled: true
@@ -68,8 +70,10 @@ data:
         upgrade:
           disableHooks: true
       values:
-        hub: docker.io/istio
-        tag: 1.20.0
+        upstream:
+          global:
+            hub: docker.io/istio
+            tag: 1.20.0
 
     # Addons
     addons:
@@ -80,47 +84,50 @@ data:
       argocd:
         enabled: true
         values:
-          # Override Iron Bank images with public images
-          global:
-            image:
-              repository: quay.io/argoproj/argocd
-              tag: v2.10.0
-          dex:
-            image:
-              repository: quay.io/dexidp/dex
-              tag: v2.37.0
-          redis:
-            image:
-              repository: docker.io/redis
-              tag: "7.0"
+          upstream:
+            # Override Iron Bank images with public images
+            global:
+              image:
+                repository: quay.io/argoproj/argocd
+                tag: v2.10.0
+            dex:
+              image:
+                repository: quay.io/dexidp/dex
+                tag: v2.37.0
+            redis:
+              image:
+                repository: docker.io/redis
+                tag: "7.0"
 
     # Monitoring stack with public images
     monitoring:
       enabled: true
       values:
-        # Override Iron Bank images with public images
-        prometheus:
-          prometheusSpec:
+        upstream:
+          # Override Iron Bank images with public images
+          prometheus:
+            prometheusSpec:
+              image:
+                registry: docker.io
+                repository: prom/prometheus
+                tag: v2.50.0
+          alertmanager:
+            alertmanagerSpec:
+              image:
+                registry: docker.io
+                repository: prom/alertmanager
+                tag: v0.27.0
+          grafana:
             image:
               registry: docker.io
-              repository: prom/prometheus
-              tag: v2.50.0
-        alertmanager:
-          alertmanagerSpec:
-            image:
-              registry: docker.io
-              repository: prom/alertmanager
-              tag: v0.27.0
-        grafana:
-          image:
-            registry: docker.io
-            repository: grafana/grafana
-            tag: 10.3.0
+              repository: grafana/grafana
+              tag: 10.3.0
 
     # Service mesh observability
     kiali:
       enabled: true
       values:
-        deployment:
-          image_name: quay.io/kiali/kiali
-          image_version: v1.79.0
+        upstream:
+          deployment:
+            image_name: quay.io/kiali/kiali
+            image_version: v1.79.0
