@@ -95,19 +95,14 @@ addons:
             # Istio sidecars
             - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
               newName: docker.io/istio/proxyv2
-              newTag: 1.28.3
             - name: registry1.dso.mil/ironbank/big-bang/argocd
               newName: quay.io/argoproj/argocd
-              newTag: v2.12.0
             - name: registry1.dso.mil/ironbank/opensource/dexidp/dex
               newName: quay.io/dexidp/dex
-              newTag: v2.38.0
             - name: registry1.dso.mil/ironbank/opensource/redis/redis8-slim
               newName: docker.io/redis
-              newTag: "7.4"
             - name: registry1.dso.mil/ironbank/bitnami/analytics/redis-exporter
               newName: docker.io/oliver006/redis_exporter
-              newTag: v1.62.0
 
 # Monitoring stack with public images via post-renderer
 monitoring:
@@ -122,48 +117,36 @@ monitoring:
           # Prometheus Operator
           - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-operator
             newName: quay.io/prometheus-operator/prometheus-operator
-            newTag: v0.77.1
           - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
             newName: quay.io/prometheus-operator/prometheus-config-reloader
-            newTag: v0.88.0
           # Webhook certgen
           - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
             newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
-            newTag: v1.6.5
           # Prometheus
           - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
             newName: docker.io/prom/prometheus
-            newTag: v3.9.1
           # Alertmanager
           - name: registry1.dso.mil/ironbank/opensource/prometheus/alertmanager
             newName: docker.io/prom/alertmanager
-            newTag: v0.30.0
           # Node exporter
           - name: registry1.dso.mil/ironbank/opensource/prometheus/node-exporter
             newName: quay.io/prometheus/node-exporter
-            newTag: v1.8.2
           # Kube state metrics
           - name: registry1.dso.mil/ironbank/opensource/kubernetes/kube-state-metrics
             newName: registry.k8s.io/kube-state-metrics/kube-state-metrics
-            newTag: v2.13.0
           # Grafana (embedded in monitoring)
           - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
             newName: docker.io/grafana/grafana
-            newTag: 11.4.0
           - name: registry1.dso.mil/grafana/grafana
             newName: docker.io/grafana/grafana
-            newTag: 11.4.0
           # Grafana sidecar
           - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
             newName: quay.io/kiwigrid/k8s-sidecar
-            newTag: 1.28.0
           - name: registry1.dso.mil/kiwigrid/k8s-sidecar
             newName: quay.io/kiwigrid/k8s-sidecar
-            newTag: 1.28.0
           # Thanos
           - name: registry1.dso.mil/ironbank/opensource/thanos/thanos
             newName: quay.io/thanos/thanos
-            newTag: v0.36.1
 
 # Kiali - service mesh observability
 kiali:
@@ -174,13 +157,10 @@ kiali:
           # Istio sidecars
           - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
             newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/opensource/kiali/kiali-operator
             newName: quay.io/kiali/kiali-operator
-            newTag: v2.21.0
           - name: registry1.dso.mil/ironbank/opensource/kiali/kiali
             newName: quay.io/kiali/kiali
-            newTag: v1.89.0
 
 # Standalone Grafana
 grafana:
@@ -191,19 +171,14 @@ grafana:
           # Istio sidecars
           - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
             newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
             newName: docker.io/grafana/grafana
-            newTag: 11.4.0
           - name: registry1.dso.mil/grafana/grafana
             newName: docker.io/grafana/grafana
-            newTag: 11.4.0
           - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
             newName: quay.io/kiwigrid/k8s-sidecar
-            newTag: 1.28.0
           - name: registry1.dso.mil/kiwigrid/k8s-sidecar
             newName: quay.io/kiwigrid/k8s-sidecar
-            newTag: 1.28.0
   values:
     upstream:
       initChownData:
@@ -218,7 +193,5 @@ tempo:
           # Istio sidecars
           - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
             newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
           - name: registry1.dso.mil/ironbank/opensource/grafana/tempo
             newName: docker.io/grafana/tempo
-            newTag: 2.6.0
