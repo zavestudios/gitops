@@ -25,9 +25,6 @@ data:
     kyvernoPolicies:
       enabled: false
 
-    clusterAuditor:
-      enabled: false
-
     # Disable logging stack (require Iron Bank)
     eckOperator:
       enabled: false
@@ -36,9 +33,6 @@ data:
       enabled: false
 
     fluentbit:
-      enabled: false
-
-    promtail:
       enabled: false
 
     loki:
@@ -51,15 +45,7 @@ data:
     twistlock:
       enabled: false
 
-    # Enable Istio with public images
-    # Disable OLD Istio structure (operator-based)
-    istioOperator:
-      enabled: false
-
-    istio:
-      enabled: false
-
-    # Enable NEW Istio structure (CRDs + istiod + gateway)
+    # Enable Istio with public images (NEW structure for Big Bang 3.x)
     istioCRDs:
       enabled: true
 
@@ -136,9 +122,6 @@ data:
             tag: 10.3.0
 
     # Service mesh observability
-    jaeger:
-      enabled: false  # Disable for now, can enable later with public images
-
     kiali:
       enabled: true
       values:
