@@ -109,6 +109,19 @@ data:
         upstream:
           # Override Iron Bank images with public images
           prometheusOperator:
+            image:
+              registry: quay.io
+              repository: prometheus-operator/prometheus-operator
+              tag: v0.77.1
+            prometheusConfigReloader:
+              image:
+                registry: quay.io
+                repository: prometheus-operator/prometheus-config-reloader
+                tag: v0.77.1
+            thanosImage:
+              registry: quay.io
+              repository: thanos/thanos
+              tag: v0.36.1
             admissionWebhooks:
               patch:
                 image:
