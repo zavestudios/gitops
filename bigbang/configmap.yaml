@@ -203,6 +203,8 @@ data:
       enabled: true
       values:
         upstream:
+          global:
+            imageRegistry: ""
           image:
             repository: docker.io/grafana/grafana
             tag: 11.4.0
