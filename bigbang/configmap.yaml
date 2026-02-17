@@ -139,6 +139,11 @@ data:
               registry: quay.io
               repository: prometheus/node-exporter
               tag: v1.8.2
+          kube-state-metrics:
+            image:
+              registry: registry.k8s.io
+              repository: kube-state-metrics/kube-state-metrics
+              tag: v2.13.0
           alertmanager:
             alertmanagerSpec:
               image:
