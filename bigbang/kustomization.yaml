@@ -3,5 +3,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - gitrepository.yaml
-  - configmap.yaml
   - helmrelease.yaml
+
+configMapGenerator:
+  - name: bigbang-values
+    namespace: bigbang
+    files:
+      - values.yaml

@@ -1,0 +1,195 @@
+# Big Bang values for sandbox environment
+# Clean configuration using post-renderers for image rewrites
+
+# Domain configuration
+domain: sandbox.zavestudios.com
+
+# Disable packages requiring Iron Bank access
+gatekeeper:
+  enabled: false
+
+kyverno:
+  enabled: false
+
+kyvernoPolicies:
+  enabled: false
+
+eckOperator:
+  enabled: false
+
+elasticsearchKibana:
+  enabled: false
+
+fluentbit:
+  enabled: false
+
+loki:
+  enabled: false
+
+neuvector:
+  enabled: false
+
+twistlock:
+  enabled: false
+
+# Istio - enabled with public images via post-renderer
+istioCRDs:
+  enabled: true
+
+istiod:
+  enabled: true
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
+  postRenderers:
+    - kustomize:
+        images:
+          - name: registry1.dso.mil/ironbank/opensource/istio/pilot
+            newName: docker.io/istio/pilot
+            newTag: 1.28.3
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
+
+istioGateway:
+  enabled: true
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
+  postRenderers:
+    - kustomize:
+        images:
+          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
+            newName: docker.io/istio/proxyv2
+            newTag: 1.28.3
+  values:
+    gateways:
+      public: {}  # Use defaults with image rewrite from post-renderer
+      passthrough: {}  # Disabled - empty config
+
+# Addons
+addons:
+  gitlab:
+    enabled: false
+  gitlabRunner:
+    enabled: false
+
+  argocd:
+    enabled: true
+    postRenderers:
+      - kustomize:
+          images:
+            - name: registry1.dso.mil/ironbank/big-bang/argocd
+              newName: quay.io/argoproj/argocd
+              newTag: v2.12.0
+            - name: registry1.dso.mil/ironbank/dso/dex
+              newName: quay.io/dexidp/dex
+              newTag: v2.38.0
+            - name: registry1.dso.mil/ironbank/bitnami/redis
+              newName: docker.io/redis
+              newTag: "7.4"
+            - name: registry1.dso.mil/ironbank/redis-exporter
+              newName: docker.io/oliver006/redis_exporter
+              newTag: v1.62.0
+
+# Monitoring stack with public images via post-renderer
+monitoring:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        images:
+          # Prometheus Operator
+          - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-operator
+            newName: quay.io/prometheus-operator/prometheus-operator
+            newTag: v0.77.1
+          - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
+            newName: quay.io/prometheus-operator/prometheus-config-reloader
+            newTag: v0.77.1
+          # Webhook certgen
+          - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
+            newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+            newTag: v1.4.3
+          # Prometheus
+          - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
+            newName: docker.io/prom/prometheus
+            newTag: v2.50.0
+          # Alertmanager
+          - name: registry1.dso.mil/ironbank/opensource/prometheus/alertmanager
+            newName: docker.io/prom/alertmanager
+            newTag: v0.27.0
+          # Node exporter
+          - name: registry1.dso.mil/ironbank/opensource/prometheus/node-exporter
+            newName: quay.io/prometheus/node-exporter
+            newTag: v1.8.2
+          # Kube state metrics
+          - name: registry1.dso.mil/ironbank/opensource/kubernetes/kube-state-metrics
+            newName: registry.k8s.io/kube-state-metrics/kube-state-metrics
+            newTag: v2.13.0
+          # Grafana (embedded in monitoring)
+          - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
+            newName: docker.io/grafana/grafana
+            newTag: 11.4.0
+          - name: registry1.dso.mil/grafana/grafana
+            newName: docker.io/grafana/grafana
+            newTag: 11.4.0
+          # Grafana sidecar
+          - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
+            newName: quay.io/kiwigrid/k8s-sidecar
+            newTag: 1.28.0
+          - name: registry1.dso.mil/kiwigrid/k8s-sidecar
+            newName: quay.io/kiwigrid/k8s-sidecar
+            newTag: 1.28.0
+          # Thanos
+          - name: registry1.dso.mil/ironbank/opensource/thanos/thanos
+            newName: quay.io/thanos/thanos
+            newTag: v0.36.1
+
+# Kiali - service mesh observability
+kiali:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        images:
+          - name: registry1.dso.mil/ironbank/opensource/kiali/kiali-operator
+            newName: quay.io/kiali/kiali-operator
+            newTag: v2.21.0
+          - name: registry1.dso.mil/ironbank/opensource/kiali/kiali
+            newName: quay.io/kiali/kiali
+            newTag: v1.89.0
+
+# Standalone Grafana
+grafana:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        images:
+          - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
+            newName: docker.io/grafana/grafana
+            newTag: 11.4.0
+          - name: registry1.dso.mil/grafana/grafana
+            newName: docker.io/grafana/grafana
+            newTag: 11.4.0
+          - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
+            newName: quay.io/kiwigrid/k8s-sidecar
+            newTag: 1.28.0
+          - name: registry1.dso.mil/kiwigrid/k8s-sidecar
+            newName: quay.io/kiwigrid/k8s-sidecar
+            newTag: 1.28.0
+  values:
+    upstream:
+      initChownData:
+        enabled: false
+
+# Tempo - distributed tracing
+tempo:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        images:
+          - name: registry1.dso.mil/ironbank/opensource/grafana/tempo
+            newName: docker.io/grafana/tempo
+            newTag: 2.6.0
