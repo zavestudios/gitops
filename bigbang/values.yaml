@@ -43,6 +43,11 @@ istiod:
       disableHooks: true
     upgrade:
       disableHooks: true
+  values:
+    upstream:
+      global:
+        hub: docker.io/istio
+        tag: 1.28.3
   postRenderers:
     - kustomize:
         images:
@@ -60,16 +65,20 @@ istioGateway:
       disableHooks: true
     upgrade:
       disableHooks: true
+  values:
+    gateways:
+      public:
+        upstream:
+          global:
+            hub: docker.io/istio
+            tag: 1.28.3
+      passthrough: {}  # Disabled - empty config
   postRenderers:
     - kustomize:
         images:
           - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
             newName: docker.io/istio/proxyv2
             newTag: 1.28.3
-  values:
-    gateways:
-      public: {}  # Use defaults with image rewrite from post-renderer
-      passthrough: {}  # Disabled - empty config
 
 # Addons
 addons:
