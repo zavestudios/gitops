@@ -15,6 +15,10 @@ data:
     # Domain configuration - routed via Cloudflare Tunnel
     domain: sandbox.zavestudios.com
 
+    # Override default Iron Bank registry to use public registries
+    registryCredentials:
+      registry: ""
+
     # Disable policy/security packages (require Iron Bank)
     gatekeeper:
       enabled: false
