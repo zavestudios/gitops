@@ -119,9 +119,10 @@ monitoring:
             newName: quay.io/prometheus-operator/prometheus-operator
           - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
             newName: quay.io/prometheus-operator/prometheus-config-reloader
-          # Webhook certgen
+          # Webhook certgen (needs explicit tag to match in hooks)
           - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
             newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+            newTag: v1.6.5
           # Prometheus
           - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
             newName: docker.io/prom/prometheus
