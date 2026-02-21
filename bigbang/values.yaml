@@ -32,7 +32,7 @@ neuvector:
 twistlock:
   enabled: false
 
-# Istio - enabled with public images via post-renderer
+# Istio - enabled with public images via values overrides
 istioCRDs:
   enabled: true
 
@@ -48,15 +48,6 @@ istiod:
       global:
         hub: docker.io/istio
         tag: 1.28.3
-  postRenderers:
-    - kustomize:
-        images:
-          - name: registry1.dso.mil/ironbank/opensource/istio/pilot
-            newName: docker.io/istio/pilot
-            newTag: 1.28.3
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
 
 istioGateway:
   enabled: true
@@ -73,12 +64,6 @@ istioGateway:
             hub: docker.io/istio
             tag: 1.28.3
       passthrough: {}  # Disabled - empty config
-  postRenderers:
-    - kustomize:
-        images:
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
 
 # Addons
 addons:
@@ -89,110 +74,96 @@ addons:
 
   argocd:
     enabled: true
-    postRenderers:
-      - kustomize:
-          images:
-            # Istio sidecars
-            - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-              newName: docker.io/istio/proxyv2
-            - name: registry1.dso.mil/ironbank/big-bang/argocd
-              newName: quay.io/argoproj/argocd
-            - name: registry1.dso.mil/ironbank/opensource/dexidp/dex
-              newName: quay.io/dexidp/dex
-            - name: registry1.dso.mil/ironbank/opensource/redis/redis8-slim
-              newName: docker.io/redis
-            - name: registry1.dso.mil/ironbank/bitnami/analytics/redis-exporter
-              newName: docker.io/oliver006/redis_exporter
+    values:
+      upstream:
+        global:
+          image:
+            repository: quay.io/argoproj/argocd
+        dex:
+          image:
+            repository: ghcr.io/dexidp/dex
+        redis:
+          image:
+            repository: public.ecr.aws/docker/library/redis
+          exporter:
+            image:
+              repository: ghcr.io/oliver006/redis_exporter
 
-# Monitoring stack with public images via post-renderer
+# Monitoring stack with public images via values overrides
 monitoring:
   enabled: true
-  postRenderers:
-    - kustomize:
-        images:
-          # Istio sidecars (injected into all pods including jobs)
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-            newTag: 1.28.3
-          # Prometheus Operator
-          - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-operator
-            newName: quay.io/prometheus-operator/prometheus-operator
-          - name: registry1.dso.mil/ironbank/opensource/prometheus-operator/prometheus-config-reloader
-            newName: quay.io/prometheus-operator/prometheus-config-reloader
-          # Webhook certgen (needs explicit tag to match in hooks)
-          - name: registry1.dso.mil/ironbank/opensource/ingress-nginx/kube-webhook-certgen
-            newName: registry.k8s.io/ingress-nginx/kube-webhook-certgen
-            newTag: v1.6.5
-          # Prometheus
-          - name: registry1.dso.mil/ironbank/opensource/prometheus/prometheus
-            newName: docker.io/prom/prometheus
-          # Alertmanager
-          - name: registry1.dso.mil/ironbank/opensource/prometheus/alertmanager
-            newName: docker.io/prom/alertmanager
-          # Node exporter
-          - name: registry1.dso.mil/ironbank/opensource/prometheus/node-exporter
-            newName: quay.io/prometheus/node-exporter
-          # Kube state metrics
-          - name: registry1.dso.mil/ironbank/opensource/kubernetes/kube-state-metrics
-            newName: registry.k8s.io/kube-state-metrics/kube-state-metrics
-          # Grafana (embedded in monitoring)
-          - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
-            newName: docker.io/grafana/grafana
-          - name: registry1.dso.mil/grafana/grafana
-            newName: docker.io/grafana/grafana
-          # Grafana sidecar
-          - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
-            newName: quay.io/kiwigrid/k8s-sidecar
-          - name: registry1.dso.mil/kiwigrid/k8s-sidecar
-            newName: quay.io/kiwigrid/k8s-sidecar
-          # Thanos
-          - name: registry1.dso.mil/ironbank/opensource/thanos/thanos
-            newName: quay.io/thanos/thanos
+  values:
+    upstream:
+      prometheusOperator:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-operator
+        prometheusConfigReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+        admissionWebhooks:
+          patch:
+            image:
+              registry: registry.k8s.io
+              repository: ingress-nginx/kube-webhook-certgen
+      prometheus:
+        prometheusSpec:
+          image:
+            registry: quay.io
+            repository: prometheus/prometheus
+      alertmanager:
+        alertmanagerSpec:
+          image:
+            registry: quay.io
+            repository: prometheus/alertmanager
+      prometheus-node-exporter:
+        image:
+          registry: quay.io
+          repository: prometheus/node-exporter
+      kube-state-metrics:
+        image:
+          registry: registry.k8s.io
+          repository: kube-state-metrics/kube-state-metrics
+      grafana:
+        image:
+          registry: docker.io
+          repository: grafana/grafana
+        sidecar:
+          image:
+            registry: quay.io
+            repository: kiwigrid/k8s-sidecar
 
 # Kiali - service mesh observability
 kiali:
   enabled: true
-  postRenderers:
-    - kustomize:
-        images:
-          # Istio sidecars
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-          - name: registry1.dso.mil/ironbank/opensource/kiali/kiali-operator
-            newName: quay.io/kiali/kiali-operator
-          - name: registry1.dso.mil/ironbank/opensource/kiali/kiali
-            newName: quay.io/kiali/kiali
+  values:
+    upstream:
+      deployment:
+        image_name: quay.io/kiali/kiali
+      cr:
+        spec:
+          deployment:
+            image_name: quay.io/kiali/kiali
 
 # Standalone Grafana
 grafana:
   enabled: true
-  postRenderers:
-    - kustomize:
-        images:
-          # Istio sidecars
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-          - name: registry1.dso.mil/ironbank/big-bang/grafana/grafana-plugins
-            newName: docker.io/grafana/grafana
-          - name: registry1.dso.mil/grafana/grafana
-            newName: docker.io/grafana/grafana
-          - name: registry1.dso.mil/ironbank/kiwigrid/k8s-sidecar
-            newName: quay.io/kiwigrid/k8s-sidecar
-          - name: registry1.dso.mil/kiwigrid/k8s-sidecar
-            newName: quay.io/kiwigrid/k8s-sidecar
   values:
     upstream:
+      image:
+        repository: docker.io/grafana/grafana
+      sidecar:
+        image:
+          repository: quay.io/kiwigrid/k8s-sidecar
       initChownData:
         enabled: false
 
 # Tempo - distributed tracing
 tempo:
   enabled: true
-  postRenderers:
-    - kustomize:
-        images:
-          # Istio sidecars
-          - name: registry1.dso.mil/ironbank/opensource/istio/proxyv2
-            newName: docker.io/istio/proxyv2
-          - name: registry1.dso.mil/ironbank/opensource/grafana/tempo
-            newName: docker.io/grafana/tempo
+  values:
+    upstream:
+      tempo:
+        image:
+          repository: docker.io/grafana/tempo
