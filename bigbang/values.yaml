@@ -94,6 +94,8 @@ monitoring:
   enabled: true
   values:
     upstream:
+      global:
+        imageRegistry: ""  # Disable registry prepending
       prometheusOperator:
         image:
           registry: quay.io
