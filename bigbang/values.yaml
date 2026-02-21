@@ -98,43 +98,34 @@ monitoring:
         imageRegistry: ""  # Disable registry prepending
       prometheusOperator:
         image:
-          registry: quay.io
-          repository: prometheus-operator/prometheus-operator
+          repository: quay.io/prometheus-operator/prometheus-operator
         prometheusConfigReloader:
           image:
-            registry: quay.io
-            repository: prometheus-operator/prometheus-config-reloader
+            repository: quay.io/prometheus-operator/prometheus-config-reloader
         admissionWebhooks:
           patch:
             image:
-              registry: registry.k8s.io
-              repository: ingress-nginx/kube-webhook-certgen
+              repository: registry.k8s.io/ingress-nginx/kube-webhook-certgen
       prometheus:
         prometheusSpec:
           image:
-            registry: quay.io
-            repository: prometheus/prometheus
+            repository: quay.io/prometheus/prometheus
       alertmanager:
         alertmanagerSpec:
           image:
-            registry: quay.io
-            repository: prometheus/alertmanager
+            repository: quay.io/prometheus/alertmanager
       prometheus-node-exporter:
         image:
-          registry: quay.io
-          repository: prometheus/node-exporter
+          repository: quay.io/prometheus/node-exporter
       kube-state-metrics:
         image:
-          registry: registry.k8s.io
-          repository: kube-state-metrics/kube-state-metrics
+          repository: registry.k8s.io/kube-state-metrics/kube-state-metrics
       grafana:
         image:
-          registry: docker.io
-          repository: grafana/grafana
+          repository: docker.io/grafana/grafana
         sidecar:
           image:
-            registry: quay.io
-            repository: kiwigrid/k8s-sidecar
+            repository: quay.io/kiwigrid/k8s-sidecar
 
 # Kiali - service mesh observability
 kiali:
