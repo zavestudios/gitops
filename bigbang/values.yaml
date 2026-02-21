@@ -114,12 +114,18 @@ monitoring:
           image:
             repository: quay.io/prometheus/alertmanager
       prometheus-node-exporter:
+        global:
+          imageRegistry: ""
         image:
           repository: quay.io/prometheus/node-exporter
       kube-state-metrics:
+        global:
+          imageRegistry: ""
         image:
           repository: registry.k8s.io/kube-state-metrics/kube-state-metrics
       grafana:
+        global:
+          imageRegistry: ""
         image:
           repository: docker.io/grafana/grafana
         sidecar:
