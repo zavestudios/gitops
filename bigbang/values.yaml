@@ -139,8 +139,9 @@ kiali:
   enabled: true
   values:
     upstream:
-      deployment:
-        image_name: quay.io/kiali/kiali
+      allowAdHocKialiImage: true  # Allow custom image override
+      image:
+        repo: quay.io/kiali/kiali-operator
       cr:
         spec:
           deployment:
