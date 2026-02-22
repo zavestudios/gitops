@@ -99,35 +99,40 @@ monitoring:
         imageRegistry: ""  # Disable registry prepending
       prometheusOperator:
         image:
-          repository: quay.io/prometheus-operator/prometheus-operator
+          registry: quay.io
+          repository: prometheus-operator/prometheus-operator
         prometheusConfigReloader:
           image:
-            repository: quay.io/prometheus-operator/prometheus-config-reloader
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
         admissionWebhooks:
           enabled: false  # Disabled to avoid Iron Bank image issues
       prometheus:
         prometheusSpec:
           image:
-            repository: quay.io/prometheus/prometheus
+            registry: quay.io
+            repository: prometheus/prometheus
       alertmanager:
         alertmanagerSpec:
           image:
-            repository: quay.io/prometheus/alertmanager
+            registry: quay.io
+            repository: prometheus/alertmanager
       prometheus-node-exporter:
         image:
           registry: quay.io
           repository: prometheus/node-exporter
       kube-state-metrics:
-        imageRegistry: ""
         image:
-          repository: registry.k8s.io/kube-state-metrics/kube-state-metrics
+          registry: registry.k8s.io
+          repository: kube-state-metrics/kube-state-metrics
       grafana:
-        imageRegistry: ""
         image:
-          repository: docker.io/grafana/grafana
+          registry: docker.io
+          repository: grafana/grafana
         sidecar:
           image:
-            repository: quay.io/kiwigrid/k8s-sidecar
+            registry: quay.io
+            repository: kiwigrid/k8s-sidecar
 
 # Kiali - service mesh observability
 kiali:
