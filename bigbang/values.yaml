@@ -84,6 +84,8 @@ addons:
             repository: ghcr.io/dexidp/dex
       redis-bb:
         upstream:
+          global:
+            imageRegistry: ""
           image:
             registry: public.ecr.aws
             repository: docker/library/redis
