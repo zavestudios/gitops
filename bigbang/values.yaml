@@ -75,19 +75,24 @@ addons:
   argocd:
     enabled: true
     values:
+      global:
+        image:
+          repository: quay.io/argoproj/argocd
       upstream:
-        global:
-          image:
-            repository: quay.io/argoproj/argocd
         dex:
           image:
             repository: ghcr.io/dexidp/dex
-        redis:
+      redis-bb:
+        upstream:
           image:
-            repository: public.ecr.aws/docker/library/redis
-          exporter:
+            registry: public.ecr.aws
+            repository: docker/library/redis
+          metrics:
             image:
               repository: ghcr.io/oliver006/redis_exporter
+            metrics:
+              image:
+                repository: ghcr.io/oliver006/redis_exporter
 
 # Monitoring stack with public images via values overrides
 monitoring:
