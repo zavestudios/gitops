@@ -114,9 +114,9 @@ monitoring:
           image:
             repository: quay.io/prometheus/alertmanager
       prometheus-node-exporter:
-        imageRegistry: ""
         image:
-          repository: quay.io/prometheus/node-exporter
+          registry: quay.io
+          repository: prometheus/node-exporter
       kube-state-metrics:
         imageRegistry: ""
         image:
