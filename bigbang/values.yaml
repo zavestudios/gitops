@@ -89,7 +89,8 @@ addons:
             repository: docker/library/redis
           metrics:
             image:
-              repository: ghcr.io/oliver006/redis_exporter
+              registry: ghcr.io
+              repository: oliver006/redis_exporter
 
 # Monitoring stack with public images via values overrides
 monitoring:
