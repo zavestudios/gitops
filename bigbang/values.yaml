@@ -75,6 +75,8 @@ addons:
   argocd:
     enabled: true
     values:
+      upgradeJob:
+        enabled: false  # Disable upgrade job to avoid Iron Bank image
       global:
         image:
           repository: quay.io/argoproj/argocd
