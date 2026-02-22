@@ -9,7 +9,49 @@ gatekeeper:
   enabled: false
 
 kyverno:
-  enabled: false
+  enabled: true
+  values:
+    global:
+      image:
+        registry: ""  # Prevent registry prepending
+    upstream:
+      admissionController:
+        container:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyverno
+            tag: v1.16.3
+        initContainer:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyvernopre
+            tag: v1.16.3
+      backgroundController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/background-controller
+          tag: v1.16.3
+      cleanupController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/cleanup-controller
+          tag: v1.16.3
+      reportsController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/reports-controller
+          tag: v1.16.3
+      crds:
+        migration:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyverno-cli
+            tag: v1.16.3
+      webhooksCleanup:
+        image:
+          registry: registry.k8s.io
+          repository: kubectl
+          tag: v1.34.3
 
 kyvernoPolicies:
   enabled: false
