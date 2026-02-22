@@ -94,9 +94,7 @@ addons:
               registry: ghcr.io
               repository: oliver006/redis_exporter
             command:
-              - /bin/sh
-              - -ec
-              - redis_exporter
+              - /redis_exporter
 
 # Monitoring stack with public images via values overrides
 monitoring:
