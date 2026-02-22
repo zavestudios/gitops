@@ -161,9 +161,9 @@ grafana:
       initChownData:
         enabled: false
 
-# Tempo - distributed tracing
+# Tempo - distributed tracing (disabled due to x86-64-v2 CPU requirement incompatibility)
 tempo:
-  enabled: true
+  enabled: false
   values:
     upstream:
       tempo:
