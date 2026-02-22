@@ -134,9 +134,9 @@ monitoring:
             registry: quay.io
             repository: kiwigrid/k8s-sidecar
 
-# Kiali - service mesh observability
+# Kiali - service mesh observability (disabled due to x86-64-v2 CPU requirement incompatibility)
 kiali:
-  enabled: true
+  enabled: false
   values:
     upstream:
       allowAdHocKialiImage: true  # Allow custom image override
