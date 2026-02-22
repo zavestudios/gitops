@@ -77,7 +77,6 @@ addons:
     values:
       upstream:
         global:
-          imageRegistry: ""  # Disable registry prepending
           image:
             repository: quay.io/argoproj/argocd
         dex:
@@ -167,8 +166,6 @@ tempo:
   enabled: true
   values:
     upstream:
-      global:
-        imageRegistry: ""  # Disable registry prepending
       tempo:
-        image:
-          repository: docker.io/grafana/tempo
+        registry: docker.io
+        repository: grafana/tempo
