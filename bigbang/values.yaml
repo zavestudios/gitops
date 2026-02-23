@@ -245,6 +245,10 @@ grafana:
   values:
     global:
       imageRegistry: ""  # Disable registry prepending
+    istio:
+      grafana:
+        hosts:
+          - grafana-sandbox.zavestudios.com  # Single-level subdomain for free SSL
     upstream:
       image:
         registry: docker.io
