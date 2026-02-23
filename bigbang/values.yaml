@@ -296,5 +296,8 @@ alloy:
 loki:
   enabled: true
   values:
-    global:
-      imageRegistry: docker.io
+    loki:
+      image:
+        registry: docker.io
+        repository: grafana/loki
+        tag: "3.5.7"
