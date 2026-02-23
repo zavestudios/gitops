@@ -289,8 +289,7 @@ alloy:
     upstream:
       podLogs:
         destinations:
-          - name: loki
-            url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
+          - http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
 
 # Loki - log aggregation storage
 loki:
