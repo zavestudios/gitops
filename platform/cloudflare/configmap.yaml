@@ -8,8 +8,8 @@ data:
     metrics: 0.0.0.0:2000
 
     ingress:
-      # Route all traffic to Istio IngressGateway
-      - service: http://istio-ingressgateway.istio-system.svc.cluster.local:80
+      # Route all traffic to Istio public gateway
+      - service: http://public-ingressgateway.istio-gateway.svc.cluster.local:80
         originRequest:
           noTLSVerify: true
           httpHostHeader: ""
