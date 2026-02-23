@@ -144,6 +144,16 @@ istioGateway:
   values:
     gateways:
       public:
+        gateway:
+          servers:
+          - hosts:
+            - '*.zavestudios.com'
+            port:
+              name: http
+              number: 8080
+              protocol: HTTP
+            tls:
+              httpsRedirect: false  # Cloudflare Tunnel terminates TLS
         upstream:
           global:
             hub: docker.io/istio
