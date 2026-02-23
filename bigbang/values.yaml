@@ -247,10 +247,14 @@ grafana:
       global:
         imageRegistry: ""  # Disable registry prepending
       image:
-        repository: docker.io/grafana/grafana
+        registry: docker.io
+        repository: grafana/grafana-plugins
+        tag: "12.3.1"
       sidecar:
         image:
-          repository: quay.io/kiwigrid/k8s-sidecar
+          registry: quay.io
+          repository: kiwigrid/k8s-sidecar
+          tag: "2.2.3"
       initChownData:
         enabled: false
 
