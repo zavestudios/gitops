@@ -143,6 +143,27 @@ istioGateway:
   values:
     gateways:
       public:
+        gateway:
+          servers:
+          - hosts:
+            - '*.sandbox.zavestudios.com'     # Second-level: grafana.sandbox.zavestudios.com
+            - '*-sandbox.zavestudios.com'     # Single-level: grafana-sandbox.zavestudios.com
+            port:
+              name: http
+              number: 8080
+              protocol: HTTP
+            tls:
+              httpsRedirect: true
+          - hosts:
+            - '*.sandbox.zavestudios.com'     # Second-level: grafana.sandbox.zavestudios.com
+            - '*-sandbox.zavestudios.com'     # Single-level: grafana-sandbox.zavestudios.com
+            port:
+              name: https
+              number: 8443
+              protocol: HTTPS
+            tls:
+              credentialName: public-cert
+              mode: SIMPLE
         upstream:
           global:
             hub: docker.io/istio
