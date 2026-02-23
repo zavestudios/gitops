@@ -56,6 +56,28 @@ kyverno:
           repository: kubectl
           tag: v1.34.3
 
+kyvernoReporter:
+  enabled: true
+  values:
+    upstream:
+      image:
+        registry: ghcr.io
+        repository: kyverno/policy-reporter
+        tag: "3.7.2"
+      ui:
+        enabled: true
+        image:
+          registry: ghcr.io
+          repository: kyverno/policy-reporter-ui
+          tag: "2.5.1"
+      plugin:
+        kyverno:
+          enabled: true
+          image:
+            registry: ghcr.io
+            repository: kyverno/policy-reporter/kyverno-plugin
+            tag: "0.5.3"
+
 kyvernoPolicies:
   enabled: false
 
