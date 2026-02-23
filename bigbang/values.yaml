@@ -286,32 +286,32 @@ tempo:
 alloy:
   enabled: true
   values:
-    upstream:
-      alloy-operator:
-        waitForRemovalCR:
-          image:
-            registry: ghcr.io
-            repository: grafana/helm-chart-toolbox-kubectl
-            tag: "0.1.2"
+    alloy-operator:  # NOT under upstream!
+      waitForAlloyRemoval:
         image:
           registry: ghcr.io
-          repository: grafana/alloy-operator
-          tag: "0.3.15"
-        configReloader:
-          image:
-            registry: quay.io
-            repository: prometheus-operator/prometheus-config-reloader
-            tag: "v0.77.2"
-      alloy-logs:
+          repository: grafana/helm-chart-toolbox-kubectl
+          tag: "0.1.2"
+      image:
+        registry: ghcr.io
+        repository: grafana/alloy-operator
+        tag: "0.3.15"
+      configReloader:
         image:
-          registry: docker.io
-          repository: grafana/alloy
-          tag: "v1.12.2"
-        configReloader:
-          image:
-            registry: quay.io
-            repository: prometheus-operator/prometheus-config-reloader
-            tag: "v0.77.2"
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: "v0.77.2"
+    alloy-logs:  # NOT under upstream!
+      image:
+        registry: docker.io
+        repository: grafana/alloy
+        tag: "v1.12.2"
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: "v0.77.2"
+    upstream:  # Only destinations go under upstream
       destinations:
         - name: loki
           type: loki
