@@ -81,6 +81,10 @@ kyvernoReporter:
 kyvernoPolicies:
   enabled: true
   values:
+    waitforready:
+      image:
+        repository: registry.k8s.io/kubectl
+        tag: v1.34.3
     bbtests:
       scripts:
         image: registry.k8s.io/kubectl:v1.34.3
