@@ -243,9 +243,9 @@ kiali:
 grafana:
   enabled: true
   values:
+    global:
+      imageRegistry: ""  # Disable registry prepending
     upstream:
-      global:
-        imageRegistry: ""  # Disable registry prepending
       image:
         registry: docker.io
         repository: grafana/grafana-plugins
