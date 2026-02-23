@@ -272,6 +272,9 @@ grafana:
           tag: "2.2.3"
       initChownData:
         enabled: false
+      grafana.ini:
+        server:
+          root_url: https://grafana-sandbox.zavestudios.com
 
 # Tempo - distributed tracing (disabled due to x86-64-v2 CPU requirement incompatibility)
 tempo:
