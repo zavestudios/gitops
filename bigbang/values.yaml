@@ -286,9 +286,6 @@ tempo:
 alloy:
   enabled: true
   values:
-    global:
-      image:
-        registry: docker.io
     upstream:
       alloy-operator:
         waitForRemovalCR:
