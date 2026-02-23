@@ -79,7 +79,11 @@ kyvernoReporter:
             tag: "0.5.3"
 
 kyvernoPolicies:
-  enabled: false
+  enabled: true
+  values:
+    bbtests:
+      scripts:
+        image: registry.k8s.io/kubectl:v1.34.3
 
 eckOperator:
   enabled: false
