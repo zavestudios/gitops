@@ -10,6 +10,9 @@ gatekeeper:
 
 kyverno:
   enabled: true
+  flux:
+    install:
+      replace: true  # Force fresh install, ignore phantom state
   values:
     global:
       image:
