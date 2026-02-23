@@ -87,6 +87,16 @@ kyvernoPolicies:
       enabled: false  # Disable tests
       scripts:
         image: registry.k8s.io/kubectl:v1.34.3
+    policies:
+      restrict-image-registries:
+        parameters:
+          allow:
+            - registry1.dso.mil/  # Iron Bank (for reference)
+            - ghcr.io/            # GitHub Container Registry
+            - quay.io/            # Red Hat Quay
+            - docker.io/          # Docker Hub
+            - registry.k8s.io/    # Kubernetes registry
+            - public.ecr.aws/     # AWS Public ECR
 
 eckOperator:
   enabled: false
