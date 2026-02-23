@@ -284,3 +284,23 @@ tempo:
       tempo:
         registry: docker.io
         repository: grafana/tempo
+
+# Alloy - unified observability collector
+alloy:
+  enabled: true
+  values:
+    upstream:
+      podLogs:
+        destinations:
+          - name: loki
+            url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
+
+# Loki - log aggregation storage
+loki:
+  enabled: true
+  values:
+    upstream:
+      loki:
+        image:
+          registry: docker.io
+          repository: grafana/loki
