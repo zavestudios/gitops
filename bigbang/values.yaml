@@ -81,11 +81,10 @@ kyvernoReporter:
 kyvernoPolicies:
   enabled: true
   values:
-    waitforready:
-      image:
-        repository: registry.k8s.io/kubectl
-        tag: v1.34.3
+    waitJob:
+      enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     bbtests:
+      enabled: false  # Disable tests
       scripts:
         image: registry.k8s.io/kubectl:v1.34.3
 
