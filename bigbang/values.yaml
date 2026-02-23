@@ -299,8 +299,5 @@ alloy:
 loki:
   enabled: true
   values:
-    upstream:
-      loki:
-        image:
-          registry: docker.io
-          repository: grafana/loki
+    global:
+      imageRegistry: docker.io
