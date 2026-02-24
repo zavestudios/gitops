@@ -316,7 +316,7 @@ alloy:
         image:
           registry: ghcr.io
           repository: grafana/alloy-operator
-          tag: "v1.5.2"
+          tag: "1.5.2"
         configReloader:
           image:
             registry: quay.io
