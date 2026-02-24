@@ -290,7 +290,7 @@ tempo:
 
 # Alloy - unified observability collector
 alloy:
-  enabled: true
+  enabled: false  # Temporarily disabled for clean reinstall
   values:
     global:
       imageRegistry: ""  # Disable registry prepending
