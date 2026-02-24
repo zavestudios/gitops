@@ -296,6 +296,16 @@ alloy:
       imageRegistry: ""  # Disable registry prepending
       image:
         registry: ""  # Also disable nested registry path
+    bb-common:
+      global:
+        imageRegistry: ""
+        image:
+          registry: ""
+    gluon:
+      global:
+        imageRegistry: ""
+        image:
+          registry: ""
     alloy-operator:  # NOT under upstream!
       waitForAlloyRemoval:
         image:
