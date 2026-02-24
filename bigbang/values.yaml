@@ -293,19 +293,7 @@ alloy:
   enabled: true
   values:
     global:
-      imageRegistry: ""  # Disable registry prepending
-      image:
-        registry: ""  # Also disable nested registry path
-    bb-common:
-      global:
-        imageRegistry: ""
-        image:
-          registry: ""
-    gluon:
-      global:
-        imageRegistry: ""
-        image:
-          registry: ""
+      imageRegistry: ""  # Disable top-level registry prepending
     upstream:
       alloy-operator:
         waitForAlloyRemoval:
