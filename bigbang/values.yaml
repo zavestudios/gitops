@@ -323,7 +323,7 @@ alloy:
       destinations:
         - name: loki
           type: loki
-          url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
+          url: http://logging-loki.logging.svc.cluster.local:3100/loki/api/v1/push
 
 # Loki - log aggregation storage
 loki:
