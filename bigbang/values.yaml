@@ -294,6 +294,8 @@ alloy:
   values:
     global:
       imageRegistry: ""  # Disable registry prepending
+      image:
+        registry: ""  # Also disable nested registry path
     alloy-operator:  # NOT under upstream!
       waitForAlloyRemoval:
         image:
