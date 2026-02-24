@@ -206,7 +206,13 @@ monitoring:
             registry: quay.io
             repository: prometheus-operator/prometheus-config-reloader
         admissionWebhooks:
-          enabled: false  # Disabled to avoid Iron Bank image issues
+          enabled: true
+          patch:
+            image:
+              registry: registry.k8s.io
+              repository: ingress-nginx/kube-webhook-certgen
+              tag: v1.6.5
+              pullPolicy: IfNotPresent
       prometheus:
         prometheusSpec:
           image:
