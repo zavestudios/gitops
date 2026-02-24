@@ -292,6 +292,8 @@ tempo:
 alloy:
   enabled: true
   values:
+    global:
+      imageRegistry: ""  # Disable registry prepending
     alloy-operator:  # NOT under upstream!
       waitForAlloyRemoval:
         image:
