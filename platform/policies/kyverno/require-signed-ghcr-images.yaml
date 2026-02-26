@@ -15,7 +15,7 @@ spec:
       verifyImages:
         - imageReferences:
             - "ghcr.io/zavestudios/*"
-          mutateDigest: true
+          mutateDigest: false
           attestors:
             - entries:
                 - keyless:
