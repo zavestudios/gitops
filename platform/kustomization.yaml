@@ -5,3 +5,4 @@ resources:
   - sealed-secrets/
   - cloudflare/
 
+  - policies/kyverno/
