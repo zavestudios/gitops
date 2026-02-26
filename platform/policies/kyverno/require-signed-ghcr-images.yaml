@@ -15,7 +15,11 @@ spec:
       verifyImages:
         - imageReferences:
             - "ghcr.io/zavestudios/*"
-          keyless:
-            issuer: "https://token.actions.githubusercontent.com"
-            # Tighten this further to specific repositories if desired.
-            subjectRegExp: "https://github.com/zavestudios/.+"
+          mutateDigest: true
+          attestors:
+            - entries:
+                - keyless:
+                    issuer: "https://token.actions.githubusercontent.com"
+                    subjectRegExp: "https://github.com/zavestudios/.+"
+                    rekor:
+                      url: "https://rekor.sigstore.dev"
