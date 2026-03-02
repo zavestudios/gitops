@@ -4,6 +4,8 @@ GitOps source of truth for the ZaveStudios platform.
 
 This repository defines desired cluster state for platform services and tenant workloads. Flux reconciles manifests from this repository into Kubernetes.
 
+**Repository Category:** `infrastructure` (canonical classification in [REPO_TAXONOMY.md](https://github.com/zavestudios/platform-docs/blob/main/_platform/REPO_TAXONOMY.md))
+
 ## Scope
 
 - Cluster-level platform resources (`platform/`)
@@ -55,6 +57,8 @@ The current sandbox values prioritize a minimal package set and public image sou
 ## Bootstrap and Apply
 
 Run these from a workstation with cluster access:
+
+**Run manually by human:**
 
 ```bash
 # Validate kustomization composition
