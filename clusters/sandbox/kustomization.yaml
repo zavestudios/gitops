@@ -7,5 +7,5 @@ resources:
   # Big Bang platform bundle
   - ../../bigbang
 
-  # Tenant applications (uncomment when ready)
-  # - ../../../tenants
+  # Tenant applications
+  - ../../tenants
