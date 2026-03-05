@@ -22,7 +22,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: mia
-        image: ghcr.io/zavestudios/mia@sha256:67e77de0d521f86abe77a07dd8f345c23e8bc2c8791c8294b14f7d45b0057dd5
+        image: ghcr.io/zavestudios/mia@sha256:bfed1742f7885dfd826fd7fe83ce38c518a2b8549efd3a0e5ed3b7a1f56bef04
         ports:
         - containerPort: 8000
           name: http
