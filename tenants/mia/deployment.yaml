@@ -15,11 +15,12 @@ spec:
     metadata:
       labels:
         app: mia
+        app.kubernetes.io/name: mia
         zave.io/workload: mia
     spec:
       containers:
       - name: mia
-        image: ghcr.io/zavestudios/mia:sha-519fd17
+        image: ghcr.io/zavestudios/mia@sha256:67e77de0d521f86abe77a07dd8f345c23e8bc2c8791c8294b14f7d45b0057dd5
         ports:
         - containerPort: 8000
           name: http
