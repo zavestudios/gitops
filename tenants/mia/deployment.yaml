@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mia
+  namespace: mia
+  labels:
+    app: mia
+    zave.io/workload: mia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mia
+  template:
+    metadata:
+      labels:
+        app: mia
+        zave.io/workload: mia
+    spec:
+      containers:
+      - name: mia
+        image: ghcr.io/zavestudios/mia:sha-519fd17
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:password@postgres:5432/mia"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5

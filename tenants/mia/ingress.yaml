@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mia
+  namespace: mia
+  labels:
+    app: mia
+    zave.io/workload: mia
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - mia-sandbox.zavestudios.com
+    secretName: mia-tls
+  rules:
+  - host: mia-sandbox.zavestudios.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mia
+            port:
+              number: 80

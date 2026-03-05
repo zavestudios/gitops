@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mia
+  namespace: argocd
+  labels:
+    zave.io/workload: mia
+    zave.io/tenant: "true"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zavestudios/gitops
+    targetRevision: main
+    path: tenants/mia
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
