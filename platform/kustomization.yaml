@@ -6,3 +6,6 @@ resources:
   - cloudflare/
 
   - policies/kyverno/
+
+  # ArgoCD Application resources for tenant workloads
+  - argocd/applications/
