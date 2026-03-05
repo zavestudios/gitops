@@ -24,14 +24,12 @@ spec:
       - name: mia
         image: ghcr.io/zavestudios/mia@sha256:bfed1742f7885dfd826fd7fe83ce38c518a2b8549efd3a0e5ed3b7a1f56bef04
         ports:
-        - containerPort: 8000
+        - containerPort: 18789
           name: http
           protocol: TCP
         env:
-        - name: DATABASE_URL
-          value: "postgresql://postgres:password@postgres:5432/mia"
-        - name: LOG_LEVEL
-          value: "info"
+        - name: NODE_ENV
+          value: "production"
         resources:
           requests:
             memory: "256Mi"
@@ -39,17 +37,15 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        # Health probes disabled - placeholder app has no HTTP server
-        # TODO: Re-enable when implementing actual API with /health endpoint
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 8000
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 8000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 18789
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 18789
+          initialDelaySeconds: 15
+          periodSeconds: 5
