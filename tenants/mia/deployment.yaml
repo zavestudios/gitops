@@ -4,6 +4,7 @@ metadata:
   name: mia
   namespace: mia
   labels:
+    app.kubernetes.io/version: sha-161c5ed
     app: mia
     zave.io/workload: mia
 spec:
@@ -16,6 +17,7 @@ spec:
       labels:
         app: mia
         app.kubernetes.io/name: mia
+        app.kubernetes.io/version: sha-161c5ed
         zave.io/workload: mia
     spec:
       imagePullSecrets:

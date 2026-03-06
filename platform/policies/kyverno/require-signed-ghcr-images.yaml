@@ -16,6 +16,11 @@ spec:
         - imageReferences:
             - "ghcr.io/zavestudios/*"
           mutateDigest: false
+          imageRegistryCredentials:
+            helpers:
+              - github
+            secrets:
+              - ghcr-secret
           attestors:
             - entries:
                 - keyless:
