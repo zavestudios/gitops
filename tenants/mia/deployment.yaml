@@ -50,18 +50,6 @@ spec:
         startupProbe:
           tcpSocket:
             port: 18789
-          periodSeconds: 5
-          timeoutSeconds: 2
-          failureThreshold: 60
-        readinessProbe:
-          tcpSocket:
-            port: 18789
           periodSeconds: 10
           timeoutSeconds: 2
-          failureThreshold: 6
-        livenessProbe:
-          tcpSocket:
-            port: 18789
-          periodSeconds: 20
-          timeoutSeconds: 2
-          failureThreshold: 3
+          failureThreshold: 90
