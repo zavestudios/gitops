@@ -7,5 +7,4 @@ resources:
   # Big Bang platform bundle
   - ../../bigbang
 
-  # Tenant applications
-  - ../../tenants
+  # Tenant workloads are reconciled by ArgoCD Applications managed under platform/.
