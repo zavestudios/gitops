@@ -11,7 +11,7 @@ metadata:
     zave.io/workload: mia
 spec:
   # Canary is disabled by default; set to 1 during canary validation.
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: mia-canary
