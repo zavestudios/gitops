@@ -22,8 +22,14 @@ spec:
     spec:
       imagePullSecrets:
       - name: ghcr-secret
+      securityContext:                                                                                                                                                                       
+        runAsUser: 1000                                                                                                                                                                      
+        runAsGroup: 1000                                                                                                                                                                     
+        fsGroup: 1000
       containers:
       - name: mia
+        securityContext:
+          runAsNonRoot: true
         image: ghcr.io/zavestudios/mia@sha256:1f7cc91dff05119477109ba3514a020a371e017fb31af14c83f5e71317e5f7f9
         ports:
         - containerPort: 18789
