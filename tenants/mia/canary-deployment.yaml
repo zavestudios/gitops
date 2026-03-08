@@ -11,7 +11,7 @@ metadata:
     zave.io/workload: mia
 spec:
   # Canary is disabled by default; set to 1 during canary validation.
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: mia-canary
@@ -34,7 +34,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:bfed1742f7885dfd826fd7fe83ce38c518a2b8549efd3a0e5ed3b7a1f56bef04
+        image: ghcr.io/zavestudios/mia@sha256:1f7cc91dff05119477109ba3514a020a371e017fb31af14c83f5e71317e5f7f9
         ports:
         - containerPort: 18789
           name: http
