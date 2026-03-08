@@ -51,9 +51,3 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
-        startupProbe:
-          tcpSocket:
-            port: 18789
-          periodSeconds: 10
-          timeoutSeconds: 2
-          failureThreshold: 90
