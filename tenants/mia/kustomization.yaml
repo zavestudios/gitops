@@ -10,6 +10,9 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+  - canary-deployment.yaml
+  - canary-service.yaml
+  - canary-ingress.yaml
 
 commonLabels:
   zave.io/workload: mia

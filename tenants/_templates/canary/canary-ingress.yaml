@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: __WORKLOAD__-canary
+  namespace: __NAMESPACE__
+  labels:
+    app: __WORKLOAD__-canary
+    app.kubernetes.io/name: __WORKLOAD__
+    app.kubernetes.io/component: canary
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - __CANARY_HOST__
+    secretName: __WORKLOAD__-canary-tls
+  rules:
+  - host: __CANARY_HOST__
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: __WORKLOAD__-canary
+            port:
+              number: 80
