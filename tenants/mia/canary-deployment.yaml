@@ -52,22 +52,8 @@ spec:
             memory: "1Gi"
             cpu: "500m"
         startupProbe:
-          exec:
-            command:
-            - openclaw
-            - health
-            - --timeout
-            - "2000"
+          tcpSocket:
+            port: 18789
           periodSeconds: 10
-          timeoutSeconds: 5
+          timeoutSeconds: 2
           failureThreshold: 90
-        readinessProbe:
-          exec:
-            command:
-            - openclaw
-            - health
-            - --timeout
-            - "2000"
-          periodSeconds: 15
-          timeoutSeconds: 5
-          failureThreshold: 6
