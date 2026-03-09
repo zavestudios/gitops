@@ -1,6 +1,6 @@
 # Mia Probe Hardening Plan (Issue #26)
 
-Status: deferred after failed probe trial; currently running with probes disabled intentionally
+Status: implemented in sandbox (all probe phases stable)
 
 Issue: https://github.com/zavestudios/gitops/issues/26
 
@@ -11,14 +11,25 @@ Reintroduce probes for `mia` without creating restart loops.
 ## Constraints
 
 - Runtime has shown delayed startup and loopback-only bind behavior in previous attempts.
-- Current deployment is intentionally stabilized with no probes.
+- Initial deployment was intentionally stabilized with no probes before phased reintroduction.
 - Any probe rollout must be gradual and reversible.
 
-## Current Baseline
+## Historical Baseline (Pre-Implementation)
 
-- `tenants/mia/deployment.yaml` has no `startupProbe`, `readinessProbe`, or `livenessProbe`.
-- This is intentional until a deterministic probe target exists for OpenClaw in this runtime.
-- Continue using the manual smoke runbook/script for health validation during this period.
+- `tenants/mia/deployment.yaml` had no `startupProbe`, `readinessProbe`, or `livenessProbe`.
+- This temporary state was used during early stabilization.
+
+## Implementation Outcome
+
+Implemented and validated in sandbox with phased rollout:
+
+- Phase 1: `startupProbe` enabled and stable.
+- Phase 2: `readinessProbe` added and stable.
+- Phase 3: `livenessProbe` added and stable.
+
+Observed result:
+- deployment stable at desired replicas
+- no probe-driven restart churn during observation window
 
 ## Phase 1: Startup Probe Only
 
@@ -110,3 +121,9 @@ kubectl -n mia get deploy mia -o jsonpath='{.status.conditions[?(@.type=="Availa
 - land one phase per commit
 - reconcile and observe before next phase
 - use canary path if stable/unstable behavior diverges between images
+
+## Post-Implementation Note (Kyverno Events)
+
+- During rollout, Kyverno may continue to show historical `PolicyViolation` events for older ReplicaSets/images.
+- For current-state triage, filter by active digest and recent timestamps.
+- Treat old-digest `no signatures found` entries as historical noise unless they recur on the active digest.
