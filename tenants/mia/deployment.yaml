@@ -40,15 +40,6 @@ spec:
         - containerPort: 18789
           name: http
           protocol: TCP
-        startupProbe:
-          exec:
-            command:
-            - sh
-            - -lc
-            - openclaw gateway health --json >/dev/null
-          periodSeconds: 15
-          timeoutSeconds: 20
-          failureThreshold: 60
         env:
         - name: NODE_ENV
           value: "production"
