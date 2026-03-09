@@ -40,6 +40,12 @@ spec:
         - containerPort: 18789
           name: http
           protocol: TCP
+        startupProbe:
+          tcpSocket:
+            port: 18769
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 90
         env:
         - name: NODE_ENV
           value: "production"
