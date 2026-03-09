@@ -46,9 +46,9 @@ spec:
             - sh
             - -lc
             - openclaw gateway health --json >/dev/null
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 90
+          periodSeconds: 15
+          timeoutSeconds: 20
+          failureThreshold: 60
         env:
         - name: NODE_ENV
           value: "production"
