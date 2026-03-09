@@ -49,6 +49,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 2
           failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 18789
+          periodSeconds: 30
+          timeoutSeconds: 2
+          failureThreshold: 3
         ports:
         - containerPort: 18789
           name: http
