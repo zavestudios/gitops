@@ -36,7 +36,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:ccba7e622f489d4243a50e372785903d4f24f7533e1dbf7056e4782247b7d5b1
+        image: ghcr.io/zavestudios/mia@sha256:d18987df5975a439614e161ae8ba3a5b78a66f2307551f04b7fa6062c5781833
         startupProbe:
           tcpSocket:
             port: 18789
