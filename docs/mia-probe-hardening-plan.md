@@ -1,6 +1,6 @@
 # Mia Probe Hardening Plan (Issue #26)
 
-Status: planned (not yet applied)
+Status: deferred after failed probe trial; currently running with probes disabled intentionally
 
 Issue: https://github.com/zavestudios/gitops/issues/26
 
@@ -13,6 +13,12 @@ Reintroduce probes for `mia` without creating restart loops.
 - Runtime has shown delayed startup and loopback-only bind behavior in previous attempts.
 - Current deployment is intentionally stabilized with no probes.
 - Any probe rollout must be gradual and reversible.
+
+## Current Baseline
+
+- `tenants/mia/deployment.yaml` has no `startupProbe`, `readinessProbe`, or `livenessProbe`.
+- This is intentional until a deterministic probe target exists for OpenClaw in this runtime.
+- Continue using the manual smoke runbook/script for health validation during this period.
 
 ## Phase 1: Startup Probe Only
 
