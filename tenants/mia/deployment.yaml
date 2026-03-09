@@ -42,7 +42,7 @@ spec:
           protocol: TCP
         startupProbe:
           tcpSocket:
-            port: 18769
+            port: 18789
           periodSeconds: 10
           timeoutSeconds: 2
           failureThreshold: 90
