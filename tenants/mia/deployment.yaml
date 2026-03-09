@@ -35,7 +35,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:1f7cc91dff05119477109ba3514a020a371e017fb31af14c83f5e71317e5f7f9
+        image: ghcr.io/zavestudios/mia@sha256:769c4adf6290c0c3f2da8cde4dc3d33e9b073f16bfbc75492c146ab5ad31ddb9
         ports:
         - containerPort: 18789
           name: http
