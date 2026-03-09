@@ -41,10 +41,13 @@ spec:
           name: http
           protocol: TCP
         startupProbe:
-          tcpSocket:
-            port: 18789
+          exec:
+            command:
+            - sh
+            - -lc
+            - openclaw gateway health --json >/dev/null
           periodSeconds: 10
-          timeoutSeconds: 2
+          timeoutSeconds: 5
           failureThreshold: 90
         env:
         - name: NODE_ENV
