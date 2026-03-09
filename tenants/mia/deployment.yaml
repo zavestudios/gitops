@@ -42,6 +42,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 2
           failureThreshold: 90
+        readinessProbe:
+          tcpSocket:
+            port: 18789
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 6
         ports:
         - containerPort: 18789
           name: http
