@@ -5,6 +5,7 @@ namespace: mia
 
 resources:
   # Add ghcr-secret.sealed.yaml after generating a SealedSecret for namespace mia.
+  - mia-provider.sealed.yaml
   - ghcr-secret.sealed.yaml
   - namespace.yaml
   - deployment.yaml
