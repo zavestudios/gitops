@@ -60,6 +60,11 @@ spec:
           name: http
           protocol: TCP
         env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mia-provider
+              key: OPENAI_API_KEY
         - name: NODE_ENV
           value: "production"
         - name: NODE_OPTIONS
