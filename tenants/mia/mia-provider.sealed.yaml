@@ -1,0 +1,16 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: mia-provider
+  namespace: mia
+spec:
+  encryptedData:
+    OPENAI_API_KEY: AgAkG5Iua0u6CYYRNPOk/Gn2aEYSKOEj75osXW7YgpH8ffef3XiR/PPfpfDQTg1cN03Q2aulza1CGtU09Ij/cVuIAYYWl5XzSGg1/8raw5kuofkxl7hwL+7lC1U7Rp9NjwSQvonX7hEsoVyH26ybIxq9vprTtyzdUxa+ARlYnJjn/GWG5OVDQ8aIejDBApaLelJhP1DWa4x0kDzLciGhACawxRyHxSWe3vHlzxTs05AOZ+RSKXSKs1DjlFOdAZf+1cRP2/2UKpQflYwo/IwHpKoRE0BNqSkBiqlYOPY5mGTFBvAHTqeEA0kqM7QM1gGDoGo66kn0DXYYi/gDiy/i8ifRo+WzytH731zDmKGhSujb/tWzaDpAX/KDTjKtbBU0Hp8PONrIecQMo2F8WCXazB26BF6r67v73Ypypn1vpnbU+c7aD/u/VscONiY09ogoNjjm6G3laXKhXofgHIHx6dH5jbn4bxkZKuxcdHL/dE6Cg0HyEhgnBbea9wYgi/2GIH7yGQMIInjE+jVr7HL9uXXoI0y81yJDXCfBWCGjUpxoZCOvuAQ/fliidupe5ns2T1WzvsO21NxBfLzM5ev/aqewf1iTbJq3F3tRhRgggWlXNZzTAU/g2pNw14f9wdCYW12cYjo8K0Aoa038sruhYf7lB5Fb1TbI1b9micI88WrMlR0keXYor+N97bkof/DbuXbuLHkXY2YkGukuBTtvhVD1K5X01CyBwJmGwNaPvKX78AIFf06iqbhtFc8qUY/uK5wNXHMd7y8FQUeONjfqsJE/VxbQwW1DoC7KQYT6OjtKn1ZLliutXqazbhs/kE6rrY/odfhGyB51qO8pNzuimUfQVRUHZPuFtKEY/mbCUqLioq3M9waVYby/NPIfqFAIZHKKeVSYXqFmGPXBjlORzfcIyntKVA==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: mia-provider
+      namespace: mia
+    type: Opaque
