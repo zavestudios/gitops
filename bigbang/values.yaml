@@ -164,6 +164,29 @@ addons:
   gitlabRunner:
     enabled: false
 
+  vault:
+    enabled: true
+    values:
+      global:
+        imageRegistry: ""  # Disable registry prepending
+      upstream:
+        server:
+          image:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+        injector:
+          enabled: true
+          image:
+            repository: docker.io/hashicorp/vault-k8s
+            tag: v1.7.2
+          agentImage:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+        csi:
+          image:
+            repository: docker.io/hashicorp/vault-csi-provider
+            tag: v1.7.0
+
   argocd:
     enabled: true
     values:
