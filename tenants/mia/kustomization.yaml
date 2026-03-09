@@ -13,6 +13,7 @@ resources:
   - canary-deployment.yaml
   - canary-service.yaml
   - canary-ingress.yaml
+  - serviceaccount.yaml
 
 commonLabels:
   zave.io/workload: mia
