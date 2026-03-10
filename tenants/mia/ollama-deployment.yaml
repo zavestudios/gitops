@@ -12,7 +12,8 @@ spec:
   selector:
     matchLabels:
       app: ollama
-      app.kubernetes.io/name: ollama
+      zave.io/managed-by: argocd
+      zave.io/workload: mia
   template:
     metadata:
       labels:
