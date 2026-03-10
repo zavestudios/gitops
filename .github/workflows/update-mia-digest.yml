@@ -49,28 +49,28 @@ jobs:
           DIGEST="${{ steps.vars.outputs.digest }}"
           TAG="${{ steps.vars.outputs.tag }}"
           python3 - "$FILE" "$DIGEST" "$TAG" <<'PY'
-import re
-import sys
-from pathlib import Path
+          import re
+          import sys
+          from pathlib import Path
 
-file_path, digest, tag = sys.argv[1], sys.argv[2], sys.argv[3]
-text = Path(file_path).read_text()
+          file_path, digest, tag = sys.argv[1], sys.argv[2], sys.argv[3]
+          text = Path(file_path).read_text()
 
-text = re.sub(
-    r'(^\s*image:\s+ghcr\.io/zavestudios/mia@).*$',
-    rf'\1{digest}',
-    text,
-    flags=re.MULTILINE,
-)
-text = re.sub(
-    r'(^\s*app\.kubernetes\.io/version:\s+).*$',
-    rf'\1{tag}',
-    text,
-    flags=re.MULTILINE,
-)
+          text = re.sub(
+              r'(^\s*image:\s+ghcr\.io/zavestudios/mia@).*$',
+              rf'\1{digest}',
+              text,
+              flags=re.MULTILINE,
+          )
+          text = re.sub(
+              r'(^\s*app\.kubernetes\.io/version:\s+).*$',
+              rf'\1{tag}',
+              text,
+              flags=re.MULTILINE,
+          )
 
-Path(file_path).write_text(text)
-PY
+          Path(file_path).write_text(text)
+          PY
 
       - name: Commit and push
         shell: bash
