@@ -96,6 +96,7 @@ kyvernoPolicies:
             - ghcr.io/            # GitHub Container Registry
             - quay.io/            # Red Hat Quay
             - docker.io/          # Docker Hub
+            - index.docker.io/    # Docker Hub canonical hostname
             - registry.k8s.io/    # Kubernetes registry
             - public.ecr.aws/     # AWS Public ECR
 
