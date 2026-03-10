@@ -21,7 +21,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: ollama
-        image: ollama/ollama:0.17.7
+        image: docker.io/ollama/ollama:0.17.7
         ports:
         - containerPort: 11434
           name: http
