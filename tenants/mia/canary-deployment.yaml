@@ -12,6 +12,7 @@ metadata:
 spec:
   # Canary is disabled by default; set to 1 during canary validation.
   replicas: 0
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: mia-canary
