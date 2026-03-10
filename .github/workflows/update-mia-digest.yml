@@ -48,11 +48,29 @@ jobs:
           FILE="tenants/mia/deployment.yaml"
           DIGEST="${{ steps.vars.outputs.digest }}"
           TAG="${{ steps.vars.outputs.tag }}"
+          python3 - "$FILE" "$DIGEST" "$TAG" <<'PY'
+import re
+import sys
+from pathlib import Path
 
-          # Pin workload image to published immutable digest.
-          sed -i -E "s#^([[:space:]]*image:[[:space:]]+ghcr\\.io/zavestudios/mia@).*$#\\1${DIGEST}#g" "${FILE}"
-          # Keep workload version label aligned with build tag.
-          sed -i -E "s#^([[:space:]]*app\\.kubernetes\\.io/version:[[:space:]]+).*$#\\1${TAG}#g" "${FILE}"
+file_path, digest, tag = sys.argv[1], sys.argv[2], sys.argv[3]
+text = Path(file_path).read_text()
+
+text = re.sub(
+    r'(^\s*image:\s+ghcr\.io/zavestudios/mia@).*$',
+    rf'\1{digest}',
+    text,
+    flags=re.MULTILINE,
+)
+text = re.sub(
+    r'(^\s*app\.kubernetes\.io/version:\s+).*$',
+    rf'\1{tag}',
+    text,
+    flags=re.MULTILINE,
+)
+
+Path(file_path).write_text(text)
+PY
 
       - name: Commit and push
         shell: bash
