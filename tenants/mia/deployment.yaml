@@ -9,6 +9,7 @@ metadata:
     zave.io/workload: mia
 spec:
   replicas: 1
+  revisionHistoryLimit: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
