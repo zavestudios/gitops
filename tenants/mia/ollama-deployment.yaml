@@ -5,15 +5,18 @@ metadata:
   namespace: mia
   labels:
     app: ollama
+    app.kubernetes.io/name: ollama
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: ollama
+      app.kubernetes.io/name: ollama
   template:
     metadata:
       labels:
         app: ollama
+        app.kubernetes.io/name: ollama
     spec:
       automountServiceAccountToken: false
       containers:
