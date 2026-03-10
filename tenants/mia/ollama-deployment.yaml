@@ -16,6 +16,7 @@ spec:
       labels:
         app: ollama
         app.kubernetes.io/name: ollama
+        app.kubernetes.io/version: "0.17.7"
     spec:
       automountServiceAccountToken: false
       containers:
