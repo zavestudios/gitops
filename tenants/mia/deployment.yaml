@@ -60,11 +60,13 @@ spec:
           name: http
           protocol: TCP
         env:
-        - name: OPENAI_API_KEY
+        - name: ANTHROPIC_API_KEY
           valueFrom:
             secretKeyRef:
               name: mia-provider
-              key: OPENAI_API_KEY
+              key: ANTHROPIC_API_KEY
+        - name: OLLAMA_HOST
+          value: "http://ollama.mia.svc.cluster.local:11434"
         - name: NODE_ENV
           value: "production"
         - name: NODE_OPTIONS

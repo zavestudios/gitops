@@ -10,6 +10,9 @@ resources:
   - namespace.yaml
   - deployment.yaml
   - service.yaml
+  - ollama-pvc.yaml
+  - ollama-deployment.yaml
+  - ollama-service.yaml
   - ingress.yaml
   - canary-deployment.yaml
   - canary-service.yaml
