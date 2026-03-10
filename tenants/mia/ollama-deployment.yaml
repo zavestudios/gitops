@@ -6,11 +6,13 @@ metadata:
   labels:
     app: ollama
     app.kubernetes.io/name: ollama
+    app.kubernetes.io/version: "0.17.7"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: ollama
+      app.kubernetes.io/name: ollama
   template:
     metadata:
       labels:
@@ -18,10 +20,24 @@ spec:
         app.kubernetes.io/name: ollama
         app.kubernetes.io/version: "0.17.7"
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       automountServiceAccountToken: false
       containers:
       - name: ollama
         image: docker.io/ollama/ollama:0.17.7
+        env:
+        - name: HOME
+          value: /home/ollama
+        - name: OLLAMA_HOME
+          value: /home/ollama/.ollama
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: ollama-data
+          mountPath: /home/ollama/.ollama
         ports:
         - containerPort: 11434
           name: http
@@ -51,9 +67,6 @@ spec:
           limits:
             cpu: "2"
             memory: 4Gi
-        volumeMounts:
-        - name: ollama-data
-          mountPath: /root/.ollama
       volumes:
       - name: ollama-data
         persistentVolumeClaim:
