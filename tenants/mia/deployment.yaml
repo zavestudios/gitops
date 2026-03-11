@@ -71,11 +71,11 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: NODE_OPTIONS
-          value: "--max-old-space-size=768"
+          value: "--max-old-space-size=1536"
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "250m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "500m"
