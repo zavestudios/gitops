@@ -170,6 +170,8 @@ addons:
     values:
       global:
         imageRegistry: ""  # Disable registry prepending
+      autoInit:
+        enabled: false  # Disable auto-init job (requires Iron Bank, not for production)
       upstream:
         server:
           image:
