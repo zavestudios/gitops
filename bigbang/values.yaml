@@ -269,6 +269,10 @@ monitoring:
           image:
             registry: quay.io
             repository: prometheus/prometheus
+          serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
+        serviceAccount:
+          create: true
+        automountServiceAccountToken: false  # Disable for Kyverno policy compliance
       alertmanager:
         alertmanagerSpec:
           image:
