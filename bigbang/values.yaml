@@ -188,7 +188,7 @@ addons:
           extraLabels:
             app.kubernetes.io/version: "1.21.2"
         injector:
-          enabled: true
+          enabled: false  # Disabled - conflicts with Kyverno, prefer External Secrets Operator
           image:
             repository: docker.io/hashicorp/vault-k8s
             tag: 1.7.3
