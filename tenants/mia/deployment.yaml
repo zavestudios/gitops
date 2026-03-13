@@ -4,7 +4,7 @@ metadata:
   name: mia
   namespace: mia
   labels:
-    app.kubernetes.io/version: sha-1c84efa
+    app.kubernetes.io/version: sha-b7f7be6
     app: mia
     zave.io/workload: mia
 spec:
@@ -23,7 +23,7 @@ spec:
       labels:
         app: mia
         app.kubernetes.io/name: mia
-        app.kubernetes.io/version: sha-1c84efa
+        app.kubernetes.io/version: sha-b7f7be6
         zave.io/workload: mia
     spec:
       automountServiceAccountToken: false
@@ -37,7 +37,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:be52c78b5d295a1ce751e89caf8e6b08d1543f4d4e3061cd699aa95eed661395
+        image: ghcr.io/zavestudios/mia@sha256:0449c252d82e107981e384b4d7a82452bf10d9ee3a71dcb519d1844217c64741
         startupProbe:
           tcpSocket:
             port: 18789
