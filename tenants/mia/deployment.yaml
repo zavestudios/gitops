@@ -33,6 +33,22 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+      initContainers:
+      - name: seed-config
+        image: ghcr.io/zavestudios/mia@sha256:0449c252d82e107981e384b4d7a82452bf10d9ee3a71dcb519d1844217c64741
+        command:
+        - sh
+        - -c
+        - |
+          if [ ! -f /data/openclaw.json ]; then
+            cp -r /home/node/.openclaw/* /data/
+            echo "Seeded initial config to persistent volume"
+          else
+            echo "Config already exists on persistent volume, skipping seed"
+          fi
+        volumeMounts:
+        - name: data
+          mountPath: /data
       containers:
       - name: mia
         securityContext:
@@ -81,7 +97,7 @@ spec:
             cpu: "500m"
         volumeMounts:
         - name: data
-          mountPath: /home/node/.openclaw/credentials
+          mountPath: /home/node/.openclaw
       volumes:
       - name: data
         persistentVolumeClaim:
