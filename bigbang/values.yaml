@@ -96,6 +96,7 @@ kyvernoPolicies:
             - ghcr.io/            # GitHub Container Registry
             - quay.io/            # Red Hat Quay
             - docker.io/          # Docker Hub
+            - index.docker.io/    # Docker Hub canonical hostname
             - registry.k8s.io/    # Kubernetes registry
             - public.ecr.aws/     # AWS Public ECR
 
@@ -164,6 +165,56 @@ addons:
   gitlabRunner:
     enabled: false
 
+  vault:
+    enabled: true
+    values:
+      global:
+        imageRegistry: ""  # Disable registry prepending
+      autoInit:
+        enabled: false  # Disable auto-init job (requires Iron Bank, not for production)
+      upstream:
+        server:
+          image:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+          # Security: disable automount of service account token
+          serviceAccount:
+            create: true
+            automountServiceAccountToken: false
+          # Add required labels for Kyverno policies
+          statefulSet:
+            annotations:
+              kyverno.io/ignore: "false"
+          extraLabels:
+            app.kubernetes.io/version: "1.21.2"
+        injector:
+          enabled: false  # Disabled - conflicts with Kyverno, prefer External Secrets Operator
+          image:
+            repository: docker.io/hashicorp/vault-k8s
+            tag: 1.7.3
+          agentImage:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+          # Security: disable automount of service account token
+          authDelegator:
+            enabled: false  # Disable if not using auth delegation
+          serviceAccount:
+            create: true
+          automountServiceAccountToken: false  # Pod-level setting
+          extraLabels:
+            app.kubernetes.io/version: "1.7.3"
+        csi:
+          enabled: false  # Disable CSI provider if not needed
+          image:
+            repository: docker.io/hashicorp/vault-csi-provider
+            tag: 1.7.0
+          # Security: disable automount of service account token
+          serviceAccount:
+            create: true
+          automountServiceAccountToken: false  # Pod-level setting
+          extraLabels:
+            app.kubernetes.io/version: "1.7.0"
+
   argocd:
     enabled: true
     values:
@@ -218,6 +269,8 @@ monitoring:
           image:
             registry: quay.io
             repository: prometheus/prometheus
+          serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
+          automountServiceAccountToken: false  # Disable for Kyverno policy compliance
       alertmanager:
         alertmanagerSpec:
           image:

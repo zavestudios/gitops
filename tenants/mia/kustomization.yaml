@@ -5,11 +5,19 @@ namespace: mia
 
 resources:
   # Add ghcr-secret.sealed.yaml after generating a SealedSecret for namespace mia.
+  - mia-provider.sealed.yaml
   - ghcr-secret.sealed.yaml
   - namespace.yaml
   - deployment.yaml
   - service.yaml
+  - ollama-pvc.yaml
+  - ollama-deployment.yaml
+  - ollama-service.yaml
   - ingress.yaml
+  - canary-deployment.yaml
+  - canary-service.yaml
+  - canary-ingress.yaml
+  - serviceaccount.yaml
 
 commonLabels:
   zave.io/workload: mia

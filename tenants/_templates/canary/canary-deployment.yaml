@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __WORKLOAD__-canary
+  namespace: __NAMESPACE__
+  labels:
+    app: __WORKLOAD__-canary
+    app.kubernetes.io/name: __WORKLOAD__
+    app.kubernetes.io/component: canary
+    app.kubernetes.io/version: __VERSION__
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: __WORKLOAD__-canary
+  template:
+    metadata:
+      labels:
+        app: __WORKLOAD__-canary
+        app.kubernetes.io/name: __WORKLOAD__
+        app.kubernetes.io/component: canary
+        app.kubernetes.io/version: __VERSION__
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: __WORKLOAD__
+        image: ghcr.io/zavestudios/__WORKLOAD__@__DIGEST__

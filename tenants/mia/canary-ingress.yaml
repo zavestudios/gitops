@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mia-canary
+  namespace: mia
+  labels:
+    app: mia-canary
+    app.kubernetes.io/name: mia
+    app.kubernetes.io/component: canary
+    zave.io/workload: mia
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - mia-canary-sandbox.zavestudios.com
+    secretName: mia-canary-tls
+  rules:
+  - host: mia-canary-sandbox.zavestudios.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mia-canary
+            port:
+              number: 80

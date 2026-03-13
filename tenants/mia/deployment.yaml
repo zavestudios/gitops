@@ -4,11 +4,17 @@ metadata:
   name: mia
   namespace: mia
   labels:
-    app.kubernetes.io/version: sha-161c5ed
+    app.kubernetes.io/version: sha-1c84efa
     app: mia
     zave.io/workload: mia
 spec:
   replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: mia
@@ -17,9 +23,10 @@ spec:
       labels:
         app: mia
         app.kubernetes.io/name: mia
-        app.kubernetes.io/version: sha-161c5ed
+        app.kubernetes.io/version: sha-1c84efa
         zave.io/workload: mia
     spec:
+      automountServiceAccountToken: false
       imagePullSecrets:
       - name: ghcr-secret
       securityContext:                                                                                                                                                                       
@@ -30,20 +37,45 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:bfed1742f7885dfd826fd7fe83ce38c518a2b8549efd3a0e5ed3b7a1f56bef04
+        image: ghcr.io/zavestudios/mia@sha256:be52c78b5d295a1ce751e89caf8e6b08d1543f4d4e3061cd699aa95eed661395
+        startupProbe:
+          tcpSocket:
+            port: 18789
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 90
+        readinessProbe:
+          tcpSocket:
+            port: 18789
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 18789
+          periodSeconds: 30
+          timeoutSeconds: 2
+          failureThreshold: 3
         ports:
         - containerPort: 18789
           name: http
           protocol: TCP
         env:
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mia-provider
+              key: ANTHROPIC_API_KEY
+        - name: OLLAMA_HOST
+          value: "http://ollama.mia.svc.cluster.local:11434"
         - name: NODE_ENV
           value: "production"
         - name: NODE_OPTIONS
-          value: "--max-old-space-size=768"
+          value: "--max-old-space-size=1536"
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "250m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "500m"

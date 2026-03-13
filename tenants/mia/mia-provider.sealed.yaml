@@ -1,0 +1,16 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: mia-provider
+  namespace: mia
+spec:
+  encryptedData:
+    ANTHROPIC_API_KEY: AgA98JYELQ+VUgiYIFNUfAErDImVuwM6RHNX5EwASK9j7+Yy3548T1mNpqYxVWh4gPXfPIkzGD7pvM7r71jib6YcFz8seKyV/Q9qvByPOM7qEP7MnoptfGtwYXD1QfbVqFtPGwatMHzjpzwt1CX+Nyx4JGeOukkrh77WrT+a9xns26Q3CHR1aJz77tm0nOkpMTHqG4dB1946Hue1h3OtqzbDEFzJuPWfLvWRJAoHj/i2Yl+nLMPkV8k2cpA0HtdtZGlvjFnYovvOQK6YmHObR2H86dcNEfqV3HEQdxjJ6ynz2jptQcGwwHo14gunVvYmOMQFnKoIIqz9C6CpsLTMvM3CmpH3MIrPZNEpsaU7Y6QSo2XWGFUUQhwRKaUrsCDU7hNUmbZY1VUhliM4KNZXB+fqPzywGH75kgSR5xQPeEYEee198R9i6rEKYzcfbcCQWc2P0oiYY5c2MGIrA8OWroKihB6RqEd4IYF98X7TegeBbElTNMinOMJI2SJ/hFMm2fQrtzw4SmCtKUBVPQPe02nXRgB3nn2s91SVZqbnF38vPB42IlU/X2UqY163N7hkLGsW7vubukG7HcyT2c0EULJ5I4IZYrgwE6Z79uNVYms81si35qlqsAJaENN0OMIDBoFXs5J/CIbI+KIDh/9w3DIeQ2F63YNyZ00te3O5rS5UlHPGTxqj3oeadeAlxxYV8VRnTY5ssc5CCSImoX2Twf/3/yUTuaz5Fs70ToMhcEnoaUBbDOW+3Xz0epQAW+bNaE8UP4WWSMXPWVHQmrmkOhibbFevbZcYZMWZeKJptST/JKagvrZi4LWj3ubm6jAYn1YiGQY3NW13utwLv2E=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: mia-provider
+      namespace: mia
+    type: Opaque

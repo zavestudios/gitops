@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mia-canary
+  namespace: mia
+  labels:
+    app: mia-canary
+    app.kubernetes.io/name: mia
+    app.kubernetes.io/component: canary
+    app.kubernetes.io/version: sha-161c5ed
+    zave.io/workload: mia
+spec:
+  # Canary is disabled by default; set to 1 during canary validation.
+  replicas: 0
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: mia-canary
+  template:
+    metadata:
+      labels:
+        app: mia-canary
+        app.kubernetes.io/name: mia
+        app.kubernetes.io/component: canary
+        app.kubernetes.io/version: sha-161c5ed
+        zave.io/workload: mia
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: mia
+        securityContext:
+          runAsNonRoot: true
+        image: ghcr.io/zavestudios/mia@sha256:1f7cc91dff05119477109ba3514a020a371e017fb31af14c83f5e71317e5f7f9
+        ports:
+        - containerPort: 18789
+          name: http
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=768"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
