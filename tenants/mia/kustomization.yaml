@@ -12,6 +12,7 @@ resources:
   - service.yaml
   - ollama-pvc.yaml
   - ollama-deployment.yaml
+  - mia-data-pvc.yaml
   - ollama-service.yaml
   - ingress.yaml
   - canary-deployment.yaml

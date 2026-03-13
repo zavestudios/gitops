@@ -29,9 +29,9 @@ spec:
       automountServiceAccountToken: false
       imagePullSecrets:
       - name: ghcr-secret
-      securityContext:                                                                                                                                                                       
-        runAsUser: 1000                                                                                                                                                                      
-        runAsGroup: 1000                                                                                                                                                                     
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
       containers:
       - name: mia
@@ -79,3 +79,10 @@ spec:
           limits:
             memory: "2Gi"
             cpu: "500m"
+        volumeMounts:
+        - name: data
+          mountPath: /home/node/.openclaw/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: mia-data
