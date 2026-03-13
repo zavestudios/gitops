@@ -81,7 +81,7 @@ spec:
             cpu: "500m"
         volumeMounts:
         - name: data
-          mountPath: /home/node/.openclaw/data
+          mountPath: /home/node/.openclaw/credentials
       volumes:
       - name: data
         persistentVolumeClaim:
