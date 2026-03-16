@@ -1,5 +1,13 @@
 # Mia Ollama Heartbeat Deployment
 
+This document describes the current tenant-scoped pattern.
+It is not the target long-term architecture.
+For the shared-platform migration target, see the `llm-platform` repository:
+
+- migration plan: https://github.com/zavestudios/llm-platform/blob/main/docs/MIGRATION_PLAN.md
+- architecture docs: https://github.com/zavestudios/llm-platform/blob/main/docs/ARCHITECTURE.md
+- draw.io diagram: https://github.com/zavestudios/llm-platform/blob/main/docs/ARCHITECTURE.drawio
+
 This document captures the tenant-scoped Ollama pattern used by `mia` for heartbeat cost optimization.
 
 ## Scope and Governance
