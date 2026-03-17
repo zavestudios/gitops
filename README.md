@@ -20,16 +20,22 @@ This repository defines desired cluster state for platform services and tenant w
 .
 ├── clusters/
 │   └── sandbox/
-│       └── kustomization.yaml
+│       ├── bigbang-kustomization.yaml
+│       ├── kustomization.yaml
+│       ├── platform-core-kustomization.yaml
+│       └── platform-runtime-kustomization.yaml
 ├── platform/
+│   ├── core/
 │   ├── kustomization.yaml
-│   └── namespaces/
+│   ├── namespaces/
+│   ├── runtime/
+│   └── vault/
 ├── bigbang/
 │   ├── kustomization.yaml
-│   ├── namespace.yaml
 │   ├── gitrepository.yaml
-│   ├── fluxkustomization.yaml
-│   └── values/
+│   ├── helmrelease.yaml
+│   ├── namespace.yaml
+│   └── values.yaml
 ├── tenants/
 ├── docs/
 └── tools/
@@ -38,11 +44,11 @@ This repository defines desired cluster state for platform services and tenant w
 ## Reconciliation Model
 
 - `clusters/<env>/kustomization.yaml` is the environment entrypoint.
-- Environment entrypoint composes platform resources first.
-- Big Bang and tenant resources are enabled as explicit layers when ready.
-- Each layer is declarative and versioned in Git.
-
-Current `sandbox` entrypoint intentionally keeps Big Bang and tenant layers commented while baseline platform resources are stabilized.
+- Environment entrypoint now creates ordered Flux `Kustomization` resources.
+- `platform/core` reconciles first.
+- `bigbang` reconciles second.
+- `platform/runtime` reconciles after Big Bang so CRD-backed resources do not race their controllers.
+- Tenant workloads remain reconciled by ArgoCD Applications under `platform/argocd/applications/`.
 
 ## Big Bang Integration
 
@@ -50,7 +56,7 @@ Current `sandbox` entrypoint intentionally keeps Big Bang and tenant layers comm
 
 - `GitRepository` pins an explicit Big Bang tag.
 - `Kustomization` reconciles Big Bang `./base` path.
-- `configMapGenerator` injects environment-specific values from `values/sandbox.yaml`.
+- `configMapGenerator` injects environment-specific values from `values.yaml`.
 
 The current sandbox values prioritize a minimal package set and public image sources.
 
@@ -68,7 +74,7 @@ kubectl kustomize clusters/sandbox
 kubectl apply -k clusters/sandbox
 ```
 
-When ready to enable additional layers, uncomment references in `clusters/sandbox/kustomization.yaml` and re-apply.
+Reconciliation order is managed by Flux `dependsOn` relationships under `clusters/sandbox/`.
 
 ## Workflow
 
@@ -81,6 +87,7 @@ When ready to enable additional layers, uncomment references in `clusters/sandbo
 ## Documentation
 
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
+- `docs/vault-hardening-plan.md`: Vault persistence, lifecycle, and recovery hardening plan for the current environment.
 - `docs/vault-migration-plan.md`: Vault, External Secrets Operator, and Sealed Secrets migration plan.
 - `tools/helm-debug/README.md`: Helm debugging commands for value tracing and template rendering.
 
