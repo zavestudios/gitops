@@ -42,12 +42,28 @@ This change adds:
 - Big Bang `externalSecrets` addon enabled
 - A GitOps-managed `ClusterSecretStore` pointing at in-cluster Vault
 - A dedicated `vault-reader` service account for ESO Vault authentication
+- ordered Flux reconciliation across `platform/core`, `bigbang`, and `platform/runtime`
+
+## Current Decision
+
+Broader Vault migration is intentionally paused.
+
+Reason:
+
+- The current environment behaved as a long-lived, stateful platform environment rather than a disposable sandbox.
+- During namespace/release churn, Vault returned to `Initialized: false`, which showed that continuity of Vault state is not yet operationally trustworthy for broader migration.
+- External Secrets integration is now structurally in place, but platform hardening should happen before additional secrets move to Vault.
+
+Tracked follow-up work:
+
+- `gitops#54` Harden Vault persistence and lifecycle behavior for the current environment
+- `gitops#55` Rename the current environment and introduce a true local sandbox
 
 ## Migration Order
 
 Migration order:
 
-1. `mia-provider` (implemented in GitOps)
+1. `mia-provider` (implemented in GitOps as the initial target path)
 2. `cloudflared-token`
 3. GHCR pull secrets (`platform/policies/kyverno/ghcr-secret`, `tenants/mia/ghcr-secret`)
 
@@ -119,3 +135,9 @@ After Vault is initialized and populated:
 2. Replace `platform/cloudflare/sealed-secret.yaml` with an `ExternalSecret`.
 3. Replace the GHCR `SealedSecret` resources with `ExternalSecret` resources.
 4. Remove Sealed Secrets only after each replacement is verified.
+
+## Current Recommendation
+
+Do not continue broader secret migration until issue `#54` is addressed.
+
+If a minimal proof path is needed before that hardening work completes, limit it to a single low-risk secret and treat it as validation work, not as the start of broad cutover.
