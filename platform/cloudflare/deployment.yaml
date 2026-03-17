@@ -15,9 +15,17 @@ spec:
       labels:
         app: cloudflared
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: cloudflared
         image: docker.io/cloudflare/cloudflared:2024.12.2
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         args:
         - tunnel
         - --config
