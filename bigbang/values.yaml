@@ -167,6 +167,22 @@ addons:
 
   externalSecrets:
     enabled: true
+    values:
+      upstream:
+        image:
+          repository: ghcr.io/external-secrets/external-secrets
+          tag: v1.2.1
+        imagePullSecrets: []
+        webhook:
+          image:
+            repository: ghcr.io/external-secrets/external-secrets
+            tag: v1.2.1
+          imagePullSecrets: []
+        certController:
+          image:
+            repository: ghcr.io/external-secrets/external-secrets
+            tag: v1.2.1
+          imagePullSecrets: []
 
   vault:
     enabled: true
