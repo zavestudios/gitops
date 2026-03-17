@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: oracle
+  labels:
+    zave.io/workload: oracle
+    zave.io/tenant: "true"
