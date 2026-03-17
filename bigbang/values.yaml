@@ -168,6 +168,7 @@ addons:
   externalSecrets:
     enabled: true
     values:
+      waitJob: false
       upstream:
         image:
           repository: ghcr.io/external-secrets/external-secrets
