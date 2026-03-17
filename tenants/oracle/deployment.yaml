@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle
+  namespace: oracle
+  labels:
+    app: oracle
+    app.kubernetes.io/version: sha-37e4f66
+    zave.io/workload: oracle
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: oracle
+  template:
+    metadata:
+      labels:
+        app: oracle
+        app.kubernetes.io/name: oracle
+        app.kubernetes.io/version: sha-37e4f66
+        zave.io/workload: oracle
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: ghcr-secret
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: oracle
+        image: ghcr.io/zavestudios/oracle:sha-37e4f66
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: oracle-db
+              key: DATABASE_URL
+        - name: LEASE_SECONDS
+          value: "60"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
