@@ -81,6 +81,7 @@ When ready to enable additional layers, uncomment references in `clusters/sandbo
 ## Documentation
 
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
+- `docs/vault-migration-plan.md`: Vault, External Secrets Operator, and Sealed Secrets migration plan.
 - `tools/helm-debug/README.md`: Helm debugging commands for value tracing and template rendering.
 
 ## Conventions

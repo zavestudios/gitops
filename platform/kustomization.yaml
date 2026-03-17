@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespaces/namespaces.yaml
   - sealed-secrets/
+  - vault/
   - cloudflare/
 
   - policies/kyverno/

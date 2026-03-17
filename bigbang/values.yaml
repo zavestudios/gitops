@@ -165,6 +165,9 @@ addons:
   gitlabRunner:
     enabled: false
 
+  externalSecrets:
+    enabled: true
+
   vault:
     enabled: true
     values:
@@ -177,6 +180,26 @@ addons:
           image:
             repository: docker.io/hashicorp/vault
             tag: 1.21.2
+          standalone:
+            config: |
+              ui = true
+              api_addr = "http://vault.vault.svc.cluster.local:8200"
+
+              listener "tcp" {
+                tls_disable = 1
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+              }
+
+              telemetry {
+                prometheus_retention_time = "24h"
+                disable_hostname = true
+                unauthenticated_metrics_access = true
+              }
+
+              storage "file" {
+                path = "/vault/data"
+              }
           # Security: disable automount of service account token
           serviceAccount:
             create: true
