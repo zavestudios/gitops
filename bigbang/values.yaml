@@ -177,6 +177,8 @@ addons:
         enabled: false  # Disable auto-init job (requires Iron Bank, not for production)
       upstream:
         server:
+          ha:
+            apiAddr: "http://vault.vault.svc.cluster.local:8200"
           image:
             repository: docker.io/hashicorp/vault
             tag: 1.21.2
