@@ -33,6 +33,74 @@ At the time of inspection:
 
 That means the current environment can recreate Vault, but continuity of Vault state is not yet trustworthy enough for broader migration.
 
+## Current Findings
+
+The following findings are already established from direct cluster inspection in the current environment:
+
+### 1. Vault continuity was lost during recovery/reconciliation churn
+
+Observed sequence:
+
+- Vault was previously observed in an initialized state
+- later, `vault operator unseal` failed with `Vault is not initialized`
+- `vault status` then confirmed `Initialized: false`
+
+Implication:
+
+- the live Vault instance was no longer the previously initialized instance
+- prior unseal keys were not usable against the new instance
+
+### 2. The current Vault instance is using newly created storage objects
+
+Observed state:
+
+- `vault-vault` StatefulSet creation timestamp: 2026-03-17 18:52:10 UTC
+- PVC `data-vault-vault-0` was bound and in use by `vault-vault-0`
+- PVC `audit-vault-vault-0` was bound and in use by `vault-vault-0`
+
+Implication:
+
+- the currently running Vault pod is attached to a fresh storage lifecycle relative to the earlier initialized instance
+
+### 3. Vault storage is mounted, but the active data path was empty
+
+Observed state:
+
+- `/vault/data` was mounted read-write from the `data` PVC
+- `ls -la /vault/data` showed an empty directory
+
+Implication:
+
+- this is not a case of Vault simply missing a mount at runtime
+- the mounted storage backing the current pod did not contain a previously initialized Vault state
+
+### 4. The deployment is persistent in shape, but not yet trusted in lifecycle behavior
+
+Observed state:
+
+- Vault is deployed as a StatefulSet
+- storage class is `local-path`
+- data and audit PVCs are both present and mounted
+- StatefulSet update strategy is `OnDelete`
+
+Implication:
+
+- the deployment shape looks persistent
+- the operational problem is lifecycle continuity across rebuild/churn, not the absence of PVCs in the current pod
+
+### 5. The environment behaves like persistent on-prem infrastructure, not a disposable sandbox
+
+Operational conclusion:
+
+- stateful platform services exist here
+- durability assumptions matter
+- namespace/release churn can have consequences that are too expensive to wave away as sandbox breakage
+
+Implication:
+
+- Vault hardening should be treated as persistent-environment platform work
+- broader secret migration should remain paused until this model is understood
+
 ## Current Decision
 
 Broader secret migration is paused until the persistence and lifecycle model is understood.
