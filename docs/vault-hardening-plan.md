@@ -33,6 +33,126 @@ At the time of inspection:
 
 That means the current environment can recreate Vault, but continuity of Vault state is not yet trustworthy enough for broader migration.
 
+## Current Findings
+
+The following findings are already established from direct cluster inspection in the current environment:
+
+### 1. Vault continuity was lost during recovery/reconciliation churn
+
+Observed sequence:
+
+- Vault was previously observed in an initialized state
+- later, `vault operator unseal` failed with `Vault is not initialized`
+- `vault status` then confirmed `Initialized: false`
+
+Implication:
+
+- the live Vault instance was no longer the previously initialized instance
+- prior unseal keys were not usable against the new instance
+
+### 2. The current Vault instance is using newly created storage objects
+
+Observed state:
+
+- `vault-vault` StatefulSet creation timestamp: 2026-03-17 18:52:10 UTC
+- PVC `data-vault-vault-0` was bound and in use by `vault-vault-0`
+- PVC `audit-vault-vault-0` was bound and in use by `vault-vault-0`
+
+Implication:
+
+- the currently running Vault pod is attached to a fresh storage lifecycle relative to the earlier initialized instance
+
+### 3. Vault storage is mounted, but the active data path was empty
+
+Observed state:
+
+- `/vault/data` was mounted read-write from the `data` PVC
+- `ls -la /vault/data` showed an empty directory
+
+Implication:
+
+- this is not a case of Vault simply missing a mount at runtime
+- the mounted storage backing the current pod did not contain a previously initialized Vault state
+
+### 4. The deployment is persistent in shape, but not yet trusted in lifecycle behavior
+
+Observed state:
+
+- Vault is deployed as a StatefulSet
+- storage class is `local-path`
+- data and audit PVCs are both present and mounted
+- StatefulSet update strategy is `OnDelete`
+
+Implication:
+
+- the deployment shape looks persistent
+- the operational problem is lifecycle continuity across rebuild/churn, not the absence of PVCs in the current pod
+
+### 5. The environment behaves like persistent on-prem infrastructure, not a disposable sandbox
+
+Operational conclusion:
+
+- stateful platform services exist here
+- durability assumptions matter
+- namespace/release churn can have consequences that are too expensive to wave away as sandbox breakage
+
+Implication:
+
+- Vault hardening should be treated as persistent-environment platform work
+- broader secret migration should remain paused until this model is understood
+
+## Candidate Causes To Validate
+
+These are hypotheses, not confirmed root causes.
+
+### 1. Namespace or release churn replaced the prior Vault lifecycle
+
+Why it is plausible:
+
+- the environment went through namespace/release churn during reconciliation recovery
+- the currently running Vault StatefulSet and PVC objects are newer than the earlier initialized state that had been observed
+
+What to validate:
+
+- whether the old Vault namespace/PVC lifecycle was deleted and recreated
+- whether Big Bang or Flux remediation paths severed continuity from the earlier initialized instance
+
+### 2. `local-path` storage continuity was affected by node or hypervisor lifecycle
+
+Why it is plausible:
+
+- Vault storage is node-local through `local-path`
+- the PVCs were selected onto `k3s-cp-01`
+- hypervisor/node lifecycle can affect assumptions about local-path-backed state
+
+What to validate:
+
+- whether a hypervisor upgrade/reboot or node restart occurred in the same time window
+- whether other `local-path` workloads on that node retained continuity
+- whether the underlying local-path storage directory persisted as expected
+
+### 3. The current environment naming encouraged destructive assumptions
+
+Why it is plausible:
+
+- the current cluster is named `sandbox`
+- recent events showed it behaves like a persistent environment with meaningful state
+
+What to validate:
+
+- whether sandbox naming contributed to tolerating destructive lifecycle actions that would not be acceptable in a persistent environment
+
+### 4. The current Vault storage model may be acceptable only with stricter operational constraints
+
+Why it is plausible:
+
+- the current deployment shape is a single-node StatefulSet with `storage "file"`
+- this may be acceptable for a constrained environment, but only if destructive operations are explicitly understood and avoided
+
+What to validate:
+
+- whether the real issue is storage unsuitability, or simply the absence of clearly documented destructive boundaries
+
 ## Current Decision
 
 Broader secret migration is paused until the persistence and lifecycle model is understood.
@@ -59,6 +179,26 @@ Answer these first:
 4. Is `local-path` acceptable for Vault in the current long-lived environment?
 5. What lifecycle actions are safe, and which should be treated as destructive?
 6. What backup/recovery expectations should apply to Vault here?
+
+## Lifecycle Classification
+
+Current working classification for the current environment:
+
+| Action | Current Classification | Reason |
+| --- | --- | --- |
+| Flux reconcile with no destructive drift | Expected non-destructive, still validate | This should not replace Vault state, but evidence should still be captured. |
+| Pod restart | Unknown, validate | Persistence should survive this if PVC continuity is real. |
+| StatefulSet restart / pod recreation | Unknown, validate | This is a key durability check for the mounted PVC-backed state. |
+| Node restart on the selected node | Unknown, validate | `local-path` behavior under node lifecycle should be confirmed explicitly. |
+| Helm upgrade with retained namespace and PVCs | Unknown, validate | Should be safe in principle, but current evidence is not strong enough yet. |
+| Namespace deletion | Destructive or presumed destructive | Recent churn led to a fresh uninitialized Vault instance. |
+| Release uninstall / reinstall | Destructive or presumed destructive | Current evidence suggests this can sever continuity from the prior Vault instance. |
+| PVC deletion or rebinding to fresh storage | Destructive | This necessarily breaks Vault continuity for `storage \"file\"`. |
+
+Operational rule for now:
+
+- Treat namespace deletion, release uninstall/reinstall, and PVC recreation as destructive operations for Vault in the current environment.
+- Do not migrate broader secrets until the currently unknown actions are validated and documented.
 
 ## Evidence To Collect
 
