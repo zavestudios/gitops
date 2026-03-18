@@ -275,6 +275,54 @@ Implications:
   - reinitialized and repopulated
   - treated as an incident requiring manual operator steps
 
+## Validation Procedures
+
+Start with the least destructive checks first.
+
+### Validation 1: Pod Restart Continuity
+
+Purpose:
+
+- verify whether the current Vault state survives a basic pod recreation while retaining the same PVC-backed storage
+
+Preconditions:
+
+- Vault has been intentionally initialized for the test window
+- current unseal keys and root token are stored safely
+- no broader secret migration depends on this validation succeeding
+
+Procedure:
+
+**Run manually by human**
+
+```bash
+kubectl -n vault exec -it vault-vault-0 -- vault status
+kubectl -n vault get pod vault-vault-0 -o wide
+kubectl -n vault get pvc data-vault-vault-0 audit-vault-vault-0
+kubectl -n vault delete pod vault-vault-0
+kubectl -n vault get pod vault-vault-0 -w
+kubectl -n vault exec -it vault-vault-0 -- vault status
+kubectl -n vault exec -it vault-vault-0 -- sh -c 'ls -la /vault/data'
+```
+
+Success criteria:
+
+- the recreated pod returns with the same PVCs attached
+- `vault status` still reports `Initialized: true`
+- Vault does not come back as a fresh uninitialized instance
+- `/vault/data` contains persistent state rather than appearing newly empty
+
+Failure criteria:
+
+- `vault status` returns `Initialized: false`
+- the pod binds to fresh PVCs or otherwise loses continuity with the prior storage state
+- the storage directory appears freshly empty despite the restart being non-destructive in intent
+
+Interpretation:
+
+- If this test fails, the current storage/lifecycle model is not trustworthy even for basic pod-level recovery.
+- If this test passes, continue to the next least-destructive validation rather than jumping immediately to more disruptive lifecycle actions.
+
 ## Exit Criteria
 
 This issue is complete when:
