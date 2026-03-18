@@ -170,6 +170,8 @@ addons:
     values:
       waitJob: false
       upstream:
+        podLabels:
+          vault-ingress: "true"
         image:
           repository: ghcr.io/external-secrets/external-secrets
           tag: v1.2.1
