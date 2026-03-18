@@ -59,6 +59,22 @@ Tracked follow-up work:
 - `gitops#54` Harden Vault persistence and lifecycle behavior for the current environment
 - `gitops#55` Rename the current environment and introduce a true local sandbox
 
+## Constrained Proof Path Status
+
+The constrained proof path for `mia-provider` has now succeeded.
+
+What was validated:
+
+- Vault was initialized, unsealed, and configured for Kubernetes auth
+- External Secrets Operator authenticated to Vault through the `vault-kv` `ClusterSecretStore`
+- the `mia-provider` `ExternalSecret` synced successfully
+- Kubernetes secret `mia-provider` was created in namespace `mia`
+
+What this means:
+
+- the Vault and External Secrets functional integration path is now proven for a low-risk tenant secret
+- the remaining blocker to broader migration is lifecycle and durability confidence, not basic integration viability
+
 ## Migration Order
 
 Migration order:

@@ -232,7 +232,8 @@ The following environment facts are now confirmed:
 - The current Vault PVCs are approximately one day old relative to the current investigation window
 - The current Vault pod is scheduled on node `k3s-cp-01`
 - Vault StatefulSet update strategy is `OnDelete`
-- `/vault/data` is mounted but currently empty in the active pod
+- `/vault/data` was observed empty after churn before reinitialization
+- after controlled reinitialization and pod recreation testing, `/vault/data` contained persistent Vault state directories (`core`, `logical`, `sys`)
 
 Implications:
 
@@ -322,6 +323,22 @@ Interpretation:
 
 - If this test fails, the current storage/lifecycle model is not trustworthy even for basic pod-level recovery.
 - If this test passes, continue to the next least-destructive validation rather than jumping immediately to more disruptive lifecycle actions.
+
+Result:
+
+- Passed
+
+Observed outcome:
+
+- after controlled initialization and unseal, pod recreation preserved Vault state on the existing PVC-backed storage
+- after pod recreation, `vault status` reported `Initialized: true` and `Sealed: true`
+- manual unseal was still required after restart
+- `/vault/data` retained persistent state directories rather than returning as a fresh empty path
+
+Conclusion:
+
+- basic pod-level continuity is working in the current environment
+- the remaining hardening concern is broader lifecycle durability and operational recovery behavior, not immediate loss of state on simple pod recreation
 
 ## Exit Criteria
 
