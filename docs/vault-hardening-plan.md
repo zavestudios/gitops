@@ -340,6 +340,66 @@ Conclusion:
 - basic pod-level continuity is working in the current environment
 - the remaining hardening concern is broader lifecycle durability and operational recovery behavior, not immediate loss of state on simple pod recreation
 
+### Validation 2: Node Restart Continuity
+
+Purpose:
+
+- verify whether the current Vault state survives a restart of the node hosting the active Vault pod and its `local-path`-backed PVCs
+
+Preconditions:
+
+- Vault has been initialized and unsealed for the validation window
+- the active Vault pod is scheduled on `k3s-cp-01`
+- current unseal keys are available for manual recovery after restart
+
+Procedure:
+
+**Run manually by human**
+
+```bash
+kubectl -n vault get pod vault-vault-0 -o wide
+kubectl -n vault exec -it vault-vault-0 -- vault status
+kubectl -n vault exec -it vault-vault-0 -- sh -c 'ls -la /vault/data'
+# Restart the underlying node or VM hosting k3s-cp-01
+kubectl get nodes
+kubectl -n vault get pod vault-vault-0 -o wide
+kubectl -n vault exec -it vault-vault-0 -- vault status
+kubectl -n vault exec -it vault-vault-0 -- sh -c 'ls -la /vault/data'
+kubectl get clustersecretstore vault-kv
+kubectl -n mia get secret mia-provider
+```
+
+Success criteria:
+
+- the Vault pod returns on `k3s-cp-01` with the same persistent state intact
+- `vault status` reports `Initialized: true` after node recovery
+- `/vault/data` still contains persisted Vault state
+- `vault-kv` returns to `Valid` after manual unseal
+- `mia-provider` remains present in namespace `mia`
+
+Failure criteria:
+
+- Vault returns as `Initialized: false`
+- the data path appears freshly empty
+- the `ClusterSecretStore` cannot recover after manual unseal
+- the synced tenant secret is lost unexpectedly
+
+Result:
+
+- Passed for continuity
+
+Observed outcome:
+
+- after node reboot, Vault returned as `Initialized: true` and `Sealed: true`
+- `/vault/data` retained persistent state directories including `auth`, `core`, `logical`, and `sys`
+- `mia-provider` remained present in namespace `mia`
+- `vault-kv` returned to `Valid` after Vault was manually unsealed
+
+Conclusion:
+
+- node restart continuity is working for the current `local-path`-backed Vault deployment on `k3s-cp-01`
+- the remaining operational gap is that Vault does not automatically return to service after restart because manual unseal is still required
+
 ## Exit Criteria
 
 This issue is complete when:
