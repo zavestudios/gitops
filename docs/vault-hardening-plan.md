@@ -222,6 +222,24 @@ kubectl -n vault get pod vault-vault-0 -o yaml
 kubectl -n vault exec -it vault-vault-0 -- sh -c 'ls -la /vault/data'
 ```
 
+## Observed Environment Facts
+
+The following environment facts are now confirmed:
+
+- `local-path` reclaim policy is `Delete`
+- `local-path` volume binding mode is `WaitForFirstConsumer`
+- Vault data PVC and audit PVC are both bound with `StorageClass: local-path`
+- The current Vault PVCs are approximately one day old relative to the current investigation window
+- The current Vault pod is scheduled on node `k3s-cp-01`
+- Vault StatefulSet update strategy is `OnDelete`
+- `/vault/data` is mounted but currently empty in the active pod
+
+Implications:
+
+- the current storage class is node-local and destructive PVC lifecycle needs to be treated seriously
+- PVC recreation is a particularly important continuity boundary because reclaim policy is `Delete`
+- continuity testing should focus on non-destructive restart paths first, before any intentionally destructive actions are repeated
+
 ## Hardening Work
 
 ### 1. Document current lifecycle semantics
