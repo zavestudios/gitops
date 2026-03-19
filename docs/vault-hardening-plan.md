@@ -423,46 +423,45 @@ After this hardening work:
 Current state:
 
 - continuity has now been validated for both pod restart and node restart on `k3s-cp-01`
-- Vault does not automatically return to service after restart because it comes back sealed
-- External Secrets recovers only after Vault is manually unsealed
+- AWS KMS auto-unseal has been implemented successfully
+- Vault now returns to service after restart without manual unseal
+- `vault-kv` returns to `Valid` after restart without operator unseal steps
 
-This means the primary remaining hardening gap is availability recovery, not immediate state continuity.
+This means the primary remaining hardening work is documenting the new recovery model clearly and deciding how quickly to expand migration scope.
 
 ## Current Recovery Model
 
-Current operator recovery flow:
+Current operator recovery flow after routine restart:
 
 **Run manually by human**
 
 ```bash
 kubectl -n vault exec -it vault-vault-0 -- vault status
-kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
-kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
-kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
 kubectl get clustersecretstore vault-kv
 ```
 
 Expected result:
 
 - `vault status` returns `Initialized: true` and `Sealed: false`
-- `vault-kv` returns to `Valid`
-- Vault-backed `ExternalSecret` resources resume syncing normally
+- `Seal Type` remains `awskms`
+- `vault-kv` returns to `Valid` without manual unseal
 
-## Decision To Make
+## Decision Status
 
-Broader migration should not resume until one of the following is accepted explicitly:
+Availability decision:
 
-1. Manual unseal is the accepted recovery model for the current on-prem environment.
-2. Auto-unseal is implemented and validated.
+- completed
 
-Working recommendation:
+Outcome:
 
-- do not expand Vault-backed secret migration beyond constrained proof paths until the environment has an explicit availability recovery decision
+- AWS KMS auto-unseal is the accepted recovery model for the current on-prem environment
+- manual unseal is no longer the steady-state restart recovery path
+- broader Vault-backed migration no longer needs to remain limited to a single constrained proof path on availability grounds
 
 ## Next Investigation
 
 The next hardening investigation should answer:
 
-1. Which auto-unseal option is viable in the current Big Bang / on-prem environment?
-2. If auto-unseal is deferred, is manual unseal operationally acceptable for this environment?
-3. What documentation and operator checks are required after restart events to restore Vault-backed secret sync safely?
+1. how AWS credentials for auto-unseal should evolve from the current bootstrap model to a cleaner long-term identity model
+2. what staged migration order should be used for the remaining shared and tenant secrets
+3. what additional recovery checks should be documented for node, pod, and package restart events
