@@ -46,13 +46,19 @@ This change adds:
 
 ## Current Decision
 
-Broader Vault migration is intentionally paused.
+Broader Vault migration is no longer blocked on basic integration viability or restart-time manual unseal.
 
-Reason:
+Current status:
 
-- The current environment behaved as a long-lived, stateful platform environment rather than a disposable sandbox.
-- During namespace/release churn, Vault returned to `Initialized: false`, which showed that continuity of Vault state is not yet operationally trustworthy for broader migration.
-- External Secrets integration is now structurally in place, but platform hardening should happen before additional secrets move to Vault.
+- External Secrets integration is in place and working
+- the constrained `mia-provider` proof path succeeded
+- Vault continuity was validated across pod and node restart
+- AWS KMS auto-unseal has now been implemented and validated
+
+Remaining caution:
+
+- issue `#54` still matters for documenting lifecycle and durability expectations in the current environment
+- broader migration can now resume deliberately, but it should still follow staged rollout rather than blind bulk cutover
 
 Tracked follow-up work:
 
@@ -73,7 +79,9 @@ What was validated:
 What this means:
 
 - the Vault and External Secrets functional integration path is now proven for a low-risk tenant secret
-- the remaining blocker to broader migration is lifecycle and durability confidence, not basic integration viability
+- Vault now returns unsealed after pod restart with AWS KMS auto-unseal
+- `vault-kv` recovers without manual unseal after restart
+- the remaining work is operational hardening and staged migration execution, not proving the basic recovery model
 
 ## Migration Order
 
@@ -154,6 +162,12 @@ After Vault is initialized and populated:
 
 ## Current Recommendation
 
-Do not continue broader secret migration until issue `#54` is addressed.
+Resume broader Vault-backed migration in controlled stages.
 
-If a minimal proof path is needed before that hardening work completes, limit it to a single low-risk secret and treat it as validation work, not as the start of broad cutover.
+Recommended order from here:
+
+1. complete the current documentation and hardening updates for AWS KMS auto-unseal
+2. migrate the next low-complexity secret (`cloudflared-token`)
+3. migrate GHCR pull secrets only after the second migration path succeeds cleanly
+
+Keep issue `#54` open until lifecycle, recovery, and environment-semantics documentation is fully settled.
