@@ -4,6 +4,6 @@ kind: Kustomization
 namespace: platform
 
 resources:
-  - sealed-secret.yaml
+  - cloudflared-token.external-secret.yaml
   - configmap.yaml
   - deployment.yaml
