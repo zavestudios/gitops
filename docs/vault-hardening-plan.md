@@ -417,3 +417,52 @@ After this hardening work:
 - revisit `docs/vault-migration-plan.md`
 - decide whether `mia-provider` remains the only test path or broader migration can resume
 - align the current environment name with its actual lifecycle semantics
+
+## Availability Decision
+
+Current state:
+
+- continuity has now been validated for both pod restart and node restart on `k3s-cp-01`
+- Vault does not automatically return to service after restart because it comes back sealed
+- External Secrets recovers only after Vault is manually unsealed
+
+This means the primary remaining hardening gap is availability recovery, not immediate state continuity.
+
+## Current Recovery Model
+
+Current operator recovery flow:
+
+**Run manually by human**
+
+```bash
+kubectl -n vault exec -it vault-vault-0 -- vault status
+kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
+kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
+kubectl -n vault exec -it vault-vault-0 -- vault operator unseal
+kubectl get clustersecretstore vault-kv
+```
+
+Expected result:
+
+- `vault status` returns `Initialized: true` and `Sealed: false`
+- `vault-kv` returns to `Valid`
+- Vault-backed `ExternalSecret` resources resume syncing normally
+
+## Decision To Make
+
+Broader migration should not resume until one of the following is accepted explicitly:
+
+1. Manual unseal is the accepted recovery model for the current on-prem environment.
+2. Auto-unseal is implemented and validated.
+
+Working recommendation:
+
+- do not expand Vault-backed secret migration beyond constrained proof paths until the environment has an explicit availability recovery decision
+
+## Next Investigation
+
+The next hardening investigation should answer:
+
+1. Which auto-unseal option is viable in the current Big Bang / on-prem environment?
+2. If auto-unseal is deferred, is manual unseal operationally acceptable for this environment?
+3. What documentation and operator checks are required after restart events to restore Vault-backed secret sync safely?
