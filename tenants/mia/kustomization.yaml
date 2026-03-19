@@ -4,9 +4,8 @@ kind: Kustomization
 namespace: mia
 
 resources:
-  # GHCR pull secret remains on Sealed Secrets until the Vault migration is validated.
   - mia-provider.external-secret.yaml
-  - ghcr-secret.sealed.yaml
+  - ghcr-secret.external-secret.yaml
   - namespace.yaml
   - deployment.yaml
   - service.yaml
