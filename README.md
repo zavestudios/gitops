@@ -19,7 +19,7 @@ This repository defines desired cluster state for platform services and tenant w
 ```text
 .
 ├── clusters/
-│   └── sandbox/
+│   └── on-prem/
 │       ├── bigbang-kustomization.yaml
 │       ├── kustomization.yaml
 │       ├── platform-core-kustomization.yaml
@@ -58,7 +58,7 @@ This repository defines desired cluster state for platform services and tenant w
 - `Kustomization` reconciles Big Bang `./base` path.
 - `configMapGenerator` injects environment-specific values from `values.yaml`.
 
-The current sandbox values prioritize a minimal package set and public image sources.
+The current on-prem values prioritize a minimal package set and public image sources.
 
 ## Bootstrap and Apply
 
@@ -68,13 +68,13 @@ Run these from a workstation with cluster access:
 
 ```bash
 # Validate kustomization composition
-kubectl kustomize clusters/sandbox
+kubectl kustomize clusters/on-prem
 
 # Apply baseline platform resources
-kubectl apply -k clusters/sandbox
+kubectl apply -k clusters/on-prem
 ```
 
-Reconciliation order is managed by Flux `dependsOn` relationships under `clusters/sandbox/`.
+Reconciliation order is managed by Flux `dependsOn` relationships under `clusters/on-prem/`.
 
 ## Workflow
 

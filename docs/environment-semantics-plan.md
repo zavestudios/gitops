@@ -1,6 +1,6 @@
 # Environment Semantics Plan
 
-Status: draft for issue `#55`
+Status: Phase 1 complete; Phase 2 repo rename prepared in `gitops`
 
 Related issues:
 
@@ -23,7 +23,7 @@ At the same time, the platform still needs a true disposable sandbox for fast va
 
 ## Current State
 
-Today the repository still contains `sandbox` as the active environment label across several surfaces:
+Before the control-plane rename, the repository used `sandbox` as the active environment label across several surfaces:
 
 - cluster entrypoint path: `clusters/sandbox/`
 - Flux `Kustomization` names:
@@ -97,7 +97,7 @@ Expected `gitops` changes:
 - rename `clusters/sandbox/` to `clusters/on-prem/`
 - rename Flux `Kustomization` object names from `sandbox-*` to `on-prem-*`
 - update README bootstrap/apply examples
-- update any repo-local references that still point to `clusters/sandbox`
+- update repo-local references that still point to `clusters/sandbox`
 
 Manual impact to plan carefully:
 
@@ -138,7 +138,7 @@ Questions to answer before implementation:
 
 ## Inventory of Known `sandbox` References
 
-Implementation-significant references currently include:
+Implementation-significant references identified during planning included:
 
 - `clusters/sandbox/`
 - `README.md`
@@ -156,7 +156,7 @@ Documentation-only references currently include:
 - `platform-docs/_platform/GITOPS_MODEL.md`
 - `platform-docs/_platform/CONTRACT_VALIDATION.md`
 
-This inventory should be refreshed before the actual rename PR.
+This inventory should be refreshed again before hostname cleanup and local sandbox implementation.
 
 ## Non-Goals
 
