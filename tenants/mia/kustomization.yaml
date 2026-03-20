@@ -13,10 +13,8 @@ resources:
   - ollama-deployment.yaml
   - mia-data-pvc.yaml
   - ollama-service.yaml
-  - ingress.yaml
   - canary-deployment.yaml
   - canary-service.yaml
-  - canary-ingress.yaml
   - serviceaccount.yaml
 
 commonLabels:

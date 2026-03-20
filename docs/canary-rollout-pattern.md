@@ -19,7 +19,7 @@ This is an operational pattern, not contract-level `spec.delivery: canary` imple
 
 - Stable workload: `tenants/mia/deployment.yaml`
 - Canary workload: `tenants/mia/canary-deployment.yaml`
-- Canary ingress host: `mia-canary-on-prem.zavestudios.com`
+- Canary service: `tenants/mia/canary-service.yaml`
 
 ## Rollout Procedure
 
@@ -29,7 +29,7 @@ This is an operational pattern, not contract-level `spec.delivery: canary` imple
 4. Validate canary runtime:
    - pod starts without crash loops
    - policy checks pass
-   - endpoint responds via canary ingress
+   - endpoint responds via operator tunnel or service-local access
 5. Promote:
    - copy candidate digest to stable deployment
    - keep canary at `0` (or delete canary resources)
@@ -40,6 +40,7 @@ This is an operational pattern, not contract-level `spec.delivery: canary` imple
 ## Validation Checklist
 
 - `kubectl -n <ns> get pods` shows stable and canary pod health as expected.
+- `kubectl -n <ns> get endpoints <canary-service>` shows backing endpoints when canary is enabled.
 - No ongoing `PolicyViolation` for signature checks on candidate digest.
 - Restart counts remain stable during validation.
 - Stable service remains unaffected while canary is tested.

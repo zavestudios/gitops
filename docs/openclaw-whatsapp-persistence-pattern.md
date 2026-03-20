@@ -14,6 +14,8 @@ Related: Issue #10 (WhatsApp credential persistence), Issue #12 (operations docu
 
 OpenClaw uses the Signal protocol for WhatsApp integration. Session credentials must be persisted to survive pod lifecycle events.
 
+The reference `mia` deployment should be treated as an internal/operator-accessed workload unless and until a deliberate Istio exposure path is added. WhatsApp communication does not require public HTTP ingress.
+
 **Required components:**
 
 - PersistentVolumeClaim for OpenClaw data directory
@@ -129,6 +131,16 @@ kubectl -n <namespace> exec deploy/<workload> -- openclaw gateway health --json
 - `channels.whatsapp.self.e164`: linked phone number
 
 **Note:** Health check may lag actual connection state. Test functionality by sending a WhatsApp message.
+
+## Operator UI Access
+
+If the OpenClaw UI is needed for inspection or short-lived operational changes, prefer operator tunnel access instead of public ingress.
+
+Current posture for `mia`:
+
+- no public HTTP ingress is required for the WhatsApp workflow
+- browser access, if needed, should use `kubectl port-forward` from the bastion plus an SSH local tunnel from the operator workstation
+- runtime changes made through the UI may persist on the PVC-backed OpenClaw state, but they are not automatically reflected back into Git-managed source of truth
 
 ## Persistence Validation
 
