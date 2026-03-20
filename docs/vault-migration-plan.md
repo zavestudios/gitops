@@ -25,15 +25,12 @@ Reference:
 
 ## Current State
 
-The repository currently stores secrets with `SealedSecret` resources:
-
-- `platform/cloudflare/sealed-secret.yaml`
-- `platform/policies/kyverno/ghcr-secret.sealed.yaml`
-- `tenants/mia/ghcr-secret.sealed.yaml`
-
-The first workload secret has already been migrated to an `ExternalSecret`:
+The initial Vault-backed migration targets have now been moved to `ExternalSecret` resources:
 
 - `tenants/mia/mia-provider.external-secret.yaml`
+- `platform/cloudflare/cloudflared-token.external-secret.yaml`
+- `platform/policies/kyverno/ghcr-secret.external-secret.yaml`
+- `tenants/mia/ghcr-secret.external-secret.yaml`
 
 Vault is already enabled in `bigbang/values.yaml`.
 
@@ -65,9 +62,9 @@ Tracked follow-up work:
 - `gitops#54` Harden Vault persistence and lifecycle behavior for the current environment
 - `gitops#55` Rename the current environment and introduce a true local sandbox
 
-## Constrained Proof Path Status
+## Migration Status
 
-The constrained proof path for `mia-provider` has now succeeded.
+The initial staged migration set has now succeeded.
 
 What was validated:
 
@@ -75,27 +72,25 @@ What was validated:
 - External Secrets Operator authenticated to Vault through the `vault-kv` `ClusterSecretStore`
 - the `mia-provider` `ExternalSecret` synced successfully
 - Kubernetes secret `mia-provider` was created in namespace `mia`
+- the `cloudflared-token` `ExternalSecret` synced successfully
+- the platform `ghcr-secret` `ExternalSecret` synced successfully in namespace `kyverno`
+- the tenant `ghcr-secret` `ExternalSecret` synced successfully in namespace `mia`
 
 What this means:
 
-- the Vault and External Secrets functional integration path is now proven for a low-risk tenant secret
+- the Vault and External Secrets functional integration path is now proven for both single-key opaque secrets and Docker config pull secrets
 - Vault now returns unsealed after pod restart with AWS KMS auto-unseal
 - `vault-kv` recovers without manual unseal after restart
-- the remaining work is operational hardening and staged migration execution, not proving the basic recovery model
+- the remaining work is cleanup, documentation, and deciding how broadly to continue migration from here
 
-## Migration Order
+## Completed Migration Order
 
-Migration order:
+Completed in this order:
 
-1. `mia-provider` (implemented in GitOps as the initial target path)
+1. `mia-provider`
 2. `cloudflared-token`
-3. GHCR pull secrets (`platform/policies/kyverno/ghcr-secret`, `tenants/mia/ghcr-secret`)
-
-Why this order:
-
-- `mia-provider` is a straightforward single-key opaque secret.
-- `cloudflared-token` is also a single-key opaque secret and easy to validate.
-- GHCR pull secrets are shared operational credentials and should move only after the Vault and ESO path is proven stable.
+3. platform GHCR pull secret (`platform/policies/kyverno/ghcr-secret`)
+4. tenant GHCR pull secret (`tenants/mia/ghcr-secret`)
 
 ## Target Vault Layout
 
@@ -151,23 +146,20 @@ External Secrets Operator documents Vault-backed stores and `ClusterSecretStore`
 
 - https://external-secrets.io/v2.0.0/provider/hashicorp-vault/
 
-## Next GitOps Changes After Bootstrap
+## Next GitOps Changes
 
-After Vault is initialized and populated:
+After the initial migration set:
 
-1. Validate `mia` reads the synced `mia-provider` Kubernetes secret successfully.
-2. Replace `platform/cloudflare/sealed-secret.yaml` with an `ExternalSecret`.
-3. Replace the GHCR `SealedSecret` resources with `ExternalSecret` resources.
-4. Remove Sealed Secrets only after each replacement is verified.
+1. remove or archive superseded `SealedSecret` manifests that are no longer authoritative
+2. review whether any remaining platform or tenant secrets should move to Vault now
+3. document the final steady-state secret-management model for this environment
 
 ## Current Recommendation
 
-Resume broader Vault-backed migration in controlled stages.
+Treat the initial Vault-backed migration wave as complete.
 
-Recommended order from here:
+Recommended next steps:
 
-1. complete the current documentation and hardening updates for AWS KMS auto-unseal
-2. migrate the next low-complexity secret (`cloudflared-token`)
-3. migrate GHCR pull secrets only after the second migration path succeeds cleanly
-
-Keep issue `#54` open until lifecycle, recovery, and environment-semantics documentation is fully settled.
+1. clean up superseded `SealedSecret` references and files
+2. keep issue `#54` open until lifecycle, recovery, and environment-semantics documentation is fully settled
+3. decide whether additional secrets should migrate now or whether this is a sufficient stopping point for the current phase
