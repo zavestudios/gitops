@@ -86,6 +86,7 @@ Reconciliation order is managed by Flux `dependsOn` relationships under `cluster
 
 ## Documentation
 
+- `docs/environment-semantics-plan.md`: Plan for renaming the current persistent environment and introducing a true local sandbox.
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
 - `docs/vault-hardening-plan.md`: Vault persistence, lifecycle, and recovery hardening plan for the current environment.
 - `docs/vault-migration-plan.md`: Vault, External Secrets Operator, and Sealed Secrets migration plan.
