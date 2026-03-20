@@ -155,19 +155,20 @@ What to validate:
 
 ## Current Decision
 
-Broader secret migration is paused until the persistence and lifecycle model is understood.
+The initial Vault hardening milestone is complete enough to support the first migration wave.
 
-Allowed for now:
+Current posture:
 
-- platform hardening work
-- documentation
-- low-risk validation planning
+- the initial migration wave is complete
+- pod restart continuity is validated
+- node restart continuity is validated
+- AWS KMS auto-unseal is implemented and validated
 
-Not recommended for now:
+Still not accepted:
 
-- migrating shared credentials to Vault
+- treating namespace deletion or release uninstall/reinstall as safe for Vault
+- assuming destructive storage lifecycle events preserve continuity
 - treating the current environment as a disposable sandbox
-- assuming Vault state survives all current reconciliation or rebuild paths
 
 ## Investigation Questions
 
@@ -186,10 +187,10 @@ Current working classification for the current environment:
 
 | Action | Current Classification | Reason |
 | --- | --- | --- |
-| Flux reconcile with no destructive drift | Expected non-destructive, still validate | This should not replace Vault state, but evidence should still be captured. |
-| Pod restart | Unknown, validate | Persistence should survive this if PVC continuity is real. |
-| StatefulSet restart / pod recreation | Unknown, validate | This is a key durability check for the mounted PVC-backed state. |
-| Node restart on the selected node | Unknown, validate | `local-path` behavior under node lifecycle should be confirmed explicitly. |
+| Flux reconcile with no destructive drift | Expected non-destructive | No evidence so far suggests this path breaks Vault state when storage continuity is preserved. |
+| Pod restart | Validated non-destructive | Continuity was preserved; Vault state survived and AWS KMS auto-unseal now restores service automatically. |
+| StatefulSet restart / pod recreation | Validated non-destructive for pod recreation | Pod recreation preserved continuity on the current storage path. |
+| Node restart on the selected node | Validated non-destructive | Continuity was preserved on `k3s-cp-01`, and Vault returned without manual unseal after AWS KMS auto-unseal rollout. |
 | Helm upgrade with retained namespace and PVCs | Unknown, validate | Should be safe in principle, but current evidence is not strong enough yet. |
 | Namespace deletion | Destructive or presumed destructive | Recent churn led to a fresh uninitialized Vault instance. |
 | Release uninstall / reinstall | Destructive or presumed destructive | Current evidence suggests this can sever continuity from the prior Vault instance. |
@@ -198,7 +199,7 @@ Current working classification for the current environment:
 Operational rule for now:
 
 - Treat namespace deletion, release uninstall/reinstall, and PVC recreation as destructive operations for Vault in the current environment.
-- Do not migrate broader secrets until the currently unknown actions are validated and documented.
+- Do not treat destructive lifecycle paths as acceptable until they are explicitly documented and accepted.
 
 ## Evidence To Collect
 
@@ -331,14 +332,14 @@ Result:
 Observed outcome:
 
 - after controlled initialization and unseal, pod recreation preserved Vault state on the existing PVC-backed storage
-- after pod recreation, `vault status` reported `Initialized: true` and `Sealed: true`
-- manual unseal was still required after restart
+- after pod recreation, `vault status` reported `Initialized: true`
+- before AWS KMS auto-unseal rollout, manual unseal was still required after restart
 - `/vault/data` retained persistent state directories rather than returning as a fresh empty path
 
 Conclusion:
 
 - basic pod-level continuity is working in the current environment
-- the remaining hardening concern is broader lifecycle durability and operational recovery behavior, not immediate loss of state on simple pod recreation
+- the remaining hardening concern was broader lifecycle durability and operational recovery behavior, not immediate loss of state on simple pod recreation
 
 ### Validation 2: Node Restart Continuity
 
@@ -374,7 +375,7 @@ Success criteria:
 - the Vault pod returns on `k3s-cp-01` with the same persistent state intact
 - `vault status` reports `Initialized: true` after node recovery
 - `/vault/data` still contains persisted Vault state
-- `vault-kv` returns to `Valid` after manual unseal
+- `vault-kv` returns to `Valid` after recovery
 - `mia-provider` remains present in namespace `mia`
 
 Failure criteria:
@@ -390,15 +391,15 @@ Result:
 
 Observed outcome:
 
-- after node reboot, Vault returned as `Initialized: true` and `Sealed: true`
+- after node reboot, Vault returned as `Initialized: true`
 - `/vault/data` retained persistent state directories including `auth`, `core`, `logical`, and `sys`
 - `mia-provider` remained present in namespace `mia`
-- `vault-kv` returned to `Valid` after Vault was manually unsealed
+- before AWS KMS auto-unseal rollout, `vault-kv` returned to `Valid` after Vault was manually unsealed
 
 Conclusion:
 
 - node restart continuity is working for the current `local-path`-backed Vault deployment on `k3s-cp-01`
-- the remaining operational gap is that Vault does not automatically return to service after restart because manual unseal is still required
+- the remaining operational gap at that stage was manual unseal after restart; that gap has since been closed by AWS KMS auto-unseal
 
 ## Exit Criteria
 
@@ -408,14 +409,14 @@ This issue is complete when:
 - destructive vs non-destructive lifecycle actions are explicit
 - the storage choice is either accepted with constraints or flagged for replacement
 - recovery expectations are written down
-- the team can make a clear go/no-go decision on broader Vault migration
+- the follow-on environment naming/semantics work is captured separately from Vault runtime mechanics
 
 ## Follow-on Actions
 
 After this hardening work:
 
-- revisit `docs/vault-migration-plan.md`
-- decide whether `mia-provider` remains the only test path or broader migration can resume
+- keep `docs/vault-migration-plan.md` aligned with the actual migration wave status
+- decide how many additional secrets, if any, should migrate in the current phase
 - align the current environment name with its actual lifecycle semantics
 
 ## Availability Decision
