@@ -9,7 +9,7 @@
 ## Current Status Update (2026-03-05)
 
 - `mia` tenant manifests and ArgoCD application wiring are now present in GitOps.
-- Sandbox tenant layer is enabled in `clusters/sandbox/kustomization.yaml`.
+- On-prem tenant layer is enabled in `clusters/on-prem/kustomization.yaml`.
 - Runtime verification is intentionally deferred and will be completed via cluster-state inspection.
 
 
