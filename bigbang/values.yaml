@@ -371,7 +371,7 @@ grafana:
     istio:
       grafana:
         hosts:
-          - grafana-sandbox.zavestudios.com  # Single-level subdomain for free SSL
+          - grafana-on-prem.zavestudios.com  # Single-level subdomain for free SSL
     upstream:
       image:
         registry: docker.io
@@ -386,7 +386,7 @@ grafana:
         enabled: false
       grafana.ini:
         server:
-          root_url: https://grafana-sandbox.zavestudios.com
+          root_url: https://grafana-on-prem.zavestudios.com
 
 # Tempo - distributed tracing (disabled due to x86-64-v2 CPU requirement incompatibility)
 tempo:

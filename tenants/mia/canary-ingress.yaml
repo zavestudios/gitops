@@ -15,10 +15,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - mia-canary-sandbox.zavestudios.com
+    - mia-canary-on-prem.zavestudios.com
     secretName: mia-canary-tls
   rules:
-  - host: mia-canary-sandbox.zavestudios.com
+  - host: mia-canary-on-prem.zavestudios.com
     http:
       paths:
       - path: /
