@@ -8,7 +8,7 @@ Use these manifests to add an isolated canary path for any tenant workload.
 - `__NAMESPACE__` - namespace (often same as workload)
 - `__DIGEST__` - candidate image digest (`sha256:...`)
 - `__VERSION__` - version label value (for example `sha-6257797`)
-- `__CANARY_HOST__` - host for canary ingress (for example `mia-canary-sandbox.zavestudios.com`)
+- `__CANARY_HOST__` - host for canary ingress (for example `mia-canary-on-prem.zavestudios.com`)
 
 ## Notes
 

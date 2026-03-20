@@ -6,14 +6,14 @@ metadata:
   namespace: bigbang
 data:
   values.yaml: |
-    # Big Bang values for sandbox environment
+    # Big Bang values for on-prem environment
     # Minimal scope: Istio + ArgoCD + Monitoring
     # Disable packages requiring Iron Bank access
 
     # MECHANIC'S NOTE: `enabled=true` causes the BigBang umbrella chart to emit a HelmRelease for the package. 
 
     # Domain configuration - routed via Cloudflare Tunnel
-    domain: sandbox.zavestudios.com
+    domain: on-prem.zavestudios.com
 
     # Override default Iron Bank registry to use public registries
     registryCredentials:

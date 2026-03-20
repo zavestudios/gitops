@@ -31,10 +31,10 @@ Before the control-plane rename, the repository used `sandbox` as the active env
   - `sandbox-bigbang`
   - `sandbox-platform-runtime`
 - public and operator-facing hostnames such as:
-  - `mia-sandbox.zavestudios.com`
-  - `mia-canary-sandbox.zavestudios.com`
-  - `grafana-sandbox.zavestudios.com`
-  - `argocd-sandbox.zavestudios.com` in platform docs
+- `mia-on-prem.zavestudios.com`
+- `mia-canary-on-prem.zavestudios.com`
+- `grafana-on-prem.zavestudios.com`
+- `argocd-on-prem.zavestudios.com` in platform docs
 - operator docs and commands that still bootstrap or apply `clusters/sandbox`
 
 Operationally, however, the environment behaves like:
@@ -109,10 +109,10 @@ Manual impact to plan carefully:
 
 Decide whether to rename operator and tenant-facing hosts such as:
 
-- `mia-sandbox.zavestudios.com`
-- `mia-canary-sandbox.zavestudios.com`
-- `grafana-sandbox.zavestudios.com`
-- `argocd-sandbox.zavestudios.com`
+- `mia-on-prem.zavestudios.com`
+- `mia-canary-on-prem.zavestudios.com`
+- `grafana-on-prem.zavestudios.com`
+- `argocd-on-prem.zavestudios.com`
 
 Recommendation:
 

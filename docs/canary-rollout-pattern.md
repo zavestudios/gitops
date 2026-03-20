@@ -19,7 +19,7 @@ This is an operational pattern, not contract-level `spec.delivery: canary` imple
 
 - Stable workload: `tenants/mia/deployment.yaml`
 - Canary workload: `tenants/mia/canary-deployment.yaml`
-- Canary ingress host: `mia-canary-sandbox.zavestudios.com`
+- Canary ingress host: `mia-canary-on-prem.zavestudios.com`
 
 ## Rollout Procedure
 
