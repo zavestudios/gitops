@@ -125,7 +125,7 @@ Suggested payloads:
 
 Vault initialization and Kubernetes auth setup remain human-gated.
 
-**Run manually by human**
+**Requires cluster access:**
 
 1. Initialize and unseal Vault.
 2. Enable the Kubernetes auth method in Vault.

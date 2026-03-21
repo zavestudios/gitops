@@ -123,7 +123,7 @@ Do not rely on a wildcard DNS/tunnel posture to make that decision implicitly.
 
 ## Manual Verification Checklist
 
-**Run manually by human**
+**Requires cluster access:**
 
 Before wildcard retirement:
 

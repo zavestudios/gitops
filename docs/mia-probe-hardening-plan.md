@@ -107,7 +107,7 @@ If any phase causes repeated restarts or pod churn:
 
 ## Validation Commands
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia get deploy,rs,pods

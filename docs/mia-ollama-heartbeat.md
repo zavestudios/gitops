@@ -44,7 +44,7 @@ This document captures the tenant-scoped Ollama pattern used by `mia` for heartb
 2. Merge/push `gitops` tenant manifest updates.
 3. Reconcile controllers.
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 flux reconcile source git flux-system -n flux-system
@@ -53,7 +53,7 @@ flux reconcile kustomization flux-system -n flux-system
 
 4. Pull Ollama model once after pod starts.
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia exec deploy/ollama -- ollama pull llama3.2:3b
@@ -61,7 +61,7 @@ kubectl -n mia exec deploy/ollama -- ollama pull llama3.2:3b
 
 ## Validation
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia get deploy,svc,pods

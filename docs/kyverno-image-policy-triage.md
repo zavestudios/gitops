@@ -4,7 +4,7 @@ Use this when `require-signed-ghcr-images` events appear during/after rollouts.
 
 ## 1) Get active digest
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia get deploy mia -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
@@ -12,7 +12,7 @@ kubectl -n mia get deploy mia -o jsonpath='{.spec.template.spec.containers[0].im
 
 ## 2) Confirm current verify result on live deployment
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia get deploy mia -o jsonpath='{.metadata.annotations.kyverno\.io/verify-images}{"\n"}'
@@ -23,7 +23,7 @@ Expected for healthy state:
 
 ## 3) Filter policy events for active digest only
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 ACTIVE_DIGEST="$(kubectl -n mia get deploy mia -o jsonpath='{.spec.template.spec.containers[0].image}' | sed 's|.*@||')"
@@ -36,7 +36,7 @@ Interpretation:
 
 ## 4) Spot historical noise quickly
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n mia get events --sort-by=.lastTimestamp | grep -i "require-signed-ghcr-images" | tail -n 30
