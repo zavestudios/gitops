@@ -1,6 +1,6 @@
 # Environment Semantics Plan
 
-Status: Phase 1 complete; Phase 2 repo rename prepared in `gitops`
+Status: Phases 1-3 complete; Phase 4 not started
 
 Related issues:
 
@@ -45,7 +45,7 @@ Operationally, however, the environment behaves like:
 
 ## Target Model
 
-The platform should move toward this split:
+The platform has now completed the initial semantic correction for the current environment and should continue toward this split:
 
 ### 1. Current cluster becomes `on-prem`
 
@@ -118,6 +118,12 @@ Recommendation:
 
 - rename infrastructure and operator-facing identifiers promptly
 - allow application hostnames to follow in a separate, explicit change if needed to reduce blast radius
+
+Status:
+
+- Phase 3 repo and cluster cleanup is complete for the initial on-prem hostname set
+- orphaned `mia` public ingress was removed instead of preserved
+- edge exposure is now documented separately in `docs/edge-exposure-plan.md`
 
 ### Phase 4: Introduce the True Local Sandbox
 
