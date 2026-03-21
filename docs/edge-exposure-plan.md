@@ -1,6 +1,6 @@
 # Edge Exposure Plan
 
-Status: draft
+Status: initial hardening implemented
 
 Related issues:
 
@@ -25,6 +25,17 @@ The platform should move to:
 - an explicit allowlist of publicly reachable hostnames
 - Cloudflare Access protection for operator/admin UIs
 - no reliance on wildcard edge exposure as the default posture
+
+## Current Status Note
+
+Initial edge hardening has now been completed for the current environment:
+
+- explicit DNS records were created for the retained operator/admin hosts
+- Cloudflare Access was added for the retained operator/admin hosts
+- wildcard tunnel DNS exposure via `*.zavestudios.com` and `*.sandbox.zavestudios.com` was retired
+- `mia-on-prem.zavestudios.com` and `mia-canary-on-prem.zavestudios.com` were intentionally retired after removal of the orphaned public ingress path
+
+The remaining work on this topic is follow-on tightening and codification, not emergency exposure reduction.
 
 ## Current Repo Evidence
 
