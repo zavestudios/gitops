@@ -64,7 +64,7 @@ The current on-prem values prioritize a minimal package set and public image sou
 
 Run these from a workstation with cluster access:
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 # Validate kustomization composition

@@ -121,7 +121,8 @@ Recommendation:
 
 Status:
 
-- Phase 3 repo and cluster cleanup is complete for the initial on-prem hostname set
+- Phase 3 repo and cluster cleanup is complete
+- All implementation-significant sandbox references have been updated to on-prem
 - orphaned `mia` public ingress was removed instead of preserved
 - edge exposure is now documented separately in `docs/edge-exposure-plan.md`
 

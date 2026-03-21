@@ -140,4 +140,4 @@ This document should reference those issue/PR links instead of embedding worksta
 
 ## Manual Execution Note
 
-Cluster mutation commands derived from this plan are **Run manually by human**.
+**Requires cluster access:** Cluster mutation commands derived from this plan.

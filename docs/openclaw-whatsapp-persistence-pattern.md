@@ -93,7 +93,7 @@ volumes:
 **Prerequisites:**
 - WhatsApp enabled in config but pod must NOT be running (auto-connect hangs without credentials)
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n <namespace> exec -it deploy/<workload> -- sh -c 'openclaw config set channels.whatsapp.enabled true && sleep 2 && openclaw channels login --channel whatsapp'
@@ -117,7 +117,7 @@ kubectl -n <namespace> exec deploy/<workload> -- find /home/node/.openclaw/crede
 
 ## Health Check Pattern
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n <namespace> exec deploy/<workload> -- openclaw gateway health --json
@@ -170,7 +170,7 @@ Expected: WhatsApp reconnects automatically using persisted credentials from PVC
 
 2. **Delete old PVC** to force fresh config seed:
 
-   **Run manually by human:**
+   **Requires cluster access:**
    ```bash
    kubectl -n <namespace> delete pod -l app=<workload>
    kubectl -n <namespace> delete pvc <workload>-data
@@ -182,7 +182,7 @@ Expected: WhatsApp reconnects automatically using persisted credentials from PVC
 
 **Symptoms:** Pod stuck at 0/1 Ready, startupProbe failing, port not listening
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 # Force-delete hanging pod
@@ -197,7 +197,7 @@ If PV inaccessible, follow "Credentials Lost" recovery above.
 
 ### Scenario: Connection Drops
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 # Check pod events
@@ -224,7 +224,7 @@ kubectl -n <namespace> exec deploy/<workload> -- openclaw channels start --chann
 
 Changes to `/home/node/.openclaw/openclaw.json` on the PVC propagate faster than image rebuilds (1-2 min vs 15-30 min).
 
-**Run manually by human:**
+**Requires cluster access:**
 
 ```bash
 kubectl -n <namespace> exec deploy/<workload> -- openclaw config set <key> <value>

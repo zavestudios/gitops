@@ -1,8 +1,8 @@
-# Big Bang values for sandbox environment
+# Big Bang values for on-prem environment
 # Clean configuration using post-renderers for image rewrites
 
 # Domain configuration
-# Using root domain with -sandbox suffix in hostnames for Cloudflare free SSL
+# Using root domain for on-prem environment hostnames
 domain: zavestudios.com
 
 # Disable packages requiring Iron Bank access

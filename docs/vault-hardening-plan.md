@@ -213,7 +213,7 @@ Collect and preserve evidence for the current environment:
 
 Suggested evidence commands:
 
-**Run manually by human**
+**Requires cluster access:**
 
 ```bash
 kubectl -n vault get statefulset vault-vault -o yaml
@@ -295,7 +295,7 @@ Preconditions:
 
 Procedure:
 
-**Run manually by human**
+**Requires cluster access:**
 
 ```bash
 kubectl -n vault exec -it vault-vault-0 -- vault status
@@ -355,7 +355,7 @@ Preconditions:
 
 Procedure:
 
-**Run manually by human**
+**Requires cluster access:**
 
 ```bash
 kubectl -n vault get pod vault-vault-0 -o wide
@@ -434,7 +434,7 @@ This means the primary remaining hardening work is documenting the new recovery 
 
 Current operator recovery flow after routine restart:
 
-**Run manually by human**
+**Requires cluster access:**
 
 ```bash
 kubectl -n vault exec -it vault-vault-0 -- vault status
