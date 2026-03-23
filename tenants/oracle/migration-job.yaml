@@ -4,12 +4,14 @@ metadata:
   name: oracle-migrations
   namespace: oracle
   labels:
+    app.kubernetes.io/version: "16-alpine"
     zave.io/workload: oracle
 spec:
   backoffLimit: 4
   template:
     metadata:
       labels:
+        app.kubernetes.io/version: "16-alpine"
         zave.io/workload: oracle
     spec:
       automountServiceAccountToken: false
@@ -20,7 +22,7 @@ spec:
         fsGroup: 70
       containers:
       - name: migrate
-        image: postgres:16-alpine
+        image: docker.io/library/postgres:16-alpine
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false

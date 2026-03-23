@@ -5,6 +5,7 @@ metadata:
   namespace: oracle
   labels:
     app: postgres
+    app.kubernetes.io/version: "16-alpine"
     zave.io/workload: oracle
 spec:
   ports:
@@ -21,6 +22,7 @@ metadata:
   namespace: oracle
   labels:
     app: postgres
+    app.kubernetes.io/version: "16-alpine"
     zave.io/workload: oracle
 spec:
   serviceName: postgres
@@ -33,6 +35,7 @@ spec:
       labels:
         app: postgres
         app.kubernetes.io/name: postgres
+        app.kubernetes.io/version: "16-alpine"
         zave.io/workload: oracle
     spec:
       automountServiceAccountToken: false
@@ -42,7 +45,7 @@ spec:
         fsGroup: 999
       containers:
       - name: postgres
-        image: postgres:16-alpine
+        image: docker.io/library/postgres:16-alpine
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
