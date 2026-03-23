@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oracle
+  namespace: argocd
+  labels:
+    zave.io/workload: oracle
+    zave.io/tenant: "true"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zavestudios/gitops
+    targetRevision: main
+    path: tenants/oracle
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: oracle
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

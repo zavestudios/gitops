@@ -29,6 +29,29 @@ spec:
       automountServiceAccountToken: false
       imagePullSecrets:
       - name: ghcr-secret
+      initContainers:
+      - name: wait-for-schema
+        image: postgres:16-alpine
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: oracle-db
+              key: DATABASE_URL
+        command:
+        - sh
+        - -ec
+        - |
+          until psql "$DATABASE_URL" -tAc "select 1 from information_schema.tables where table_schema = 'oracle' and table_name = 'jobs'" | grep -q 1; do
+            echo "waiting for oracle schema";
+            sleep 2;
+          done
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oracle-migrations
+  namespace: oracle
+  labels:
+    zave.io/workload: oracle
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        zave.io/workload: oracle
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+      containers:
+      - name: migrate
+        image: postgres:16-alpine
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: oracle-db
+              key: DATABASE_URL
+        command:
+        - sh
+        - -ec
+        - |
+          until pg_isready -d "$DATABASE_URL"; do
+            echo "waiting for postgres";
+            sleep 2;
+          done
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /migrations/001_init.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /migrations/002_indexes.sql
+        volumeMounts:
+        - name: migrations
+          mountPath: /migrations
+          readOnly: true
+      volumes:
+      - name: migrations
+        configMap:
+          name: oracle-migrations
