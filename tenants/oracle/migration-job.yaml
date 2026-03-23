@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "16-alpine"
     zave.io/workload: oracle
+    app.kubernetes.io/name: oracle-migrations
 spec:
   backoffLimit: 4
   template:
@@ -13,6 +14,7 @@ spec:
       labels:
         app.kubernetes.io/version: "16-alpine"
         zave.io/workload: oracle
+        app.kubernetes.io/name: oracle-migrations
     spec:
       automountServiceAccountToken: false
       restartPolicy: OnFailure
