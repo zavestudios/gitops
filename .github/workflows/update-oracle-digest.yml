@@ -1,0 +1,88 @@
+name: Update Oracle Digest
+
+on:
+  repository_dispatch:
+    types: [oracle-image-published]
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "Image digest (sha256:...)"
+        required: true
+        type: string
+      tag:
+        description: "Version tag label (sha-xxxxxxx)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: main
+
+      - name: Resolve inputs
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            DIGEST="${{ inputs.digest }}"
+            TAG="${{ inputs.tag }}"
+          else
+            DIGEST="${{ github.event.client_payload.digest }}"
+            TAG="${{ github.event.client_payload.tag }}"
+          fi
+          echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Patch deployment manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="tenants/oracle/deployment.yaml"
+          DIGEST="${{ steps.vars.outputs.digest }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          python3 - "$FILE" "$DIGEST" "$TAG" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          file_path, digest, tag = sys.argv[1], sys.argv[2], sys.argv[3]
+          text = Path(file_path).read_text()
+
+          text = re.sub(
+              r'(^\s*image:\s+ghcr\.io/zavestudios/oracle)(?::[^@\s]+|@sha256:[0-9a-f]+)?\s*$',
+              rf'\1@{digest}',
+              text,
+              flags=re.MULTILINE,
+          )
+          text = re.sub(
+              r'(^\s*app\.kubernetes\.io/version:\s+).*$',
+              rf'\1{tag}',
+              text,
+              flags=re.MULTILINE,
+          )
+
+          Path(file_path).write_text(text)
+          PY
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIGEST="${{ steps.vars.outputs.digest }}"
+          if git diff --quiet -- tenants/oracle/deployment.yaml; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tenants/oracle/deployment.yaml
+          git commit -m "chore(oracle): promote image digest ${DIGEST}"
+          git push origin HEAD:main
