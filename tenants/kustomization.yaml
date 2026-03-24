@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - mia
   - oracle
+  - panchito
