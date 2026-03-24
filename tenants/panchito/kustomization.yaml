@@ -7,6 +7,7 @@ resources:
   - namespace.yaml
   - ghcr-secret.external-secret.yaml
   - panchito-app.external-secret.yaml
+  - panchito-db.external-secret.yaml
   - deployment.yaml
   - service.yaml
 
