@@ -6,6 +6,7 @@ metadata:
 spec:
   dependsOn:
     - name: on-prem-platform-core
+    - name: on-prem-keycloak-secrets  # Ensure KeyCloak secrets exist before deployment
   interval: 10m
   path: ./bigbang
   prune: true

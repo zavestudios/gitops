@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+  labels:
+    zave.io/component: keycloak
+    zave.io/tier: platform-service
+    istio-injection: enabled
