@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rigoberta
+  labels:
+    zave.io/workload: rigoberta
+    zave.io/tenant: "true"
