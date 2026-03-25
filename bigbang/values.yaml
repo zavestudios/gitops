@@ -271,6 +271,69 @@ addons:
           extraLabels:
             app.kubernetes.io/version: "1.7.0"
 
+  keycloak:
+    enabled: true
+    ingress:
+      gateway: "public"
+      cert: ""
+      key: ""
+    values:
+      global:
+        imageRegistry: ""  # Disable registry prepending
+      istio:
+        keycloak:
+          hosts:
+            - sso.zavestudios.com  # KeyCloak SSO endpoint
+      upstream:
+        image:
+          repository: quay.io/keycloak/keycloak
+        replicas: 1  # Single instance for Formation phase, scale later for HA
+        # Database connection via environment variables from External Secrets
+        # Database provisioned via pg/scripts/provision_tenant.sh
+        postgresql:
+          enabled: false  # Disable embedded PostgreSQL, using external instead
+        # Credentials from Vault via External Secrets Operator
+        # Vault paths:
+        #   - secret/platform/services/keycloak/db (database credentials)
+        #   - secret/platform/services/keycloak/admin (admin credentials)
+        secrets:
+          env:
+            stringData:
+              # Admin credentials - will be populated by keycloak-admin-credentials secret
+              KEYCLOAK_ADMIN: "admin"
+              KEYCLOAK_ADMIN_PASSWORD: ""  # Override via secretKeyRef below
+              # Database connection - populated by keycloak-postgres-credentials secret
+              KC_DB: "postgres"
+              KC_DB_URL_HOST: "192.168.122.20"
+              KC_DB_URL_PORT: "5432"
+              KC_DB_URL_DATABASE: "db_keycloak"
+              KC_DB_USERNAME: "keycloak_app"
+              KC_DB_PASSWORD: ""  # Override via secretKeyRef below
+        extraEnv:
+          # Database password from External Secret
+          - name: KC_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-postgres-credentials
+                key: password
+          # Admin password from External Secret
+          - name: KEYCLOAK_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-admin-credentials
+                key: KEYCLOAK_ADMIN_PASSWORD
+          # Enable metrics for Prometheus scraping
+          - name: KC_METRICS_ENABLED
+            value: "true"
+          # Set hostname
+          - name: KC_HOSTNAME
+            value: "sso.zavestudios.com"
+          - name: KC_HOSTNAME_STRICT
+            value: "false"
+          # Proxy settings for Cloudflare Tunnel
+          - name: KC_PROXY
+            value: "edge"
+
   argocd:
     enabled: true
     values:
