@@ -146,6 +146,21 @@ Expected pieces:
 - `Service`
 - ArgoCD `Application`
 
+### 6A. First image promotion sequencing
+
+For a brand-new tenant, the first successful application image build may complete
+before the GitOps digest-promotion workflow exists on `gitops` `main`.
+
+If that happens:
+- the tenant may still be registered with a bootstrap or placeholder image reference
+- the `repository_dispatch` from the tenant repo will not retroactively replay
+- ArgoCD may reconcile successfully while the workload still fails with `ErrImagePull`
+
+Recovery path:
+- confirm the tenant repo `main` build succeeded
+- patch the deployment image to the published `sha-<commit>` tag or trigger the GitOps workflow manually
+- after the first promotion lands on `main`, subsequent `repository_dispatch` events should use the normal digest update path
+
 ### 7. Reconcile and observe
 
 Use ArgoCD and Kubernetes status to determine the **current** blocker, not stale historical assumptions.

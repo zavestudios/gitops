@@ -50,19 +50,22 @@ spec:
               name: metrics
               protocol: TCP
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /up
               port: http
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 30
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /up
               port: http
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /up
               port: http
             periodSeconds: 30
             timeoutSeconds: 2
