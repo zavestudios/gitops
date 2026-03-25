@@ -70,6 +70,8 @@ spec:
           env:
             - name: RAILS_ENV
               value: production
+            - name: PIDFILE
+              value: /tmp/server.pid
             - name: PORT
               value: "3000"
             - name: RAILS_LOG_TO_STDOUT
