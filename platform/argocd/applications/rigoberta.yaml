@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rigoberta
+  namespace: argocd
+  labels:
+    zave.io/workload: rigoberta
+    zave.io/tenant: "true"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zavestudios/gitops
+    targetRevision: main
+    path: tenants/rigoberta
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rigoberta
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
