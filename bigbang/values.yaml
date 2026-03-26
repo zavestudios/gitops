@@ -278,6 +278,8 @@ addons:
       cert: ""
       key: ""
     values:
+      postgresql:
+        enabled: false  # Disable embedded PostgreSQL dependency; use external DB instead
       global:
         imageRegistry: ""  # Disable registry prepending
       istio:
@@ -287,11 +289,12 @@ addons:
       upstream:
         image:
           repository: quay.io/keycloak/keycloak
+        args:
+          - start
+          - --optimized
         replicas: 1  # Single instance for Formation phase, scale later for HA
         # Database connection via environment variables from External Secrets
         # Database provisioned via pg/scripts/provision_tenant.sh
-        postgresql:
-          enabled: false  # Disable embedded PostgreSQL, using external instead
         # Credentials from Vault via External Secrets Operator
         # Vault paths:
         #   - secret/platform/services/keycloak/db (database credentials)
