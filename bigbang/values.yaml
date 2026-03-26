@@ -272,7 +272,7 @@ addons:
             app.kubernetes.io/version: "1.7.0"
 
   keycloak:
-    enabled: true
+    enabled: false
     ingress:
       gateway: "public"
       cert: ""
