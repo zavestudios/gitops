@@ -299,40 +299,23 @@ addons:
         secrets:
           env:
             stringData:
-              # Admin credentials - will be populated by keycloak-admin-credentials secret
-              KEYCLOAK_ADMIN: "admin"
-              KEYCLOAK_ADMIN_PASSWORD: ""  # Override via secretKeyRef below
-              # Database connection - populated by keycloak-postgres-credentials secret
+              # Database connection
               KC_DB: "postgres"
               KC_DB_URL_HOST: "192.168.122.20"
               KC_DB_URL_PORT: "5432"
               KC_DB_URL_DATABASE: "db_keycloak"
               KC_DB_USERNAME: "keycloak_app"
-              KC_DB_PASSWORD: ""  # Override via secretKeyRef below
-        extraEnv:
-          # Database password from External Secret
-          - name: KC_DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: keycloak-postgres-credentials
-                key: password
-          # Admin password from External Secret
-          - name: KEYCLOAK_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: keycloak-admin-credentials
-                key: KEYCLOAK_ADMIN_PASSWORD
-          # Enable metrics for Prometheus scraping
-          - name: KC_METRICS_ENABLED
-            value: "true"
-          # Set hostname
-          - name: KC_HOSTNAME
-            value: "sso.zavestudios.com"
-          - name: KC_HOSTNAME_STRICT
-            value: "false"
-          # Proxy settings for Cloudflare Tunnel
-          - name: KC_PROXY
-            value: "edge"
+              # Hostname and proxy configuration
+              KC_METRICS_ENABLED: "true"
+              KC_HOSTNAME: "sso.zavestudios.com"
+              KC_HOSTNAME_STRICT: "false"
+              KC_PROXY: "edge"
+        # Mount secrets as environment variables
+        extraEnvFrom:
+          - secretRef:
+              name: keycloak-postgres-credentials
+          - secretRef:
+              name: keycloak-admin-credentials
 
   argocd:
     enabled: true
