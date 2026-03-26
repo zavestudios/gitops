@@ -311,7 +311,7 @@ addons:
               KC_HOSTNAME_STRICT: "false"
               KC_PROXY: "edge"
         # Mount secrets as environment variables
-        extraEnvFrom:
+        extraEnvFrom: |
           - secretRef:
               name: keycloak-postgres-credentials
           - secretRef:
