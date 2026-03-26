@@ -316,6 +316,17 @@ addons:
               name: keycloak-postgres-credentials
           - secretRef:
               name: keycloak-admin-credentials
+        # Provide writable directories for KeyCloak Quarkus build
+        extraVolumes: |
+          - name: keycloak-data
+            emptyDir: {}
+          - name: tmp
+            emptyDir: {}
+        extraVolumeMounts: |
+          - name: keycloak-data
+            mountPath: /opt/keycloak/data
+          - name: tmp
+            mountPath: /tmp
 
   argocd:
     enabled: true
