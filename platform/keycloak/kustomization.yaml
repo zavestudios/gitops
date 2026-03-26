@@ -6,6 +6,7 @@ namespace: keycloak
 
 resources:
   - namespace.yaml
+  - keycloak-headless-service.yaml
   - external-secrets.yaml
 
 commonLabels:

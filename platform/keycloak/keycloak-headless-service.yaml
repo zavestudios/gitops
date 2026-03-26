@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-keycloak-headless
+  namespace: keycloak
+  labels:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    zave.io/component: keycloak
+    zave.io/tier: platform-service
+  annotations:
+    meta.helm.sh/release-name: keycloak
+    meta.helm.sh/release-namespace: keycloak
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/name: keycloak
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: discovery
+      port: 7800
+      protocol: TCP
+      targetPort: 7800
+    - name: ping
+      port: 57800
+      protocol: TCP
+      targetPort: 57800
