@@ -289,12 +289,16 @@ addons:
       upstream:
         image:
           repository: quay.io/keycloak/keycloak
-        args:
-          - start
-          - --optimized
         replicas: 1  # Single instance for Formation phase, scale later for HA
-        # Database connection via environment variables from External Secrets
-        # Database provisioned via pg/scripts/provision_tenant.sh
+        # External PostgreSQL connection, using chart-supported database fields
+        database:
+          vendor: postgres
+          hostname: "192.168.122.20"
+          port: 5432
+          database: "db_keycloak"
+          username: "keycloak_app"
+          existingSecret: "keycloak-postgres-credentials"
+          existingSecretKey: "KC_DB_PASSWORD"
         # Credentials from Vault via External Secrets Operator
         # Vault paths:
         #   - secret/platform/services/keycloak/db (database credentials)
@@ -302,12 +306,6 @@ addons:
         secrets:
           env:
             stringData:
-              # Database connection
-              KC_DB: "postgres"
-              KC_DB_URL_HOST: "192.168.122.20"
-              KC_DB_URL_PORT: "5432"
-              KC_DB_URL_DATABASE: "db_keycloak"
-              KC_DB_USERNAME: "keycloak_app"
               # Hostname and proxy configuration
               KC_METRICS_ENABLED: "true"
               KC_HOSTNAME: "sso.zavestudios.com"
