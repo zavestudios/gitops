@@ -64,6 +64,7 @@ Based on current cluster observations and repo state, the relevant hosts are:
 | `argocd.zavestudios.com` | Operator UI | Cloudflare Access | Admin surface; should not be openly reachable without edge auth. |
 | `vault.zavestudios.com` | Operator/admin UI | Cloudflare Access | Sensitive admin surface. |
 | `grafana-on-prem.zavestudios.com` | Operator UI | Cloudflare Access | Useful UI, but not a public app. |
+| `sso.zavestudios.com` | Keycloak IdP | Public by design | Identity plane endpoint; do not place Cloudflare Access in front of Keycloak itself. |
 | `policyreporter.zavestudios.com` | Operator UI | Cloudflare Access | Reporting UI, not a public app. |
 | `prometheus.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
 | `alertmanager.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
@@ -95,6 +96,10 @@ Apply Cloudflare Access to operator/admin surfaces:
 - `prometheus.zavestudios.com`
 - `alertmanager.zavestudios.com`
 - `loki.zavestudios.com` if retained
+
+Do **not** put Cloudflare Access in front of `sso.zavestudios.com`. Keycloak is
+the platform identity provider, so layering Cloudflare Access in front of it would
+create a second identity gate and complicate OIDC login flows for downstream apps.
 
 ### 3. Retire Unneeded App Hosts
 
