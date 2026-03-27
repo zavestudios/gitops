@@ -289,7 +289,7 @@ addons:
       upstream:
         image:
           repository: ghcr.io/zavestudios/keycloak
-          tag: bootstrap
+          digest: sha256:ae0cfe0050552e2341cdb0c14d03614dba3d6719c6ecc603ef62050233417c17
         args:
           - start
           - --optimized
