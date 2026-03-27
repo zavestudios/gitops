@@ -288,7 +288,11 @@ addons:
             - sso.zavestudios.com  # KeyCloak SSO endpoint
       upstream:
         image:
-          repository: quay.io/keycloak/keycloak
+          repository: ghcr.io/zavestudios/keycloak
+          tag: bootstrap
+        args:
+          - start
+          - --optimized
         replicas: 1  # Single instance for Formation phase, scale later for HA
         # External PostgreSQL connection, using chart-supported database fields
         database:
