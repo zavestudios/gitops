@@ -415,6 +415,8 @@ monitoring:
 kiali:
   enabled: true
   values:
+    waitJob:
+      enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     upstream:
       allowAdHocKialiImage: true  # Allow custom image override
       image:
@@ -454,6 +456,8 @@ grafana:
 tempo:
   enabled: true
   values:
+    waitJob:
+      enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     upstream:
       tempo:
         registry: docker.io
