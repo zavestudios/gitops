@@ -411,9 +411,9 @@ monitoring:
             registry: quay.io
             repository: kiwigrid/k8s-sidecar
 
-# Kiali - service mesh observability (disabled due to x86-64-v2 CPU requirement incompatibility)
+# Kiali - service mesh observability
 kiali:
-  enabled: false
+  enabled: true
   values:
     upstream:
       allowAdHocKialiImage: true  # Allow custom image override
@@ -450,9 +450,9 @@ grafana:
         server:
           root_url: https://grafana-on-prem.zavestudios.com
 
-# Tempo - distributed tracing (disabled due to x86-64-v2 CPU requirement incompatibility)
+# Tempo - distributed tracing
 tempo:
-  enabled: false
+  enabled: true
   values:
     upstream:
       tempo:
