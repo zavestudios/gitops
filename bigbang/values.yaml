@@ -391,6 +391,14 @@ monitoring:
             repository: prometheus/prometheus
           serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
           automountServiceAccountToken: false  # Disable for Kyverno policy compliance
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 1000m
+          retention: 12h  # Reduce from 24h default to lower memory footprint
       alertmanager:
         alertmanagerSpec:
           image:
