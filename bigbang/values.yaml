@@ -346,6 +346,8 @@ addons:
           image:
             repository: ghcr.io/dexidp/dex
       redis-bb:
+        cleanUpgrade:
+          enabled: false  # Disable clean upgrade job - uses Iron Bank kubectl image
         upstream:
           global:
             imageRegistry: ""
@@ -415,6 +417,8 @@ monitoring:
 kiali:
   enabled: true
   values:
+    waitJob:
+      enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     upstream:
       allowAdHocKialiImage: true  # Allow custom image override
       image:
@@ -454,6 +458,8 @@ grafana:
 tempo:
   enabled: true
   values:
+    waitJob:
+      enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     upstream:
       tempo:
         registry: docker.io
