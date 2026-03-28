@@ -346,6 +346,8 @@ addons:
           image:
             repository: ghcr.io/dexidp/dex
       redis-bb:
+        cleanUpgrade:
+          enabled: false  # Disable clean upgrade job - uses Iron Bank kubectl image
         upstream:
           global:
             imageRegistry: ""
