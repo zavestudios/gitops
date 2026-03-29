@@ -1,0 +1,8 @@
+# Teach Kustomize to rewrite ConfigMap references in Flux HelmRelease CRDs
+# Without this, Kustomize doesn't know that spec.valuesFrom[].name is a ConfigMap reference
+nameReference:
+  - kind: ConfigMap
+    version: v1
+    fieldSpecs:
+      - path: spec/valuesFrom/name
+        kind: HelmRelease
