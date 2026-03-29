@@ -5,6 +5,9 @@ resources:
   - gitrepository.yaml
   - helmrelease.yaml
 
+configurations:
+  - kustomizeconfig.yaml
+
 configMapGenerator:
   - name: bigbang-values
     namespace: bigbang
