@@ -549,6 +549,21 @@ alloy:
   values:
     global:
       imageRegistry: ""  # Disable top-level registry prepending
+      imagePullSecrets: []
+      image:
+        registry: ""
+        pullSecrets: []
+    k8s-monitoring:
+      alloy-operator:
+        image:
+          registry: ghcr.io
+          repository: grafana/alloy-operator
+          tag: "1.5.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
     upstream:
       alloy-operator:
         waitForAlloyRemoval:
