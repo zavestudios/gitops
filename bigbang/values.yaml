@@ -562,6 +562,7 @@ alloy:
                   metadata:
                     labels:
                       app.kubernetes.io/version: "0.1.2"
+                    annotations:
                       sidecar.istio.io/inject: "true"
                   spec:
                     automountServiceAccountToken: false
@@ -569,6 +570,21 @@ alloy:
                     containers:
                       - name: add-finalizers
                         image: ghcr.io/grafana/helm-chart-toolbox-kubectl:0.1.2
+                    serviceAccountName: alloy-upstream-add-finalizer
+          - target:
+              group: v1
+              version: v1
+              kind: ServiceAccount
+              namespace: alloy
+              name: alloy-upstream-add-finalizer
+            patch: |
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: alloy-upstream-add-finalizer
+                labels:
+                  app.kubernetes.io/version: "0.1.2"
+              automountServiceAccountToken: false
   values:
     global:
       imageRegistry: ""  # Disable top-level registry prepending
