@@ -5,5 +5,5 @@ resources:
   - ../vault/
   - ../policies/kyverno/
 
-  # ArgoCD Application resources for tenant workloads
-  - ../argocd/applications/
+  # ArgoCD platform resources and tenant Application registrations
+  - ../argocd/
