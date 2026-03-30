@@ -509,6 +509,43 @@ tempo:
 # Alloy - unified observability collector
 alloy:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: alloy
+              name: alloy-alloy-operator
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: alloy-alloy-operator
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "1.5.2"
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: DaemonSet
+              namespace: alloy
+              name: alloy-alloy-logs
+            patch: |
+              apiVersion: apps/v1
+              kind: DaemonSet
+              metadata:
+                name: alloy-alloy-logs
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "v1.12.2"
   values:
     global:
       imageRegistry: ""  # Disable top-level registry prepending
