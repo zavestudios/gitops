@@ -546,6 +546,29 @@ alloy:
                   metadata:
                     labels:
                       app.kubernetes.io/version: "v1.12.2"
+          - target:
+              group: batch
+              version: v1
+              kind: Job
+              namespace: alloy
+              name: alloy-upstream-add-finalizer
+            patch: |
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                name: alloy-upstream-add-finalizer
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "0.1.2"
+                      sidecar.istio.io/inject: "true"
+                  spec:
+                    automountServiceAccountToken: false
+                    imagePullSecrets: []
+                    containers:
+                      - name: add-finalizers
+                        image: ghcr.io/grafana/helm-chart-toolbox-kubectl:0.1.2
   values:
     global:
       imageRegistry: ""  # Disable top-level registry prepending
