@@ -6,6 +6,11 @@ metadata:
   namespace: bigbang
 spec:
   interval: 10m
+  driftDetection:
+    # Recreate or patch drifted resources from Helm storage during steady-state
+    # reconciliation. This hardens Big Bang child objects like HelmRelease/keycloak
+    # against silent live-state deletion.
+    mode: enabled
   chart:
     spec:
       chart: ./chart
