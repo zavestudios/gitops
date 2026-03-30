@@ -554,7 +554,22 @@ alloy:
         registry: ""
         pullSecrets: []
     k8s-monitoring:
+      alloy-logs:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
       alloy-operator:
+        waitForAlloyRemoval:
+          image:
+            registry: ghcr.io
+            repository: grafana/helm-chart-toolbox-kubectl
+            tag: "0.1.2"
         image:
           registry: ghcr.io
           repository: grafana/alloy-operator
@@ -564,6 +579,32 @@ alloy:
             registry: quay.io
             repository: prometheus-operator/prometheus-config-reloader
             tag: "v0.77.2"
+      alloy-metrics:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      alloy-receiver:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      integrations:
+        alloy:
+          image:
+            registry: docker.io
+            repository: grafana/alloy
+            tag: "v1.12.2"
     upstream:
       alloy-operator:
         waitForAlloyRemoval:
