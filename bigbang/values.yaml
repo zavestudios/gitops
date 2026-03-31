@@ -301,7 +301,7 @@ addons:
           - --optimized
           - --http-enabled=true
           - --proxy-headers=forwarded
-          - --hostname-url=https://sso.zavestudios.com
+          - --hostname=https://sso.zavestudios.com
           - --hostname-strict=false
         replicas: 1  # Single instance for Formation phase, scale later for HA
         # External PostgreSQL connection, using chart-supported database fields
