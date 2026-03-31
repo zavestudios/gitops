@@ -314,16 +314,20 @@ addons:
         #   - secret/platform/services/keycloak/db (database credentials)
         #   - secret/platform/services/keycloak/admin (admin credentials)
         # Hostname and proxy configuration via direct env vars
-        # KC_PROXY deprecated in Keycloak 24+; use explicit settings
+        # Cloudflare terminates TLS; Keycloak runs HTTP behind proxy
         extraEnv: |
           - name: KC_HOSTNAME
-            value: "https://sso.zavestudios.com"
+            value: "sso.zavestudios.com"
           - name: KC_HOSTNAME_STRICT
+            value: "false"
+          - name: KC_HOSTNAME_STRICT_HTTPS
             value: "false"
           - name: KC_PROXY_HEADERS
             value: "xforwarded"
           - name: KC_HTTP_ENABLED
             value: "true"
+          - name: KC_HTTPS_CLIENT_AUTH
+            value: "none"
         # Mount secrets as environment variables
         extraEnvFrom: |
           - secretRef:
