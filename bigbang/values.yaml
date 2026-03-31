@@ -9,6 +9,11 @@ domain: zavestudios.com
 gatekeeper:
   enabled: false
 
+# bbctl - disabled per vault-migration-plan.md decision
+# Flux + ArgoCD already provide GitOps control plane
+bbctl:
+  enabled: false
+
 kyverno:
   enabled: true
   flux:
