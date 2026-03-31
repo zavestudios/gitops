@@ -292,45 +292,88 @@ addons:
         keycloak:
           hosts:
             - sso.zavestudios.com  # KeyCloak SSO endpoint
-      # Image and args at root level (Big Bang passes these directly to keycloakx chart)
-      image:
-        repository: ghcr.io/zavestudios/keycloak
-        digest: sha256:ae0cfe0050552e2341cdb0c14d03614dba3d6719c6ecc603ef62050233417c17
-        tag: ""  # Empty tag to force digest usage
-      args:
-        - start
-        - --optimized
-        - --http-enabled=true
-        - --proxy-headers=forwarded
-        - --hostname=https://sso.zavestudios.com
-        - --hostname-strict=false
-      replicas: 1
-      # External PostgreSQL connection
-      database:
-        vendor: postgres
-        hostname: "192.168.122.20"
-        port: 5432
-        database: "db_keycloak"
-        username: "keycloak_app"
-        existingSecret: "keycloak-postgres-credentials"
-        existingSecretKey: "KC_DB_PASSWORD"
-      # Mount secrets as environment variables
-      extraEnvFrom: |
-        - secretRef:
-            name: keycloak-postgres-credentials
-        - secretRef:
-            name: keycloak-admin-credentials
-      # Provide writable directories for Keycloak
-      extraVolumes: |
-        - name: keycloak-data
-          emptyDir: {}
-        - name: tmp
-          emptyDir: {}
-      extraVolumeMounts: |
-        - name: keycloak-data
-          mountPath: /opt/keycloak/data
-        - name: tmp
-          mountPath: /tmp
+      upstream:
+        image:
+          repository: ghcr.io/zavestudios/keycloak
+          digest: sha256:ae0cfe0050552e2341cdb0c14d03614dba3d6719c6ecc603ef62050233417c17
+          tag: ""  # Empty tag to force digest usage
+        args:
+          - start
+          - --optimized
+          - --http-enabled=true
+          - --proxy-headers=forwarded
+          - --hostname=https://sso.zavestudios.com
+          - --hostname-strict=false
+        replicas: 1
+        # External PostgreSQL connection
+        database:
+          vendor: postgres
+          hostname: "192.168.122.20"
+          port: 5432
+          database: "db_keycloak"
+          username: "keycloak_app"
+          existingSecret: "keycloak-postgres-credentials"
+          existingSecretKey: "KC_DB_PASSWORD"
+        # These string-valued upstream fields replace Big Bang defaults wholesale.
+        # Include every secret and mount we need in a single override block.
+        extraEnvFrom: |
+          - secretRef:
+              name: keycloak-postgres-credentials
+          - secretRef:
+              name: keycloak-admin-credentials
+        extraVolumes: |
+          - name: keycloak-data
+            emptyDir: {}
+          - name: tmp
+            emptyDir: {}
+        extraVolumeMounts: |
+          - name: keycloak-data
+            mountPath: /opt/keycloak/data
+          - name: tmp
+            mountPath: /tmp
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: keycloak
+                labelSelector: app.kubernetes.io/instance=keycloak
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/version: "26.4.7"
+                    spec:
+                      automountServiceAccountToken: false
+                      imagePullSecrets:
+                        - name: private-registry
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: keycloak
+                labelSelector: app.kubernetes.io/instance=keycloak
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/version: "26.4.7"
+                    spec:
+                      automountServiceAccountToken: false
+                      imagePullSecrets:
+                        - name: private-registry
 
   argocd:
     enabled: true
