@@ -278,6 +278,7 @@ addons:
 
   keycloak:
     enabled: true
+    hostname: sso  # Overrides default 'keycloak' prefix → sso.zavestudios.com
     ingress:
       gateway: "public"
       cert: ""
