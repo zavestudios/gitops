@@ -301,7 +301,6 @@ addons:
           - --optimized
           - --http-enabled=true
           - --proxy-headers=xforwarded
-          - --hostname-strict-https=false
         replicas: 1  # Single instance for Formation phase, scale later for HA
         # External PostgreSQL connection, using chart-supported database fields
         database:
