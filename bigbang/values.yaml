@@ -554,59 +554,13 @@ addons:
 # Monitoring stack with public images via values overrides
 monitoring:
   enabled: true
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              group: apps
-              version: v1
-              kind: Deployment
-              namespace: monitoring
-              name: monitoring-monitoring-kube-state-metrics
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: monitoring-monitoring-kube-state-metrics
-              spec:
-                template:
-                  spec:
-                    automountServiceAccountToken: false
-          - target:
-              group: apps
-              version: v1
-              kind: Deployment
-              namespace: monitoring
-              name: monitoring-monitoring-kube-operator
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: monitoring-monitoring-kube-operator
-              spec:
-                template:
-                  spec:
-                    automountServiceAccountToken: false
-          - target:
-              group: apps
-              version: v1
-              kind: Deployment
-              namespace: monitoring
-              name: monitoring-grafana
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: monitoring-grafana
-              spec:
-                template:
-                  spec:
-                    automountServiceAccountToken: false
   values:
     upstream:
       global:
         imageRegistry: ""  # Disable registry prepending
       prometheusOperator:
+        serviceAccount:
+          automountServiceAccountToken: false
         image:
           registry: quay.io
           repository: prometheus-operator/prometheus-operator
@@ -647,10 +601,12 @@ monitoring:
           registry: quay.io
           repository: prometheus/node-exporter
       kube-state-metrics:
+        automountServiceAccountToken: false
         image:
           registry: registry.k8s.io
           repository: kube-state-metrics/kube-state-metrics
       grafana:
+        automountServiceAccountToken: false
         image:
           registry: docker.io
           repository: grafana/grafana
