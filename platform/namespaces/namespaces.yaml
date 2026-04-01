@@ -1,21 +1,23 @@
 ---                                                                                                                                   
 apiVersion: v1                  
 kind: Namespace                
-metadata:                                                         
-  name: platform                                                  
-  labels:                                                                                                                             
-    name: platform                                                
----                                                                                                                                   
-apiVersion: v1                  
-kind: Namespace                                                                                                                       
-metadata:                                                                                                                             
-  name: monitoring                                                                                                                    
-  labels:                                                                                                                             
-    name: monitoring                                              
----                                                                                                                                   
-apiVersion: v1                                                    
-kind: Namespace                                                
-metadata:                                                      
-  name: ingress                                                
-  labels:                                                      
+metadata:
+  name: platform
+  labels:
+    name: platform
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress
+  labels:
     name: ingress
+    istio-injection: enabled

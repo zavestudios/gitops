@@ -16,6 +16,69 @@ bbctl:
 
 kyverno:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-admission-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-admission-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-background-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-background-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-cleanup-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-cleanup-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-reports-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-reports-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
   flux:
     install:
       replace: true  # Force fresh install, ignore phantom state
@@ -126,6 +189,24 @@ istioCRDs:
 
 istiod:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: istio-system
+              name: istiod
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: istiod
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
   flux:
     install:
       disableHooks: true
@@ -139,6 +220,20 @@ istiod:
 
 istioGateway:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: ServiceAccount
+              namespace: istio-gateway
+              name: public-ingressgateway-ingressgateway-service-account
+            patch: |
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: public-ingressgateway-ingressgateway-service-account
+              automountServiceAccountToken: false
   flux:
     install:
       disableHooks: true
@@ -172,6 +267,25 @@ addons:
 
   externalSecrets:
     enabled: true
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: external-secrets
+                name: external-secrets
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: external-secrets
+                spec:
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/version: "1.2.1"
     values:
       waitJob: false
       upstream:
@@ -194,6 +308,24 @@ addons:
 
   vault:
     enabled: true
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: vault
+                name: vault-vault
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: vault-vault
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
     values:
       global:
         imageRegistry: ""  # Disable registry prepending
@@ -295,8 +427,12 @@ addons:
       upstream:
         image:
           repository: ghcr.io/zavestudios/keycloak
-          digest: sha256:ae0cfe0050552e2341cdb0c14d03614dba3d6719c6ecc603ef62050233417c17
-          tag: ""  # Empty tag to force digest usage
+          tag: bootstrap
+        podLabels:
+          app.kubernetes.io/version: "26.4.7"
+        automountServiceAccountToken: false
+        serviceAccount:
+          automountServiceAccountToken: false
         args:
           - start
           - --optimized
@@ -347,9 +483,6 @@ addons:
                   name: not-used
                 spec:
                   template:
-                    metadata:
-                      labels:
-                        app.kubernetes.io/version: "26.4.7"
                     spec:
                       automountServiceAccountToken: false
                       imagePullSecrets:
@@ -367,9 +500,6 @@ addons:
                   name: not-used
                 spec:
                   template:
-                    metadata:
-                      labels:
-                        app.kubernetes.io/version: "26.4.7"
                     spec:
                       automountServiceAccountToken: false
                       imagePullSecrets:
@@ -439,6 +569,54 @@ addons:
 # Monitoring stack with public images via values overrides
 monitoring:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: monitoring
+              name: monitoring-monitoring-kube-state-metrics
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: monitoring-monitoring-kube-state-metrics
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: monitoring
+              name: monitoring-monitoring-kube-operator
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: monitoring-monitoring-kube-operator
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: monitoring
+              name: monitoring-grafana
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: monitoring-grafana
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
   values:
     upstream:
       global:
@@ -499,6 +677,24 @@ monitoring:
 # Kiali - service mesh observability
 kiali:
   enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kiali
+              name: kiali-kiali-kiali-operator
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kiali-kiali-kiali-operator
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
   values:
     waitJob:
       enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image

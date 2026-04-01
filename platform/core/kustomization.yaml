@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - ../namespaces/namespaces.yaml
+  - ../namespaces/default-serviceaccounts.yaml
   - ../sealed-secrets/
   - ../cloudflare/
