@@ -24,21 +24,6 @@ kyverno:
               version: v1
               kind: Deployment
               namespace: kyverno
-              name: kyverno-admission-controller
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: kyverno-admission-controller
-              spec:
-                template:
-                  spec:
-                    automountServiceAccountToken: false
-          - target:
-              group: apps
-              version: v1
-              kind: Deployment
-              namespace: kyverno
               name: kyverno-background-controller
             patch: |
               apiVersion: apps/v1
