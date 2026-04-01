@@ -297,6 +297,15 @@ addons:
       - kustomize:
           patches:
             - target:
+                group: networking.istio.io
+                version: v1
+                kind: VirtualService
+                namespace: keycloak
+                name: keycloak
+              patch: |
+                - op: remove
+                  path: /spec/tls
+            - target:
                 group: apps
                 version: v1
                 kind: StatefulSet
