@@ -5,6 +5,8 @@ metadata:
   namespace: platform
   labels:
     app: cloudflared
+    app.kubernetes.io/name: cloudflared
+    app.kubernetes.io/version: "2024.12.2"
 spec:
   replicas: 2
   selector:
@@ -14,6 +16,8 @@ spec:
     metadata:
       labels:
         app: cloudflared
+        app.kubernetes.io/name: cloudflared
+        app.kubernetes.io/version: "2024.12.2"
     spec:
       automountServiceAccountToken: false
       containers:
