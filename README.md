@@ -87,6 +87,7 @@ Reconciliation order is managed by Flux `dependsOn` relationships under `cluster
 ## Documentation
 
 - `docs/edge-exposure-plan.md`: Plan for reducing wildcard tunnel exposure and moving to an explicit hostname allowlist with edge protection for operator UIs.
+- `docs/bigbang-exit-plan.md`: Execution epic for migrating platform package ownership away from the Big Bang umbrella chart toward directly owned Flux primitives.
 - `docs/environment-semantics-plan.md`: Plan for renaming the current persistent environment and introducing a true local sandbox.
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
 - `docs/keycloak-recovery-notes.md`: Recovery notes for the Keycloak bring-up, including manual incident actions and durable follow-up fixes.
