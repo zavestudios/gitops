@@ -5,7 +5,7 @@ metadata:
   namespace: panchito
   labels:
     app: panchito
-    app.kubernetes.io/version: sha-2d108c7
+    app.kubernetes.io/version: sha-28e8b3d
     zave.io/workload: panchito
 spec:
   replicas: 1
@@ -23,7 +23,7 @@ spec:
       labels:
         app: panchito
         app.kubernetes.io/name: panchito
-        app.kubernetes.io/version: sha-2d108c7
+        app.kubernetes.io/version: sha-28e8b3d
         zave.io/workload: panchito
     spec:
       automountServiceAccountToken: false
@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: panchito
-          image: ghcr.io/zavestudios/panchito@sha256:13afadec03cb73dc189c45e72dcbc224f49e35db08e7363dcc12d57fb0fe7d1a
+          image: ghcr.io/zavestudios/panchito@sha256:9f897528f105ea945b8bc7183b96f46612739defd2df1a55dcf96ad34fade5ca
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
