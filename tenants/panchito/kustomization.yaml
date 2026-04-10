@@ -10,6 +10,7 @@ resources:
   - panchito-db.external-secret.yaml
   - deployment.yaml
   - service.yaml
+  - virtualservice.yaml
 
 commonLabels:
   zave.io/workload: panchito
