@@ -70,11 +70,26 @@ spec:
           env:
             - name: FLASK_ENV
               value: production
+            - name: OIDC_ENABLED
+              value: "true"
+            - name: OIDC_ISSUER_URL
+              value: https://sso.zavestudios.com/realms/zavestudios
+            - name: OIDC_CLIENT_ID
+              value: panchito
+            - name: APP_BASE_URL
+              value: https://panchito-on-prem.zavestudios.com
+            - name: SESSION_COOKIE_SECURE
+              value: "true"
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: panchito-app
                   key: SECRET_KEY
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: panchito-app
+                  key: OIDC_CLIENT_SECRET
             - name: DB_USER
               valueFrom:
                 secretKeyRef:

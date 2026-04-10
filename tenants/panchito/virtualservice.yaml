@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: panchito
+  namespace: panchito
+  labels:
+    app: panchito
+    zave.io/workload: panchito
+spec:
+  gateways:
+    - istio-gateway/public
+  hosts:
+    - panchito-on-prem.zavestudios.com
+  http:
+    - route:
+        - destination:
+            host: panchito.panchito.svc.cluster.local
+            port:
+              number: 80
