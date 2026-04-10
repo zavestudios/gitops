@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - serviceaccount.yaml
-  - data-pipelines-db.externalsecret.yaml
+  - listings-ingest-db.externalsecret.yaml

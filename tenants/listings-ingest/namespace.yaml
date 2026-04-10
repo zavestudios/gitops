@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: data-pipelines
+  name: listings-ingest
   labels:
-    zave.io/workload: data-pipelines
+    zave.io/workload: listings-ingest
     zave.io/tenant: "true"
