@@ -1,0 +1,53 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: airflow-pod-manager
+  labels:
+    zave.io/workload: airflow
+rules:
+  # Allow Airflow to create/manage pods in tenant namespaces
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "pods/exec"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+
+  # Allow Airflow to create/manage pod events
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+
+  # Allow Airflow to read tenant service accounts
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get", "list"]
+
+  # Allow Airflow to read tenant secrets (for KubernetesPodOperator env_vars)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+
+  # Allow Airflow to read ConfigMaps
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list"]
+
+  # Allow Airflow to read namespaces
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: airflow-pod-manager
+  labels:
+    zave.io/workload: airflow
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: airflow-pod-manager
+subjects:
+  - kind: ServiceAccount
+    name: airflow
+    namespace: platform

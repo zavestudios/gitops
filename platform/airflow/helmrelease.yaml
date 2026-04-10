@@ -1,0 +1,152 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: airflow
+  namespace: platform
+  labels:
+    zave.io/workload: airflow
+spec:
+  interval: 10m
+  timeout: 20m
+  chart:
+    spec:
+      chart: airflow
+      version: 1.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: apache-airflow
+        namespace: platform
+      interval: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Executor configuration
+    executor: KubernetesExecutor
+
+    # Environment configuration
+    env:
+      - name: AIRFLOW__CORE__LOAD_EXAMPLES
+        value: "False"
+      - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
+        value: "True"
+
+    # External PostgreSQL configuration
+    postgresql:
+      enabled: false
+
+    data:
+      metadataConnection:
+        user: airflow_app
+        protocol: postgresql
+        host: postgres.platform.svc.cluster.local
+        port: 5432
+        db: db_airflow
+        sslmode: disable
+        passwordSecret: airflow-db
+        passwordSecretKey: connection
+
+    # Fernet key for encryption
+    fernetKeySecretName: airflow-fernet
+
+    # Web server configuration
+    webserver:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      service:
+        type: ClusterIP
+        ports:
+          - name: http
+            port: 8080
+
+    # Scheduler configuration
+    scheduler:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # Triggerer configuration (for deferrable operators)
+    triggerer:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+
+    # DAG git-sync configuration
+    dags:
+      gitSync:
+        enabled: true
+        repo: https://github.com/zavestudios/listings-ingest
+        branch: main
+        subPath: dags
+        wait: 60
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+
+    # KubernetesPodOperator configuration
+    config:
+      kubernetes:
+        namespace: platform
+        worker_container_repository: apache/airflow
+        worker_container_tag: 2.9.3-python3.11
+        delete_worker_pods: "True"
+        delete_worker_pods_on_failure: "False"
+
+    # RBAC for cross-namespace pod creation
+    rbac:
+      create: true
+      createSCCRoleBinding: false
+
+    serviceAccount:
+      create: true
+      name: airflow
+
+    # Security contexts
+    securityContexts:
+      pod:
+        runAsUser: 50000
+        runAsGroup: 0
+        fsGroup: 0
+      container:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+
+    # Volumes for writable paths
+    extraVolumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /opt/airflow/logs
