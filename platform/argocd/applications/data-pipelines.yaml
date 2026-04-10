@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: data-pipelines
+  name: listings-ingest
   namespace: argocd
   labels:
-    zave.io/workload: data-pipelines
+    zave.io/workload: listings-ingest
     zave.io/tenant: "true"
 spec:
   project: default
   source:
     repoURL: https://github.com/zavestudios/gitops
     targetRevision: main
-    path: tenants/data-pipelines
+    path: tenants/listings-ingest
   destination:
     server: https://kubernetes.default.svc
-    namespace: data-pipelines
+    namespace: listings-ingest
   syncPolicy:
     automated:
       prune: true

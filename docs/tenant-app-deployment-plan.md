@@ -42,7 +42,7 @@ This plan does **not** define:
 | `panchito` | Flask API | PostgreSQL, Redis | External |
 | `rigoberta` | Rails web | PostgreSQL, Redis | External |
 | `thehouseguy` | Rails web | PostgreSQL, Redis, S3 | External |
-| `data-pipelines` | Airflow ETL | PostgreSQL, Airflow | Internal |
+| `listings-ingest` | Airflow ETL | PostgreSQL, Airflow | Internal |
 
 ## GitOps Decisions
 
@@ -59,7 +59,7 @@ gitops/
 │   ├── panchito/
 │   ├── rigoberta/
 │   ├── thehouseguy/
-│   └── data-pipelines/
+│   └── listings-ingest/
 └── clusters/
     └── <env>/
 ```
@@ -84,7 +84,7 @@ Recommended sequence for risk reduction:
 2. `panchito`
 3. `rigoberta`
 4. `thehouseguy`
-5. `data-pipelines`
+5. `listings-ingest`
 
 ## Phased Rollout
 
@@ -109,7 +109,7 @@ Recommended sequence for risk reduction:
 - Reconcile runtime and optional object-storage integration.
 - Verify application feature health.
 
-### Phase 6: Batch/orchestration tenant (`data-pipelines`)
+### Phase 6: Batch/orchestration tenant (`listings-ingest`)
 - Reconcile Airflow/DAG scheduling components.
 - Verify scheduled execution and data writes.
 
