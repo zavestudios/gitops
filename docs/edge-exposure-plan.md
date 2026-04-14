@@ -65,6 +65,7 @@ Based on current cluster observations and repo state, the relevant hosts are:
 | `vault.zavestudios.com` | Operator/admin UI | Cloudflare Access | Sensitive admin surface. |
 | `grafana-on-prem.zavestudios.com` | Operator UI | Cloudflare Access | Useful UI, but not a public app. |
 | `sso.zavestudios.com` | Keycloak IdP | Public by design | Identity plane endpoint; do not place Cloudflare Access in front of Keycloak itself. |
+| `panchito-on-prem.zavestudios.com` | Tenant workload | Public by design | Authenticated via Keycloak OIDC; no Cloudflare Access. |
 | `policyreporter.zavestudios.com` | Operator UI | Cloudflare Access | Reporting UI, not a public app. |
 | `prometheus.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
 | `alertmanager.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
