@@ -8,7 +8,7 @@ metadata:
     zave.io/workload: panchito
 spec:
   gateways:
-    - istio-gateway/public
+    - istio-gateway/public-ingressgateway
   hosts:
     - panchito-on-prem.zavestudios.com
   http:
