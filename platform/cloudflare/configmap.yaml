@@ -17,3 +17,5 @@ data:
           httpHeaders:
             X-Forwarded-Proto:
               - https
+      # Required catch-all rule
+      - service: http_status:404
