@@ -4,6 +4,6 @@ kind: Kustomization
 namespace: platform
 
 resources:
-  - cloudflared-token.external-secret.yaml
+  - cloudflared-credentials.external-secret.yaml
   - configmap.yaml
   - deployment.yaml
