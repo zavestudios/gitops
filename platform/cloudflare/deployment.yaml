@@ -40,6 +40,7 @@ spec:
         - /etc/cloudflared/creds/credentials.json
         - --no-autoupdate
         - run
+        - 24ca1f2b-5a12-497b-bdb0-49496fde9bc8
         volumeMounts:
         - name: config
           mountPath: /etc/cloudflared/config
