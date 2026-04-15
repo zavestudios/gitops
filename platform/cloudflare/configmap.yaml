@@ -8,7 +8,7 @@ data:
     metrics: 0.0.0.0:2000
 
     ingress:
-      # Route all traffic to Istio public gateway
+      # Route all traffic to Istio public gateway (catch-all rule)
       - service: http://public-ingressgateway.istio-gateway.svc.cluster.local:80
         originRequest:
           noTLSVerify: true
@@ -17,5 +17,3 @@ data:
           httpHeaders:
             X-Forwarded-Proto:
               - https
-      # Required catch-all rule
-      - service: http_status:404
