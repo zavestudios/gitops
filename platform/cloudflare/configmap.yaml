@@ -13,3 +13,7 @@ data:
         originRequest:
           noTLSVerify: true
           httpHostHeader: ""
+          # Forward protocol header so backend apps know request was HTTPS
+          httpHeaders:
+            X-Forwarded-Proto:
+              - https
