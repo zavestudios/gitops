@@ -17,3 +17,7 @@ spec:
             host: panchito.panchito.svc.cluster.local
             port:
               number: 80
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: "https"
