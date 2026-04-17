@@ -80,8 +80,6 @@ spec:
               value: https://panchito-on-prem.zavestudios.com
             - name: SESSION_COOKIE_SECURE
               value: "true"
-            - name: SESSION_COOKIE_DOMAIN
-              value: "panchito-on-prem.zavestudios.com"
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
