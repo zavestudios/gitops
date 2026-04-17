@@ -113,6 +113,11 @@ kyverno:
 kyvernoReporter:
   enabled: true
   values:
+    istio:
+      kyvernoReporter:
+        hosts:
+          - policyreporter.zavestudios.com
+          - policyreporter-on-prem.zavestudios.com
     upstream:
       image:
         registry: ghcr.io
@@ -323,6 +328,11 @@ addons:
     values:
       global:
         imageRegistry: ""  # Disable registry prepending
+      istio:
+        vault:
+          hosts:
+            - vault.zavestudios.com
+            - vault-on-prem.zavestudios.com
       autoInit:
         enabled: false  # Disable auto-init job (requires Iron Bank, not for production)
       upstream:
@@ -404,7 +414,7 @@ addons:
 
   keycloak:
     enabled: true
-    hostname: sso  # Overrides default 'keycloak' prefix → sso.zavestudios.com
+    hostname: sso-on-prem  # Overrides default 'keycloak' prefix → sso-on-prem.zavestudios.com
     ingress:
       gateway: "public"
       cert: ""
@@ -418,6 +428,7 @@ addons:
         keycloak:
           hosts:
             - sso.zavestudios.com  # KeyCloak SSO endpoint
+            - sso-on-prem.zavestudios.com
       upstream:
         image:
           repository: ghcr.io/zavestudios/keycloak
@@ -432,7 +443,7 @@ addons:
           - --optimized
           - --http-enabled=true
           - --proxy-headers=forwarded
-          - --hostname=https://sso.zavestudios.com/auth
+          - --hostname=https://sso-on-prem.zavestudios.com/auth
           - --hostname-strict=false
         replicas: 1
         # External PostgreSQL connection
@@ -535,6 +546,11 @@ addons:
                     spec:
                       automountServiceAccountToken: false
     values:
+      istio:
+        argocd:
+          hosts:
+            - argocd.zavestudios.com
+            - argocd-on-prem.zavestudios.com
       upgradeJob:
         enabled: false  # Disable upgrade job to avoid Iron Bank image
       global:
@@ -564,6 +580,15 @@ addons:
 monitoring:
   enabled: true
   values:
+    istio:
+      prometheus:
+        hosts:
+          - prometheus.zavestudios.com
+          - prometheus-on-prem.zavestudios.com
+      alertmanager:
+        hosts:
+          - alertmanager.zavestudios.com
+          - alertmanager-on-prem.zavestudios.com
     upstream:
       global:
         imageRegistry: ""  # Disable registry prepending
@@ -646,6 +671,12 @@ kiali:
                   spec:
                     automountServiceAccountToken: false
   values:
+    routes:
+      inbound:
+        kiali:
+          hosts:
+            - kiali.zavestudios.com
+            - kiali-on-prem.zavestudios.com
     waitJob:
       enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
     upstream:
@@ -666,6 +697,7 @@ grafana:
     istio:
       grafana:
         hosts:
+          - grafana.zavestudios.com
           - grafana-on-prem.zavestudios.com  # Single-level subdomain for free SSL
     upstream:
       image:
@@ -867,6 +899,13 @@ alloy:
 loki:
   enabled: true
   values:
+    routes:
+      inbound:
+        loki:
+          enabled: true
+          hosts:
+            - loki.zavestudios.com
+            - loki-on-prem.zavestudios.com
     loki:
       image:
         registry: docker.io
