@@ -116,7 +116,6 @@ kyvernoReporter:
     istio:
       kyvernoReporter:
         hosts:
-          - policyreporter.zavestudios.com
           - policyreporter-on-prem.zavestudios.com
     upstream:
       image:
@@ -331,7 +330,6 @@ addons:
       istio:
         vault:
           hosts:
-            - vault.zavestudios.com
             - vault-on-prem.zavestudios.com
       autoInit:
         enabled: false  # Disable auto-init job (requires Iron Bank, not for production)
@@ -427,7 +425,6 @@ addons:
       istio:
         keycloak:
           hosts:
-            - sso.zavestudios.com  # KeyCloak SSO endpoint
             - sso-on-prem.zavestudios.com
       upstream:
         image:
@@ -549,7 +546,6 @@ addons:
       istio:
         argocd:
           hosts:
-            - argocd.zavestudios.com
             - argocd-on-prem.zavestudios.com
       upgradeJob:
         enabled: false  # Disable upgrade job to avoid Iron Bank image
@@ -583,11 +579,9 @@ monitoring:
     istio:
       prometheus:
         hosts:
-          - prometheus.zavestudios.com
           - prometheus-on-prem.zavestudios.com
       alertmanager:
         hosts:
-          - alertmanager.zavestudios.com
           - alertmanager-on-prem.zavestudios.com
     upstream:
       global:
@@ -675,7 +669,6 @@ kiali:
       inbound:
         kiali:
           hosts:
-            - kiali.zavestudios.com
             - kiali-on-prem.zavestudios.com
     waitJob:
       enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
@@ -697,7 +690,6 @@ grafana:
     istio:
       grafana:
         hosts:
-          - grafana.zavestudios.com
           - grafana-on-prem.zavestudios.com  # Single-level subdomain for free SSL
     upstream:
       image:
@@ -904,7 +896,6 @@ loki:
         loki:
           enabled: true
           hosts:
-            - loki.zavestudios.com
             - loki-on-prem.zavestudios.com
     loki:
       image:
