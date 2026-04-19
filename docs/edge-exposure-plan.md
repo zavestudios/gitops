@@ -1,6 +1,6 @@
 # Edge Exposure Plan
 
-Status: initial hardening implemented
+Status: **COMPLETE** - Edge hardening implemented
 
 Related issues:
 
@@ -26,22 +26,24 @@ The platform should move to:
 - Cloudflare Access protection for operator/admin UIs
 - no reliance on wildcard edge exposure as the default posture
 
-## Current Status Note
+## Implementation Status
 
-Initial edge hardening has now been completed for the current environment:
+Edge hardening completed April 2026:
 
-- explicit DNS records were created for the retained operator/admin hosts
-- Cloudflare Access was added for the retained operator/admin hosts
-- wildcard tunnel DNS exposure via `*.zavestudios.com` and `*.sandbox.zavestudios.com` was retired
-- `mia-on-prem.zavestudios.com` and `mia-canary-on-prem.zavestudios.com` were intentionally retired after removal of the orphaned public ingress path
+- ✓ Explicit DNS records created for all `-on-prem` hostnames only
+- ✓ Cloudflare Access policies protecting all operator/admin UIs
+- ✓ Wildcard DNS exposure retired
+- ✓ Legacy hostname DNS records removed
+- ✓ Infrastructure managed as code in Terraform
+- ✓ Defense-in-depth: edge authentication + application authentication
 
-The remaining work on this topic is follow-on tightening and codification, not emergency exposure reduction.
+All operator UIs now require Cloudflare Access authentication before reaching the application layer.
 
 ## Current Repo Evidence
 
 ### Tunnel Behavior
 
-[platform/cloudflare/configmap.yaml](/Users/xavierlopez/Dev/gitops/platform/cloudflare/configmap.yaml) routes all tunnel traffic to:
+`platform/cloudflare/configmap.yaml` routes all tunnel traffic to:
 
 - `http://public-ingressgateway.istio-gateway.svc.cluster.local:80`
 
@@ -49,7 +51,7 @@ There is no host-based filtering in the cloudflared config today.
 
 ### Istio Public Gateway Behavior
 
-[bigbang/values.yaml](/Users/xavierlopez/Dev/gitops/bigbang/values.yaml) configures the public gateway to accept:
+`bigbang/values.yaml` configures the public gateway to accept:
 
 - `*.zavestudios.com`
 
@@ -57,103 +59,64 @@ This aligns with the current wildcard Cloudflare posture, but it is broader than
 
 ## Current Exposure Matrix
 
-Based on current cluster observations and repo state, the relevant hosts are:
+Current hostname exposure model:
 
-| Hostname | Current Role | Proposed Exposure | Notes |
+| Hostname Pattern | Role | Edge Protection | Notes |
 | --- | --- | --- | --- |
-| `argocd.zavestudios.com` | Operator UI | Cloudflare Access | Admin surface; should not be openly reachable without edge auth. |
-| `vault.zavestudios.com` | Operator/admin UI | Cloudflare Access | Sensitive admin surface. |
-| `grafana-on-prem.zavestudios.com` | Operator UI | Cloudflare Access | Useful UI, but not a public app. |
-| `sso.zavestudios.com` | Keycloak IdP | Public by design | Identity plane endpoint; do not place Cloudflare Access in front of Keycloak itself. |
-| `panchito-on-prem.zavestudios.com` | Tenant workload | Public by design | Authenticated via Keycloak OIDC; no Cloudflare Access. |
-| `policyreporter.zavestudios.com` | Operator UI | Cloudflare Access | Reporting UI, not a public app. |
-| `prometheus.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
-| `alertmanager.zavestudios.com` | Operator UI | Cloudflare Access | Observability admin surface. |
-| `loki.zavestudios.com` | Operator/API surface | Cloudflare Access or retire | Keep only if there is a real operator need. |
-| `mia-on-prem.zavestudios.com` | Removed public path | Retire | `mia` is now intentionally internal/operator-tunneled. |
-| `mia-canary-on-prem.zavestudios.com` | Removed public path | Retire | Canary ingress was removed; do not keep DNS just because the hostname exists historically. |
+| `*-on-prem.zavestudios.com` (operator UIs) | Platform admin surfaces | Cloudflare Access | ArgoCD, Vault, Grafana, Prometheus, Alertmanager, Kiali, Loki, Policy Reporter |
+| `sso-on-prem.zavestudios.com` | Keycloak IdP | Public | Identity provider must be publicly accessible for OIDC flows |
+| `panchito-on-prem.zavestudios.com` | Tenant application | Public | Authenticated via Keycloak OIDC at application layer |
 
-## Recommended Target State
+## Security Architecture
 
-### 1. Explicit DNS Allowlist
+### Defense-in-Depth Model
 
-Replace broad wildcard DNS exposure with explicit records for only the hosts you intend to expose.
+**Operator/Admin UIs:**
+1. Edge layer: Cloudflare Access (authorized operator emails only)
+2. Application layer: Service authentication (local admin, pending Keycloak SSO per `gitops#90`)
 
-Default principle:
+**Public Applications:**
+1. No edge restriction (intentionally public)
+2. Application layer: Keycloak OIDC authentication
 
-- no wildcard `*.zavestudios.com` record pointed at the cluster tunnel
-- no wildcard `*.sandbox.zavestudios.com` record pointed at the cluster tunnel
+**Identity Provider (Keycloak):**
+1. Intentionally public (no Cloudflare Access)
+2. Required for OIDC flows; edge protection would break authentication chains
 
-Preferred record set is explicit and minimal.
+### DNS Model
 
-### 2. Access-Protect Operator UIs
+- No wildcard DNS records (`*.zavestudios.com`)
+- Explicit DNS records for intentional exposure only
+- All operator UIs use `-on-prem` suffix for clarity
+- All DNS and Access configuration managed in Terraform
 
-Apply Cloudflare Access to operator/admin surfaces:
+### Adding New Services
 
-- `argocd.zavestudios.com`
-- `vault.zavestudios.com`
-- `grafana-on-prem.zavestudios.com`
-- `policyreporter.zavestudios.com`
-- `prometheus.zavestudios.com`
-- `alertmanager.zavestudios.com`
-- `loki.zavestudios.com` if retained
+When exposing a new service:
 
-Do **not** put Cloudflare Access in front of `sso.zavestudios.com`. Keycloak is
-the platform identity provider, so layering Cloudflare Access in front of it would
-create a second identity gate and complicate OIDC login flows for downstream apps.
+1. Create explicit DNS record (no wildcards)
+2. Determine exposure model:
+   - Operator UI → Add Cloudflare Access policy
+   - Public app → No edge restriction, use application-layer auth
+3. Document in this file
+4. Manage via infrastructure-as-code
 
-### 3. Retire Unneeded App Hosts
+## Verification
 
-Retire public hosts that no longer have an intended exposure path:
+To verify edge protection is working:
 
-- `mia-on-prem.zavestudios.com`
-- `mia-canary-on-prem.zavestudios.com`
+1. Open an incognito/private browser window
+2. Navigate to any operator UI (e.g., `argocd-on-prem.zavestudios.com`)
+3. Expected: Cloudflare Access authentication prompt before reaching application
+4. Public services (panchito, sso) should be directly accessible without Access prompt
 
-### 4. Keep Public App Exposure Explicit
+## Related Work
 
-If a future tenant application must be public:
-
-- create an explicit DNS record
-- create the platform routing intentionally
-- document whether it is public-by-design or Access-protected
-
-Do not rely on a wildcard DNS/tunnel posture to make that decision implicitly.
-
-## Suggested Rollout Order
-
-1. Build the explicit hostname allowlist.
-2. Add or confirm Cloudflare Access policies for operator/admin hosts.
-3. Remove DNS records for hosts that should no longer exist.
-4. Remove wildcard DNS records once explicit records and Access policies are confirmed.
-5. Optionally tighten the cloudflared/ingress posture further if wildcard host acceptance is no longer needed.
-
-## Manual Verification Checklist
-
-**Requires cluster access:**
-
-Before wildcard retirement:
-
-```bash
-dig +short argocd.zavestudios.com
-dig +short vault.zavestudios.com
-dig +short grafana-on-prem.zavestudios.com
-dig +short prometheus.zavestudios.com
-dig +short alertmanager.zavestudios.com
-dig +short loki.zavestudios.com
-```
-
-After Cloudflare Access rollout:
-
-- verify operator UIs require Access before application login
-- verify intended admins can still reach them
-
-After DNS cleanup:
-
-- confirm retired hosts no longer resolve or no longer route to the cluster edge
-- confirm remaining allowlisted hosts still resolve and serve as intended
+- `gitops#90`: Add Keycloak SSO to operator UIs (application-layer auth improvement)
+- Infrastructure code: `kubernetes-platform-infrastructure/terraform-cloudflare/`
 
 ## Notes
 
-- This plan is intentionally about edge exposure, not workload authentication design.
-- Application login pages are not a substitute for edge access control on operator/admin surfaces.
-- The current broad exposure posture was acceptable during early formation, but it should not remain the steady-state model.
+- Edge protection (Cloudflare Access) and application authentication (Keycloak SSO) are complementary layers
+- Both layers should remain in place for defense-in-depth
+- All infrastructure changes should be made via Terraform, not manually in Cloudflare UI
