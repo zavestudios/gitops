@@ -39,15 +39,7 @@ spec:
       enabled: false
 
     data:
-      metadataConnection:
-        user: airflow_app
-        protocol: postgresql
-        host: 192.168.122.20
-        port: 5432
-        db: db_airflow
-        sslmode: disable
-        passwordSecret: airflow-db
-        passwordSecretKey: connection
+      metadataSecretName: airflow-db
 
     # Fernet key for encryption
     fernetKeySecretName: airflow-fernet
