@@ -91,6 +91,7 @@ Reconciliation order is managed by Flux `dependsOn` relationships under `cluster
 - `docs/environment-semantics-plan.md`: Plan for renaming the current persistent environment and introducing a true local sandbox.
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
 - `docs/keycloak-recovery-notes.md`: Recovery notes for the Keycloak bring-up, including manual incident actions and durable follow-up fixes.
+- `docs/rabbitmq-capability-evaluation.md`: Cross-repo decision record for the OpenShift Local RabbitMQ proving exercise and the current defer-promote recommendation.
 - `docs/vault-hardening-plan.md`: Vault persistence, lifecycle, and recovery hardening plan for the current environment.
 - `docs/vault-migration-plan.md`: Vault, External Secrets Operator, and Sealed Secrets migration plan.
 - `tools/helm-debug/README.md`: Helm debugging commands for value tracing and template rendering.
