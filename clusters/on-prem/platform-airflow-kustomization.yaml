@@ -1,0 +1,16 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: on-prem-platform-airflow
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: on-prem-platform-runtime
+  interval: 10m
+  path: ./platform/airflow
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+  timeout: 25m
