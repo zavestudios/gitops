@@ -137,6 +137,12 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
+        securityContexts:
+          container:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
     # KubernetesPodOperator configuration
     config:
