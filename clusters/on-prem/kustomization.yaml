@@ -6,4 +6,4 @@ resources:
   - keycloak-secrets-kustomization.yaml
   - bigbang-kustomization.yaml
   - platform-runtime-kustomization.yaml
-  - platform-airflow-kustomization.yaml
+  - platform-services-kustomization.yaml
