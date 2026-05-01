@@ -166,8 +166,8 @@ spec:
     securityContexts:
       pod:
         runAsUser: 50000
-        runAsGroup: 0
-        fsGroup: 0
+        runAsGroup: 50000
+        fsGroup: 50000
       containers:
         allowPrivilegeEscalation: false
         readOnlyRootFilesystem: true
