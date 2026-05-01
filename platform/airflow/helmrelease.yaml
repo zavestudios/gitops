@@ -59,6 +59,19 @@ spec:
         ports:
           - name: http
             port: 8080
+      securityContexts:
+        container:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+      waitForMigrations:
+        securityContexts:
+          container:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
     # Scheduler configuration
     scheduler:
@@ -70,6 +83,19 @@ spec:
         limits:
           cpu: 500m
           memory: 512Mi
+      securityContexts:
+        container:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+      waitForMigrations:
+        securityContexts:
+          container:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
     # Triggerer configuration (for deferrable operators)
     triggerer:
@@ -82,6 +108,19 @@ spec:
         limits:
           cpu: 200m
           memory: 256Mi
+      securityContexts:
+        container:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+      waitForMigrations:
+        securityContexts:
+          container:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
     # DAG git-sync configuration
     dags:
@@ -123,7 +162,7 @@ spec:
         runAsUser: 50000
         runAsGroup: 0
         fsGroup: 0
-      container:
+      containers:
         allowPrivilegeEscalation: false
         readOnlyRootFilesystem: true
         capabilities:
