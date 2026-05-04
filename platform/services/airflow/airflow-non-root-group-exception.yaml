@@ -1,0 +1,25 @@
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: airflow-non-root-group
+  namespace: platform
+spec:
+  exceptions:
+    - policyName: require-non-root-group
+      ruleNames:
+        - run-as-group
+        - fs-group
+        - supplemental-groups
+        - autogen-run-as-group
+        - autogen-fs-group
+        - autogen-supplemental-groups
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - platform
+          selector:
+            matchLabels:
+              release: airflow
