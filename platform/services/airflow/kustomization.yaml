@@ -9,4 +9,3 @@ resources:
   - airflow-fernet.externalsecret.yaml
   - helmrelease.yaml
   - rbac.yaml
-  - airflow-non-root-group-exception.yaml
