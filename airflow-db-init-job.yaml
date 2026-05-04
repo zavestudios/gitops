@@ -11,6 +11,8 @@ spec:
         app.kubernetes.io/name: airflow
         app.kubernetes.io/version: "2.9.3"
         release: airflow
+      annotations:
+        sidecar.istio.io/inject: "false"
     spec:
       restartPolicy: OnFailure
       securityContext:
