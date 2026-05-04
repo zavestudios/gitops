@@ -24,6 +24,10 @@ spec:
     remediation:
       retries: 3
   values:
+    # Required by Kyverno require-labels policy — applied to all pod templates
+    labels:
+      app.kubernetes.io/name: airflow
+
     # Explicit registry prefix required for Kyverno restrict-image-registries policy
     defaultAirflowRepository: docker.io/apache/airflow
     defaultAirflowTag: "2.9.3-python3.11"
