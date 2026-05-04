@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ghcr-secret.external-secret.yaml
   - require-signed-ghcr-images.yaml
+  - inject-required-labels.yaml
