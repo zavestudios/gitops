@@ -50,9 +50,6 @@ spec:
 
     # Web server configuration
     webserver:
-      podLabels:
-        app.kubernetes.io/name: airflow
-        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -82,9 +79,6 @@ spec:
 
     # Scheduler configuration
     scheduler:
-      podLabels:
-        app.kubernetes.io/name: airflow
-        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -110,9 +104,6 @@ spec:
     # Triggerer configuration (for deferrable operators)
     triggerer:
       enabled: true
-      podLabels:
-        app.kubernetes.io/name: airflow
-        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -134,12 +125,6 @@ spec:
             capabilities:
               drop:
                 - ALL
-
-    # StatsD — metrics sidecar, also needs the label on its pod template
-    statsd:
-      podLabels:
-        app.kubernetes.io/name: airflow
-        app.kubernetes.io/version: "2.9.3"
 
     # DAG git-sync configuration
     dags:
