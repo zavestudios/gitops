@@ -6,11 +6,10 @@ metadata:
 spec:
   dependsOn:
     - name: on-prem-platform-runtime
-  interval: 10m
+  interval: 2m
   path: ./platform/services
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
   timeout: 25m
