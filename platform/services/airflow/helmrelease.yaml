@@ -52,6 +52,7 @@ spec:
     webserver:
       podLabels:
         app.kubernetes.io/name: airflow
+        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -83,6 +84,7 @@ spec:
     scheduler:
       podLabels:
         app.kubernetes.io/name: airflow
+        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -110,6 +112,7 @@ spec:
       enabled: true
       podLabels:
         app.kubernetes.io/name: airflow
+        app.kubernetes.io/version: "2.9.3"
       replicas: 1
       resources:
         requests:
@@ -136,6 +139,7 @@ spec:
     statsd:
       podLabels:
         app.kubernetes.io/name: airflow
+        app.kubernetes.io/version: "2.9.3"
 
     # DAG git-sync configuration
     dags:
