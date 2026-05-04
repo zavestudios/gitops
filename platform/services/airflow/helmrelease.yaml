@@ -24,6 +24,10 @@ spec:
     remediation:
       retries: 3
   values:
+    # Explicit registry prefix required for Kyverno restrict-image-registries policy
+    defaultAirflowRepository: docker.io/apache/airflow
+    defaultAirflowTag: "2.9.3-python3.11"
+
     # Executor configuration
     executor: KubernetesExecutor
 
@@ -148,7 +152,7 @@ spec:
     config:
       kubernetes:
         namespace: platform
-        worker_container_repository: apache/airflow
+        worker_container_repository: docker.io/apache/airflow
         worker_container_tag: 2.9.3-python3.11
         delete_worker_pods: "True"
         delete_worker_pods_on_failure: "False"
