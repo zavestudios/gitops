@@ -54,7 +54,6 @@ spec:
     webserver:
       replicas: 1
       startupProbe:
-        initialDelaySeconds: 30
         failureThreshold: 24
         periodSeconds: 10
         timeoutSeconds: 30
@@ -88,7 +87,6 @@ spec:
     scheduler:
       replicas: 1
       livenessProbe:
-        initialDelaySeconds: 30
         timeoutSeconds: 60
         failureThreshold: 5
         periodSeconds: 60
@@ -118,7 +116,6 @@ spec:
       enabled: true
       replicas: 1
       livenessProbe:
-        initialDelaySeconds: 30
         timeoutSeconds: 60
         failureThreshold: 5
         periodSeconds: 60
