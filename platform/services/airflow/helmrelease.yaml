@@ -89,11 +89,11 @@ spec:
       replicas: 1
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
-        limits:
-          cpu: 500m
+          cpu: 250m
           memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
       securityContexts:
         container:
           allowPrivilegeEscalation: false
@@ -115,10 +115,10 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 128Mi
+          memory: 512Mi
         limits:
-          cpu: 200m
-          memory: 256Mi
+          cpu: 500m
+          memory: 1Gi
       securityContexts:
         container:
           allowPrivilegeEscalation: false
