@@ -7,5 +7,6 @@ resources:
   - helmrepository.yaml
   - airflow-db.externalsecret.yaml
   - airflow-fernet.externalsecret.yaml
+  - airflow-webserver-secret-key.externalsecret.yaml
   - helmrelease.yaml
   - rbac.yaml

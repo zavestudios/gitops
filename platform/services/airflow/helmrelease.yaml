@@ -50,6 +50,9 @@ spec:
     # Fernet key for encryption
     fernetKeySecretName: airflow-fernet
 
+    # Webserver secret key for Flask session signing
+    webserverSecretKeySecretName: airflow-webserver-secret-key
+
     # Web server configuration
     webserver:
       replicas: 1
