@@ -53,13 +53,18 @@ spec:
     # Web server configuration
     webserver:
       replicas: 1
+      startupProbe:
+        initialDelaySeconds: 30
+        failureThreshold: 24
+        periodSeconds: 10
+        timeoutSeconds: 30
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
-        limits:
-          cpu: 500m
+          cpu: 250m
           memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
       service:
         type: ClusterIP
         ports:
