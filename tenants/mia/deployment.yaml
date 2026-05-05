@@ -4,7 +4,7 @@ metadata:
   name: mia
   namespace: mia
   labels:
-    app.kubernetes.io/version: sha-0ffcdb4
+    app.kubernetes.io/version: sha-5e313b0
     app: mia
     zave.io/workload: mia
 spec:
@@ -23,7 +23,7 @@ spec:
       labels:
         app: mia
         app.kubernetes.io/name: mia
-        app.kubernetes.io/version: sha-0ffcdb4
+        app.kubernetes.io/version: sha-5e313b0
         zave.io/workload: mia
     spec:
       automountServiceAccountToken: false
@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       initContainers:
       - name: seed-config
-        image: ghcr.io/zavestudios/mia@sha256:f21c43e524fe7e2e1ed1324b72b7f39840105a9d76628ed7c09f6d9ace59372b
+        image: ghcr.io/zavestudios/mia@sha256:023aafc032f3f7894393a5c497cec8d235b9a4866a5f7f5b2af284cc571d7c56
         command:
         - sh
         - -c
@@ -53,7 +53,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:f21c43e524fe7e2e1ed1324b72b7f39840105a9d76628ed7c09f6d9ace59372b
+        image: ghcr.io/zavestudios/mia@sha256:023aafc032f3f7894393a5c497cec8d235b9a4866a5f7f5b2af284cc571d7c56
         startupProbe:
           tcpSocket:
             port: 18789
