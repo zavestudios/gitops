@@ -33,6 +33,8 @@ spec:
 
     # Environment configuration
     env:
+      - name: PYTHONUNBUFFERED
+        value: "1"
       - name: AIRFLOW__CORE__LOAD_EXAMPLES
         value: "False"
       - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
