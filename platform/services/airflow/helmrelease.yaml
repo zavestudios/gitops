@@ -86,6 +86,10 @@ spec:
     # Scheduler configuration
     scheduler:
       replicas: 1
+      startupProbe:
+        timeoutSeconds: 60
+        failureThreshold: 24
+        periodSeconds: 10
       livenessProbe:
         timeoutSeconds: 60
         failureThreshold: 5
@@ -115,6 +119,10 @@ spec:
     triggerer:
       enabled: true
       replicas: 1
+      startupProbe:
+        timeoutSeconds: 60
+        failureThreshold: 24
+        periodSeconds: 10
       livenessProbe:
         timeoutSeconds: 60
         failureThreshold: 5
