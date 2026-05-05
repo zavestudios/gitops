@@ -87,6 +87,11 @@ spec:
     # Scheduler configuration
     scheduler:
       replicas: 1
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 60
+        failureThreshold: 5
+        periodSeconds: 60
       resources:
         requests:
           cpu: 250m
@@ -112,6 +117,11 @@ spec:
     triggerer:
       enabled: true
       replicas: 1
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 60
+        failureThreshold: 5
+        periodSeconds: 60
       resources:
         requests:
           cpu: 100m
