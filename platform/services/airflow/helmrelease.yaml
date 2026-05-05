@@ -174,6 +174,7 @@ spec:
         runAsUser: 50000
       containers:
         allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
         capabilities:
           drop:
             - ALL
@@ -182,11 +183,11 @@ spec:
     extraVolumes:
       - name: tmp
         emptyDir: {}
-      - name: logs
+      - name: airflow-home
         emptyDir: {}
 
     extraVolumeMounts:
       - name: tmp
         mountPath: /tmp
-      - name: logs
-        mountPath: /opt/airflow/logs
+      - name: airflow-home
+        mountPath: /opt/airflow
