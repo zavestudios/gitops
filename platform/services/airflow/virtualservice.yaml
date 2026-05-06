@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: airflow
+  namespace: platform
+spec:
+  hosts:
+    - airflow-on-prem.zavestudios.com
+  gateways:
+    - istio-gateway/public
+  http:
+    - route:
+        - destination:
+            host: airflow-webserver.platform.svc.cluster.local
+            port:
+              number: 8080

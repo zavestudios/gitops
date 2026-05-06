@@ -10,3 +10,4 @@ resources:
   - airflow-webserver-secret-key.externalsecret.yaml
   - helmrelease.yaml
   - rbac.yaml
+  - virtualservice.yaml
