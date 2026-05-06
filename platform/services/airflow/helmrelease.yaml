@@ -192,12 +192,15 @@ spec:
       name: airflow
 
     # Security contexts
+    # readOnlyRootFilesystem is omitted: the chart does not propagate global
+    # extraVolumeMounts to Jobs and sidecars consistently, so every airflow
+    # component hits EROFS when initialising logging or airflow.cfg.
+    # Re-evaluate with per-component volume mounts in a hardening pass.
     securityContexts:
       pod:
         runAsUser: 50000
       containers:
         allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
         capabilities:
           drop:
             - ALL
