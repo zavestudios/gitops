@@ -7,7 +7,7 @@ spec:
   hosts:
     - airflow-on-prem.zavestudios.com
   gateways:
-    - istio-gateway/public
+    - istio-gateway/public-ingressgateway
   http:
     - route:
         - destination:
