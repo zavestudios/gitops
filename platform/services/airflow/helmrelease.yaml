@@ -118,27 +118,12 @@ spec:
               drop:
                 - ALL
       logGroomerSidecar:
-        extraVolumeMounts:
-          - name: tmp
-            mountPath: /tmp
-          - name: airflow-home
-            mountPath: /opt/airflow
-        securityContexts:
-          container:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: false
+        enabled: false
 
     # Triggerer configuration (for deferrable operators)
     triggerer:
       enabled: true
       replicas: 1
-      startupProbe:
-        timeoutSeconds: 60
-        failureThreshold: 24
-        periodSeconds: 10
       livenessProbe:
         timeoutSeconds: 60
         failureThreshold: 5
@@ -163,22 +148,8 @@ spec:
             capabilities:
               drop:
                 - ALL
-      # logGroomerSidecar does not inherit global extraVolumeMounts; mount explicitly
-      # readOnlyRootFilesystem must be false here because the sidecar runs `airflow`
-      # which writes airflow.cfg to AIRFLOW_HOME (/opt/airflow) on startup
       logGroomerSidecar:
-        extraVolumeMounts:
-          - name: tmp
-            mountPath: /tmp
-          - name: airflow-home
-            mountPath: /opt/airflow
-        securityContexts:
-          container:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: false
+        enabled: false
 
     # DAG git-sync configuration
     dags:
