@@ -117,6 +117,19 @@ spec:
             capabilities:
               drop:
                 - ALL
+      logGroomerSidecar:
+        extraVolumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: airflow-home
+            mountPath: /opt/airflow
+        securityContexts:
+          container:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
 
     # Triggerer configuration (for deferrable operators)
     triggerer:
