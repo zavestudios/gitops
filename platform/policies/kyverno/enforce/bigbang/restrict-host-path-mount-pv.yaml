@@ -1,0 +1,49 @@
+---
+# Source: kyverno-policies/templates/restrict-host-path-mount-pv.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-host-path-mount-pv
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Restrict hostPath Volume Mountable Paths
+    policies.kyverno.io/category: Best Practices (Security)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/subject: PersistentVolume
+    policies.kyverno.io/description: >-
+      PersistentVolume using hostPath consume the underlying node's file system. If not universally disabled, 
+      they should be restricted to specific host paths to prevent access to sensitive information. 
+      This policy ensures that PV hostPath is in the allowed list.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce 
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: restrict-hostpath    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - PersistentVolume
+    validate:
+      message: PV hostPath is restricted to the allowed list.
+      pattern:
+        spec:
+          =(hostPath):
+            path: ""

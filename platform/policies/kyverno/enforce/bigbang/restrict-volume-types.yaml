@@ -1,0 +1,68 @@
+---
+# Source: kyverno-policies/templates/restrict-volume-types.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-volume-types
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Restrict Volume Types
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Volume types, beyond the core set, should be restricted to limit exposure to potential vulnerabilities
+      in Container Storage Interface (CSI) drivers.  In addition, HostPath volumes should not be allowed because
+      host directories could be exploited to access shared data or escalate privileges.  This policy restricts
+      use of volume types to the allowed list.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce 
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: restrict-volume-types    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+        - BACKGROUND
+      - key: "{{ not_null(request.object.spec.volumes[], '') | length(@) }}"
+        operator: GreaterThanOrEquals
+        value: 1
+    validate:
+      message: >-
+        One or more volume types used in the pod is not in the allowed list.
+      foreach:
+      - list: "request.object.spec.volumes"
+        anyPattern:
+        - configMap: "*"
+        - csi: "*"
+        - downwardAPI: "*"
+        - emptyDir: "*"
+        - ephemeral: "*"
+        - persistentVolumeClaim: "*"
+        - projected: "*"
+        - secret: "*"

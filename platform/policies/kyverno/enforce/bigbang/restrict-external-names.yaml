@@ -1,0 +1,48 @@
+---
+# Source: kyverno-policies/templates/restrict-external-names.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-external-names
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Restrict External Names (CVE-2020-8554)
+    policies.kyverno.io/category: Vulnerability
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/description: >-
+      Service external names can be used for a MITM attack (CVE-2020-8554).  External names can
+      be used by an attacker to point back to localhost or internal IP addresses for exploitation.
+      This policy restricts services using external names to a specified list.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce 
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: external-names    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Service
+    validate:
+      message: "Only external names from the approved list are allowed."
+      pattern:
+        spec:
+          (type): ExternalName
+          externalName: ""

@@ -1,0 +1,52 @@
+---
+# Source: kyverno-policies/templates/restrict-host-ports.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-host-ports
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Restrict Host Ports
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Access to host ports allows potential snooping of network traffic and should not be
+      allowed, or at minimum restricted to a known list. This policy ensures only approved ports
+      are defined in container's `hostPort` field.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce 
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: host-ports    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: >-
+        The host port used is not allowed. The fields spec.containers[*].ports[*].hostPort,
+        spec.initContainers[*].ports[*].hostPort, and spec.ephemeralContainers[*].ports[*].hostPort
+        must only include ports from the allowed list.
+      foreach:
+          - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+            pattern:
+              =(ports):
+                - =(hostPort): ""

@@ -1,0 +1,127 @@
+name: Kyverno Validate
+
+on:
+  pull_request:
+    paths:
+      - 'platform/services/**/helmrelease.yaml'
+      - 'platform/policies/kyverno/enforce/**'
+      - 'tenants/**/*.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Render Manifests and Stage Policies
+    runs-on: ubuntu-latest
+    outputs:
+      has_manifests: ${{ steps.check.outputs.has_manifests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect changed files
+        id: changed
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          base_ref="origin/${{ github.base_ref }}"
+
+          helmreleases=$(git diff --name-only "${base_ref}...HEAD" \
+            | grep -E '^platform/services/.*/helmrelease\.yaml$' || true)
+
+          tenant_manifests=$(git diff --name-only "${base_ref}...HEAD" \
+            | grep -E '^tenants/.*\.yaml$' \
+            | grep -v 'kustomization\.yaml' || true)
+
+          {
+            echo "helmreleases<<EOF"
+            echo "$helmreleases"
+            echo "EOF"
+            echo "tenant_manifests<<EOF"
+            echo "$tenant_manifests"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Render HelmRelease manifests
+        if: steps.changed.outputs.helmreleases != ''
+        run: |
+          mkdir -p rendered-manifests
+
+          while IFS= read -r hr_file; do
+            [[ -z "$hr_file" ]] && continue
+
+            release_name=$(python3 -c "import yaml,sys; d=yaml.safe_load(open('${hr_file}')); print(d['metadata']['name'])")
+            chart=$(python3 -c "import yaml,sys; d=yaml.safe_load(open('${hr_file}')); print(d['spec']['chart']['spec']['chart'])")
+            version=$(python3 -c "import yaml,sys; d=yaml.safe_load(open('${hr_file}')); print(d['spec']['chart']['spec']['version'])")
+            repo_ref=$(python3 -c "import yaml,sys; d=yaml.safe_load(open('${hr_file}')); print(d['spec']['chart']['spec']['sourceRef']['name'])")
+            service_dir=$(dirname "$hr_file")
+
+            # Find HelmRepository URL colocated with the HelmRelease
+            repo_file=$(grep -rl 'kind: HelmRepository' "$service_dir" | head -1)
+            repo_url=$(python3 -c "import yaml; d=yaml.safe_load(open('${repo_file}')); print(d['spec']['url'])")
+
+            helm repo add "$repo_ref" "$repo_url"
+            helm repo update "$repo_ref"
+
+            python3 -c "
+import yaml, json
+d = yaml.safe_load(open('${hr_file}'))
+v = d.get('spec', {}).get('values') or {}
+import sys
+yaml.dump(v, sys.stdout)
+" > /tmp/helm-values.yaml
+
+            helm template "$release_name" "${repo_ref}/${chart}" \
+              --version "$version" \
+              --values /tmp/helm-values.yaml \
+              --output-dir "rendered-manifests/${release_name}"
+          done <<< "${{ steps.changed.outputs.helmreleases }}"
+
+      - name: Stage tenant manifests
+        if: steps.changed.outputs.tenant_manifests != ''
+        run: |
+          mkdir -p rendered-manifests
+
+          while IFS= read -r manifest; do
+            [[ -z "$manifest" ]] && continue
+            dest="rendered-manifests/$(dirname "$manifest")"
+            mkdir -p "$dest"
+            cp "$manifest" "$dest/"
+          done <<< "${{ steps.changed.outputs.tenant_manifests }}"
+
+      - name: Check for staged manifests
+        id: check
+        run: |
+          if [[ -n "$(find rendered-manifests -name '*.yaml' 2>/dev/null | head -1)" ]]; then
+            echo "has_manifests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_manifests=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload manifests artifact
+        if: steps.check.outputs.has_manifests == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kyverno-manifests
+          path: rendered-manifests/
+          retention-days: 1
+
+      - name: Upload policies artifact
+        if: steps.check.outputs.has_manifests == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kyverno-enforce-policies
+          path: platform/policies/kyverno/enforce/
+          retention-days: 1
+
+  kyverno-validate:
+    name: Kyverno Validate
+    needs: prepare
+    if: needs.prepare.outputs.has_manifests == 'true'
+    uses: zavestudios/platform-pipelines/.github/workflows/kyverno-validate.yml@2ffb9cf35a8e99b7559931b4b84ff9ccbf943790
+    with:
+      manifests_artifact: kyverno-manifests
+      policies_artifact: kyverno-enforce-policies
