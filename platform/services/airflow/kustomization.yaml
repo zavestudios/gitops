@@ -8,6 +8,8 @@ resources:
   - airflow-db.externalsecret.yaml
   - airflow-fernet.externalsecret.yaml
   - airflow-webserver-secret-key.externalsecret.yaml
+  - airflow-admin.externalsecret.yaml
   - helmrelease.yaml
   - rbac.yaml
   - virtualservice.yaml
+  - airflow-admin-password-job.yaml
