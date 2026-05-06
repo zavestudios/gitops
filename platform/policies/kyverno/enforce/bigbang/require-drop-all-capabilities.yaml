@@ -1,0 +1,62 @@
+---
+# Source: kyverno-policies/templates/require-drop-all-capabilities.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-drop-all-capabilities
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Drop All Capabilities
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Capabilities permit privileged actions without giving full root access. All
+      capabilities should be dropped from a Pod, with only those required added back.
+      This policy ensures that all containers explicitly specify `drop: ["ALL"]`.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce
+  background: false
+  failurePolicy: Fail
+  rules:
+  - name: drop-all-capabilities    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: >-
+        Containers must drop all Linux capabilities by setting the fields
+        spec.containers[*].securityContext.capabilities.drop,
+        spec.initContainers[*].securityContext.capabilities.drop, and
+        spec.ephemeralContainers[*].securityContext.capabilities.drop to `ALL`.
+      foreach:
+          - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+            deny:
+              conditions:
+                any:
+                - key: "{{ not_null(element.securityContext.capabilities.drop, '[]') | contains(@, 'ALL') }}"
+                  operator: Equals
+                  value: false

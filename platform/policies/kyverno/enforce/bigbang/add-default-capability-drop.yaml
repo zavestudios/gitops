@@ -1,0 +1,82 @@
+---
+# Source: kyverno-policies/templates/add-default-capability-drop.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-capability-drop
+  annotations:
+    policies.kyverno.io/title: Add Default Capability Drop
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy mutates all containers in pods to drop `ALL` capabilities by default.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno 
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: add-default-capability-drop    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      foreach:
+      - list: request.object.spec.containers[]
+        patchStrategicMerge:
+          spec:
+            containers:
+            - name: "{{ element.name }}"
+              securityContext:
+                capabilities:
+                  drop:
+                  - ALL
+        preconditions:
+          any:
+          - key: "{{ contains((element.securityContext.capabilities.drop[] || '[]'), 'ALL') }}"
+            operator: Equals
+            value: false
+      - list: request.object.spec.ephemeralContainers[]
+        patchStrategicMerge:
+          spec:
+            ephemeralContainers:
+            - name: "{{ element.name }}"
+              securityContext:
+                capabilities:
+                  drop:
+                  - ALL
+        preconditions:
+          any:
+          - key: "{{ contains((element.securityContext.capabilities.drop[] || '[]'), 'ALL') }}"
+            operator: Equals
+            value: false
+      - list: request.object.spec.initContainers[]
+        patchStrategicMerge:
+          spec:
+            initContainers:
+            - name: "{{ element.name }}"
+              securityContext:
+                capabilities:
+                  drop:
+                  - ALL
+        preconditions:
+          any:
+          - key: "{{ contains((element.securityContext.capabilities.drop[] || '[]'), 'ALL') }}"
+            operator: Equals
+            value: false

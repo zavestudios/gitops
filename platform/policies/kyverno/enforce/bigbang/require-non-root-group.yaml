@@ -1,0 +1,119 @@
+---
+# Source: kyverno-policies/templates/require-non-root-group.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root-group
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: Deployment,ReplicaSet,DaemonSet,StatefulSet
+    policies.kyverno.io/title: Reqire Non-root Group
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Following the least privilege principle, access to the root group ID should be forbidden
+      in containers. This policy ensures containers are running with groups > 0.
+  labels:
+    app.kubernetes.io/name: kyverno-policies
+    helm.sh/chart: kyverno-policies-3.3.4-bb.24
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: kyverno-policies
+    app.kubernetes.io/version: "3.3.4-bb.24"
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kyverno
+    app: kyverno
+spec:  
+  webhookTimeoutSeconds: 30
+  validationFailureAction: Enforce
+  background: true
+  failurePolicy: Fail
+  rules:
+  - name: run-as-group    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: >-
+        runAsGroup must be set to an id > 0 in either spec.securityContext.runAsGroup or
+        (spec.containers[*].securityContext.runAsGroup, spec.initContainers[*].securityContext.runAsGroup,
+        and spec.ephemeralContainers[*].securityContext.runAsGroup)
+      foreach:
+      - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+        preconditions:
+          all:
+    
+        pattern:
+          =(securityContext):
+            =(runAsGroup): "*"
+      - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+        preconditions:
+          any:
+          - key: "{{ request.object.spec.securityContext.runAsGroup || to_number('0') }}"
+            operator: NotEquals
+            value: 0
+          all:
+    
+        pattern:
+          =(securityContext):
+            =(runAsGroup): ">0"
+      - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+        preconditions:
+          all:
+          - key: "{{ request.object.spec.securityContext.runAsGroup || to_number('0') }}"
+            operator: Equals
+            value: 0
+    
+        anyPattern:
+        - securityContext:
+            runAsGroup: ">0"
+  - name: fs-group    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: >-
+        fsGroup must be empty or set to an id > 0 in spec.securityContextChanging.
+      pattern:
+        spec:
+          =(securityContext):
+            =(fsGroup): ">0"
+  - name: supplemental-groups    
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+    match:
+      all:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+        - BACKGROUND
+    validate:
+      message: >-
+        Supplemental group ids must be empty or > 0 in spec.securityContext.supplementalGroups[*].
+      pattern:
+        spec:
+          =(securityContext):
+            =(supplementalGroups): ">0"
