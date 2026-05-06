@@ -121,9 +121,7 @@ yaml.dump(v, sys.stdout)
     name: Kyverno Validate
     needs: prepare
     if: needs.prepare.outputs.has_manifests == 'true'
-    # Pin to commit SHA after zavestudios/platform-pipelines kyverno-validate.yml is merged.
-    # Replace d685d5518ea5541950ac70b0b303b9ed1e0a9b40 with the actual merge commit SHA.
-    uses: zavestudios/platform-pipelines/.github/workflows/kyverno-validate.yml@d685d5518ea5541950ac70b0b303b9ed1e0a9b40
+    uses: zavestudios/platform-pipelines/.github/workflows/kyverno-validate.yml@2ffb9cf35a8e99b7559931b4b84ff9ccbf943790
     with:
       manifests_artifact: kyverno-manifests
       policies_artifact: kyverno-enforce-policies
