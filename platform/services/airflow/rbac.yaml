@@ -51,3 +51,6 @@ subjects:
   - kind: ServiceAccount
     name: airflow
     namespace: platform
+  - kind: ServiceAccount
+    name: airflow-worker
+    namespace: platform
