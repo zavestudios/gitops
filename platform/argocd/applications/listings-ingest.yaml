@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: listings-ingest
+  namespace: argocd
+  labels:
+    zave.io/workload: listings-ingest
+    zave.io/tenant: "true"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zavestudios/gitops
+    targetRevision: main
+    path: tenants/listings-ingest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: listings-ingest
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
