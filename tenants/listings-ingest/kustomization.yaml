@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - serviceaccount.yaml
+  - ghcr-secret.external-secret.yaml
   - listings-ingest-db.externalsecret.yaml
