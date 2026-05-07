@@ -60,19 +60,13 @@ jobs:
             service_dir=$(dirname "$hr_file")
 
             # Find HelmRepository URL colocated with the HelmRelease
-            repo_file=$(grep -rl 'kind: HelmRepository' "$service_dir" | head -1)
+            repo_file=$(grep -rl '^kind: HelmRepository' "$service_dir" | head -1)
             repo_url=$(python3 -c "import yaml; d=yaml.safe_load(open('${repo_file}')); print(d['spec']['url'])")
 
             helm repo add "$repo_ref" "$repo_url"
             helm repo update "$repo_ref"
 
-            python3 -c "
-import yaml, json
-d = yaml.safe_load(open('${hr_file}'))
-v = d.get('spec', {}).get('values') or {}
-import sys
-yaml.dump(v, sys.stdout)
-" > /tmp/helm-values.yaml
+            python3 -c "import yaml,sys; d=yaml.safe_load(open('${hr_file}')); yaml.dump((d.get('spec') or {}).get('values') or {}, sys.stdout)" > /tmp/helm-values.yaml
 
             helm template "$release_name" "${repo_ref}/${chart}" \
               --version "$version" \
