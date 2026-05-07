@@ -7,3 +7,4 @@ resources:
   - bigbang-kustomization.yaml
   - platform-runtime-kustomization.yaml
   - platform-services-kustomization.yaml
+  - tenants-kustomization.yaml
