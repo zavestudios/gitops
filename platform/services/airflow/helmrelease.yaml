@@ -43,6 +43,9 @@ spec:
         value: "listings-ingest"
       - name: ETL_IMAGE
         value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:881cd83b940f30a6e63b9ad8e86ba7e53a103fcd7814c21c07e50c8e1ae4ab43"
+      # temporary: keep failed worker pods for log inspection, remove after smoke test
+      - name: AIRFLOW__KUBERNETES__DELETE_WORKER_PODS_ON_FAILURE
+        value: "False"
 
     # External PostgreSQL configuration
     postgresql:
