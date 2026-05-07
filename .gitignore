@@ -17,6 +17,10 @@ secret.yml
 # BUT allow sealed secrets
 !*sealed-secret.yaml
 !*sealed-secret.yml
+# AND allow ExternalSecret manifests (these reference secret paths, not secret values)
+!*external-secret.yaml
+!*external-secret.yml
+!*.externalsecret.yaml
 *.enc.yaml
 *.enc.yml
 
