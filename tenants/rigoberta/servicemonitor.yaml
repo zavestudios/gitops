@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rigoberta
+  namespace: rigoberta
+  labels:
+    app: rigoberta
+    release: monitoring
+    zave.io/workload: rigoberta
+spec:
+  selector:
+    matchLabels:
+      app: rigoberta
+      zave.io/workload: rigoberta
+  namespaceSelector:
+    matchNames:
+      - rigoberta
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
