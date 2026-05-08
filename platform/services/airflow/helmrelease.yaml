@@ -42,7 +42,7 @@ spec:
       - name: AIRFLOW_RUN_NAMESPACE
         value: "listings-ingest"
       - name: ETL_IMAGE
-        value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:73952e2991c46758a509d532c544a52d9dec16caa5ceb39d80223d453b5036fb"
+        value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:f7ef312a5db7379af01c0dcbbaf789373465434621a73454edd26bfaeaa42dff"
       # temporary: keep failed worker pods for log inspection, remove after smoke test
       - name: AIRFLOW__KUBERNETES__DELETE_WORKER_PODS_ON_FAILURE
         value: "False"
