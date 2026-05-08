@@ -10,6 +10,7 @@ resources:
   - rigoberta-db.external-secret.yaml
   - deployment.yaml
   - service.yaml
+  - servicemonitor.yaml
 
 commonLabels:
   zave.io/workload: rigoberta
