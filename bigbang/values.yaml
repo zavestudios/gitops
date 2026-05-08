@@ -610,7 +610,8 @@ monitoring:
             registry: quay.io
             repository: prometheus/prometheus
           serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
-          automountServiceAccountToken: false  # Disable for Kyverno policy compliance
+          # Prometheus needs Kubernetes API credentials for ServiceMonitor/PodMonitor discovery.
+          automountServiceAccountToken: true
           resources:
             requests:
               memory: 512Mi
