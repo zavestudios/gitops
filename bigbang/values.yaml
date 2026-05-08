@@ -858,6 +858,21 @@ alloy:
             repository: grafana/alloy
             tag: "v1.12.2"
     upstream:
+      collectors:
+        receiver:
+          presets:
+            - daemonset
+      applicationObservability:
+        enabled: true
+        collector: receiver
+        receivers:
+          otlp:
+            grpc:
+              enabled: true
+              port: 4317
+            http:
+              enabled: true
+              port: 4318
       alloy-operator:
         waitForAlloyRemoval:
           image:
@@ -887,6 +902,12 @@ alloy:
         - name: loki
           type: loki
           url: http://logging-loki.logging.svc.cluster.local:3100/loki/api/v1/push
+        - name: tempo
+          type: otlp
+          protocol: grpc
+          url: tempo-tempo.tempo.svc.cluster.local:4317
+          traces:
+            enabled: true
 
 # Loki - log aggregation storage
 loki:
