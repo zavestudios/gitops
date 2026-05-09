@@ -799,6 +799,19 @@ alloy:
                   app.kubernetes.io/version: "0.1.2"
               automountServiceAccountToken: false
   values:
+    applicationObservability:
+      enabled: true
+      collector: alloy-receiver
+      receivers:
+        otlp:
+          grpc:
+            enabled: true
+            port: 4317
+          http:
+            enabled: true
+            port: 4318
+    alloy-receiver:
+      enabled: true
     global:
       imageRegistry: ""  # Disable top-level registry prepending
       imagePullSecrets: []
@@ -858,19 +871,6 @@ alloy:
             repository: grafana/alloy
             tag: "v1.12.2"
     upstream:
-      applicationObservability:
-        enabled: true
-        collector: alloy-receiver
-        receivers:
-          otlp:
-            grpc:
-              enabled: true
-              port: 4317
-            http:
-              enabled: true
-              port: 4318
-      alloy-receiver:
-        enabled: true
       alloy-operator:
         waitForAlloyRemoval:
           image:
