@@ -858,13 +858,9 @@ alloy:
             repository: grafana/alloy
             tag: "v1.12.2"
     upstream:
-      collectors:
-        receiver:
-          presets:
-            - daemonset
       applicationObservability:
         enabled: true
-        collector: receiver
+        collector: alloy-receiver
         receivers:
           otlp:
             grpc:
@@ -873,6 +869,8 @@ alloy:
             http:
               enabled: true
               port: 4318
+      alloy-receiver:
+        enabled: true
       alloy-operator:
         waitForAlloyRemoval:
           image:
