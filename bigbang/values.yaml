@@ -775,14 +775,39 @@ alloy:
                   metadata:
                     labels:
                       app.kubernetes.io/version: "0.1.2"
+                      sidecar.istio.io/inject: "true"
                     annotations:
                       sidecar.istio.io/inject: "true"
                   spec:
                     automountServiceAccountToken: false
                     imagePullSecrets: []
+                    volumes:
+                      - name: k8s-api-access
+                        projected:
+                          defaultMode: 420
+                          sources:
+                            - serviceAccountToken:
+                                audience: https://kubernetes.default.svc
+                                expirationSeconds: 3600
+                                path: token
+                            - configMap:
+                                items:
+                                  - key: ca.crt
+                                    path: ca.crt
+                                name: kube-root-ca.crt
+                            - downwardAPI:
+                                items:
+                                  - fieldRef:
+                                      apiVersion: v1
+                                      fieldPath: metadata.namespace
+                                    path: namespace
                     containers:
                       - name: add-finalizers
                         image: ghcr.io/grafana/helm-chart-toolbox-kubectl:0.1.2
+                        volumeMounts:
+                          - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                            name: k8s-api-access
+                            readOnly: true
                     serviceAccountName: alloy-upstream-add-finalizer
           - target:
               group: v1
