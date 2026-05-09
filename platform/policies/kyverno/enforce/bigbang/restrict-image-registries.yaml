@@ -37,6 +37,11 @@ spec:
       - resources:
           namespaces:
           - kube-system
+      - resources:
+          namespaces:
+          - alloy
+          names:
+          - alloy-upstream-add-finalizer*
     match:
       all:
       - resources:
