@@ -156,6 +156,28 @@ kyvernoPolicies:
             - index.docker.io/    # Docker Hub canonical hostname
             - registry.k8s.io/    # Kubernetes registry
             - public.ecr.aws/     # AWS Public ECR
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - alloy
+                names:
+                  - alloy-upstream-add-finalizer*
+      disallow-auto-mount-service-account-token:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - alloy
+                names:
+                  - alloy-upstream-add-finalizer*
+            - resources:
+                namespaces:
+                  - alloy
+                kinds:
+                  - ServiceAccount
+                names:
+                  - alloy-upstream-add-finalizer
 
 eckOperator:
   enabled: false
