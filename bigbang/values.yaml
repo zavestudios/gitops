@@ -744,6 +744,11 @@ tempo:
 # Alloy - unified observability collector
 alloy:
   enabled: true
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
   postRenderers:
     - kustomize:
         patches:
