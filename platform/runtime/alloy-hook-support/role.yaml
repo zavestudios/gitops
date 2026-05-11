@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: alloy-upstream-add-finalizer
+  namespace: alloy
+  labels:
+    app.kubernetes.io/name: alloy-upstream-add-finalizer
+    app.kubernetes.io/part-of: alloy
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    resourceNames:
+      - alloy-alloy-operator
+    verbs:
+      - get
+      - patch
+      - update

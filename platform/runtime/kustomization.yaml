@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../vault/
   - ../policies/kyverno/
+  - alloy-hook-support/
 
   # ArgoCD platform resources and tenant Application registrations
   - ../argocd/
