@@ -872,14 +872,16 @@ alloy:
           http:
             enabled: true
             port: 4318
-    alloy-receiver:
-      enabled: true
     global:
       imageRegistry: ""  # Disable top-level registry prepending
       imagePullSecrets: []
       image:
         registry: ""
         pullSecrets: []
+    collectors:
+      alloy-receiver:
+        presets:
+          - deployment
     k8s-monitoring:
       alloy-logs:
         image:
