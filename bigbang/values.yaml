@@ -846,6 +846,16 @@ alloy:
                   app.kubernetes.io/version: "0.1.2"
               automountServiceAccountToken: false
   values:
+    alloy-operator:
+      waitForAlloyRemoval:
+        image:
+          registry: ghcr.io
+          repository: grafana/helm-chart-toolbox-kubectl
+          tag: "0.1.2"
+        podAnnotations:
+          sidecar.istio.io/inject: "true"
+        podLabels:
+          sidecar.istio.io/inject: "true"
     applicationObservability:
       enabled: true
       collector: alloy-receiver
