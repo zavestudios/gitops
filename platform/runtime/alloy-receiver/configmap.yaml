@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-receiver
+  namespace: alloy
+  labels:
+    app.kubernetes.io/name: alloy-receiver
+    app.kubernetes.io/part-of: alloy
+data:
+  config.alloy: |
+    otelcol.receiver.otlp "receiver" {
+      grpc {
+        endpoint = "0.0.0.0:4317"
+      }
+
+      http {
+        endpoint = "0.0.0.0:4318"
+        include_metadata = false
+        max_request_body_size = "20MiB"
+      }
+
+      output {
+        traces = [otelcol.processor.batch.default.input]
+      }
+    }
+
+    otelcol.processor.batch "default" {
+      send_batch_size = 8192
+      send_batch_max_size = 0
+      timeout = "2s"
+
+      output {
+        traces = [otelcol.exporter.otlp.tempo.input]
+      }
+    }
+
+    otelcol.exporter.otlp "tempo" {
+      client {
+        endpoint = "tempo-tempo.tempo.svc.cluster.local:4317"
+
+        tls {
+          insecure = true
+          insecure_skip_verify = true
+        }
+      }
+
+      retry_on_failure {
+        enabled = true
+        initial_interval = "5s"
+        max_interval = "30s"
+        max_elapsed_time = "5m"
+      }
+
+      sending_queue {
+        enabled = true
+      }
+    }
