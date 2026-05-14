@@ -175,6 +175,13 @@ kyvernoPolicies:
                 namespaces:
                   - alloy
                 kinds:
+                  - Deployment
+                names:
+                  - alloy-receiver
+            - resources:
+                namespaces:
+                  - alloy
+                kinds:
                   - ServiceAccount
                 names:
                   - alloy-upstream-add-finalizer
