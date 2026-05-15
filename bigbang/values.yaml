@@ -148,6 +148,8 @@ kyvernoPolicies:
     policies:
       update-automountserviceaccounttokens:
         enabled: false
+      update-automountserviceaccounttokens-default:
+        enabled: false
       restrict-image-registries:
         parameters:
           allow:
