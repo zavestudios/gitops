@@ -678,7 +678,7 @@ monitoring:
           registry: quay.io
           repository: prometheus/node-exporter
       kube-state-metrics:
-        automountServiceAccountToken: false
+        automountServiceAccountToken: true
         image:
           registry: registry.k8s.io
           repository: kube-state-metrics/kube-state-metrics
@@ -712,7 +712,7 @@ kiali:
               spec:
                 template:
                   spec:
-                    automountServiceAccountToken: false
+                    automountServiceAccountToken: true
   values:
     routes:
       inbound:
@@ -795,7 +795,7 @@ alloy:
                     labels:
                       app.kubernetes.io/version: "1.5.2"
                   spec:
-                    automountServiceAccountToken: false
+                    automountServiceAccountToken: true
           - target:
               group: apps
               version: v1
