@@ -192,6 +192,13 @@ kyvernoPolicies:
                   - kiali-kiali-kiali-operator
             - resources:
                 namespaces:
+                  - monitoring
+                kinds:
+                  - Deployment
+                names:
+                  - monitoring-monitoring-kube-state-metrics
+            - resources:
+                namespaces:
                   - alloy
                 kinds:
                   - ServiceAccount
