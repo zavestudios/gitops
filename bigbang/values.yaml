@@ -146,6 +146,8 @@ kyvernoPolicies:
       scripts:
         image: registry.k8s.io/kubectl:v1.34.3
     policies:
+      update-automountserviceaccounttokens:
+        enabled: false
       restrict-image-registries:
         parameters:
           allow:
