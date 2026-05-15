@@ -181,7 +181,15 @@ kyvernoPolicies:
                 kinds:
                   - Deployment
                 names:
+                  - alloy-alloy-operator
                   - alloy-receiver
+            - resources:
+                namespaces:
+                  - kiali
+                kinds:
+                  - Deployment
+                names:
+                  - kiali-kiali-kiali-operator
             - resources:
                 namespaces:
                   - alloy
