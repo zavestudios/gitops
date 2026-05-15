@@ -254,6 +254,11 @@ istiod:
       global:
         hub: docker.io/istio
         tag: 1.28.3
+      pilot:
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
 
 istioGateway:
   enabled: true
