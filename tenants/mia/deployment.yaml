@@ -69,15 +69,28 @@ spec:
             exit 1
           fi
 
-          openclaw config set gateway.auth.mode token
-          openclaw config set gateway.auth.token --ref-provider default --ref-source env --ref-id OPENCLAW_GATEWAY_TOKEN
-          openclaw config set commands.ownerAllowFrom "$OPENCLAW_OWNER_ALLOW_FROM" --strict-json
+          node <<'NODE'
+          const fs = require('fs');
+          const path = '/home/node/.openclaw/openclaw.json';
+          const cfg = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+          cfg.gateway = cfg.gateway || {};
+          cfg.gateway.auth = cfg.gateway.auth || {};
+          cfg.gateway.auth.mode = 'token';
+          cfg.gateway.auth.token = {
+            source: 'env',
+            provider: 'default',
+            id: 'OPENCLAW_GATEWAY_TOKEN',
+          };
+
+          cfg.commands = cfg.commands || {};
+          cfg.commands.ownerAllowFrom = JSON.parse(process.env.OPENCLAW_OWNER_ALLOW_FROM);
+
+          fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
+          NODE
+
+          openclaw config validate
         env:
-        - name: OPENCLAW_GATEWAY_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: mia-provider
-              key: OPENCLAW_GATEWAY_TOKEN
         - name: OPENCLAW_OWNER_ALLOW_FROM
           valueFrom:
             secretKeyRef:
