@@ -51,6 +51,13 @@ spec:
           mountPath: /data
       - name: reconcile-openclaw-config
         image: ghcr.io/zavestudios/mia@sha256:023aafc032f3f7894393a5c497cec8d235b9a4866a5f7f5b2af284cc571d7c56
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
         command:
         - sh
         - -c
