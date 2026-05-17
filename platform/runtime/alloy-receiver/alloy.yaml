@@ -13,6 +13,14 @@ spec:
   serviceAccount:
     create: true
     automountServiceAccountToken: false
+  configReloader:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
   alloy:
     configMap:
       create: false
