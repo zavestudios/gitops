@@ -62,7 +62,7 @@ spec:
         - sh
         - -c
         - |
-          set -euo pipefail
+          set -eu
 
           if [ ! -f /home/node/.openclaw/openclaw.json ]; then
             echo "Expected /home/node/.openclaw/openclaw.json on the persistent volume" >&2
