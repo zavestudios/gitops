@@ -10,6 +10,9 @@ spec:
   nameOverride: alloy-receiver
   crds:
     create: false
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
   alloy:
     configMap:
       create: false
