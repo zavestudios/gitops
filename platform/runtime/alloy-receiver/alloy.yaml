@@ -22,6 +22,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
   alloy:
+    enableReporting: false
     configMap:
       create: false
       name: alloy-receiver
