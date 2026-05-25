@@ -774,6 +774,7 @@ tempo:
 # Alloy - unified observability collector
 alloy:
   enabled: true
+  enableReporting: false
   flux:
     install:
       disableHooks: true

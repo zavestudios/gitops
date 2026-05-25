@@ -1,8 +1,8 @@
-# Observability Review Outline
+# Observability Review Record
 
 **Date:** 2026-05-17
 
-**Purpose:** Review the current observability effort now that the shared Alloy receiver, Mia/OpenClaw runtime upgrade, and operator access path are working. This is no longer a bring-up/debugging stream. The focus is now service classification, operating model, and rollout path.
+**Purpose:** Capture the current observability decision and immediate rollout path now that the shared Alloy receiver, Mia/OpenClaw runtime upgrade, and operator access path are working.
 
 ## Current Baseline
 
@@ -15,15 +15,20 @@ The following are now materially true:
 - dashboard access and interactive Mia round-trip were validated
 - incident notes are captured in [alloy-receiver-troubleshooting-notes-2026-05.md](/Users/xavierlopez/Dev/gitops/docs/alloy-receiver-troubleshooting-notes-2026-05.md)
 
-The primary remaining tenant-specific validation is still:
+The primary remaining tenant-specific tracing validation is still:
 
 - explicit end-to-end OTEL verification into Tempo, tracked in `zavestudios/mia#30`
 
-## Review Question
+## Decision
 
-What class of service is observability at ZaveStudios, and what operating model should govern it?
+Observability should be treated as a **hybrid platform concern**:
 
-The current implementation already behaves like more than an app-local integration:
+- a shared platform service surface for collection, storage, query, and access
+- a workload capability surface for contract-declared intent
+
+This matches the platform reality better than either extreme alone.
+
+Why:
 
 - shared ingest path
 - cross-tenant consumption
@@ -32,70 +37,121 @@ The current implementation already behaves like more than an app-local integrati
 - operator workflow requirements
 - contract and GitOps materialization implications
 
-That suggests observability should be treated as either:
+## Current State
 
-- a platform shared service
-- a platform capability
-- or a hybrid of both
+### Shared runtime and access
 
-## Review Goals
+- Grafana, Loki, Prometheus, Tempo, and Alloy are shared platform surfaces
+- the main runtime ownership remains in `gitops`, largely via Big Bang values
+- some runtime glue now exists directly in `gitops/platform/runtime/`, most notably the explicit Alloy receiver path
 
-1. Confirm service classification.
-2. Confirm ownership boundaries across Big Bang, GitOps, tenants, and operator access.
-3. Confirm canonical paths for logs, metrics, and traces.
-4. Define the baseline operator workflow: request -> logs -> metrics -> trace.
-5. Decide what should become doctrine and what should remain implementation detail.
-6. Produce the next-step rollout path beyond `mia`.
+### Tracing path
 
-## Suggested Structure
+- the shared Alloy receiver path is live
+- tenant OTLP export can target `alloy-receiver.alloy.svc.cluster.local:4318`
+- `mia` is the first tracing validation workload
+- the remaining missing proof is runtime end-to-end verification into Tempo
 
-### 1. Current State
+### Metrics path
 
-- which observability components are live now
-- which parts are Big Bang-owned versus directly GitOps-owned
-- which behaviors are verified versus only assumed
+- the current platform contract still defines `metrics` as a Prometheus-style scrape capability
+- `rigoberta` already materializes that pattern with a `ServiceMonitor`
+- `mia` does not currently materialize Prometheus scrape objects, so it should not be treated as the metrics validation workload
 
-### 2. Service Classification
+## Ownership Boundaries
 
-- should observability be treated as platform shared service, platform capability, or hybrid
-- what that classification implies for ownership, support, and rollout
+### `platform-docs`
 
-### 3. Control Plane And Ownership
+- classify observability
+- define capability semantics
+- define completion criteria and rollout rules
 
-- Big Bang-owned surfaces
-- GitOps-owned surfaces
-- tenant-owned instrumentation and export wiring
-- operator access and auth model
+### `gitops`
 
-### 4. Canonical Operator Workflow
+- install and reconcile the shared stack
+- publish the shared collector and routing path
+- materialize tenant-side config needed for the governed path
 
-- logs path
-- metrics path
-- traces path
-- one legible journey for governed workloads:
-  request -> logs -> metrics -> trace
+### Tenant repos
 
-### 5. Doctrine And Enforcement
+- declare only capabilities that are actually materialized
+- own workload-local instrumentation and config
+- do not own bespoke backend topology as the default platform path
 
-- what belongs in `platform-docs`
-- what should be enforceable through contracts or policy
-- what should remain a local implementation pattern
+## Canonical Operator Workflow
 
-### 6. Rollout Path
+The target operator workflow for governed workloads is:
 
-- `mia` as first tracing validation workload
-- next candidate workloads for metrics and tracing standardization
-- sequencing for broader platform adoption
+```text
+request -> logs -> metrics -> trace
+```
 
-## Suggested Outputs
+Interpretation in the current stack:
 
-- one explicit service-classification decision
-- updated scope and follow-through on `zavestudios/gitops#190`
-- any required `platform-docs` follow-up issues
-- workload rollout follow-up issues for metrics and tracing standardization
+- logs: inspect the workload's log stream in Loki/Grafana
+- metrics: inspect Prometheus-backed workload metrics in Grafana
+- trace: pivot from request behavior into Tempo for distributed tracing
+
+## Immediate Rollout Rules
+
+1. Keep `mia` as the tracing validation workload.
+2. Use `rigoberta` as the metrics materialization example until another workload proves the canonical `metrics` path.
+3. Do not let tenant contracts claim capability completion ahead of GitOps materialization.
+4. Convert runtime recovery notes into durable operator-facing verification steps.
+
+## Manual Verification Steps
+
+### Mia tracing verification
+
+**Requires cluster access:**
+
+```bash
+kubectl get deployment -n mia mia -o yaml | rg 'OTEL_EXPORTER_OTLP_ENDPOINT|OTEL_EXPORTER_OTLP_PROTOCOL|OTEL_SERVICE_NAME'
+kubectl get svc -n alloy alloy-receiver
+kubectl logs -n alloy deployment/alloy-receiver --since=15m
+```
+
+Expected checks:
+
+- `mia` publishes `OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy-receiver.alloy.svc.cluster.local:4318`
+- the `alloy-receiver` Service exists in namespace `alloy`
+- receiver logs show OTLP ingestion without repeated export failures
+
+### Rigoberta metrics verification
+
+**Requires cluster access:**
+
+```bash
+kubectl get servicemonitor -n rigoberta rigoberta
+kubectl get service -n rigoberta rigoberta -o yaml | rg 'name: metrics'
+kubectl get endpoints -n rigoberta rigoberta
+```
+
+Expected checks:
+
+- the `ServiceMonitor` exists
+- the workload `Service` exposes a named `metrics` port
+- endpoints exist behind that `Service`
+
+### Operator UI follow-through
+
+Use the operator surfaces already modeled for the current environment:
+
+- Grafana for logs, dashboards, and Tempo pivoting
+- Tempo for trace confirmation through Grafana data-source integration
+- Prometheus-backed dashboards for workload metrics
+
+## Follow-Through
+
+This review changes the shape of the execution work:
+
+1. `mia#30` remains the tracing verification issue.
+2. `gitops#190` should treat metrics and tracing as separate validation tracks, not a single workload proof.
+3. `platform-docs` should carry the durable classification and ownership model.
 
 ## Execution Anchors
 
 - `zavestudios/gitops#190`
 - `zavestudios/mia#30`
+- `zavestudios/platform-docs#79`
 - [alloy-receiver-troubleshooting-notes-2026-05.md](/Users/xavierlopez/Dev/gitops/docs/alloy-receiver-troubleshooting-notes-2026-05.md)
