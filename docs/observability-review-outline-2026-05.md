@@ -148,10 +148,47 @@ This review changes the shape of the execution work:
 1. `mia#30` remains the tracing verification issue.
 2. `gitops#190` should treat metrics and tracing as separate validation tracks, not a single workload proof.
 3. `platform-docs` should carry the durable classification and ownership model.
+4. `gitops#240` tracks the control-plane follow-through after the `on-prem-bigbang` reconciliation stalled on a stale failed state and required an explicit forced Helm reconcile.
+
+## Control-Plane Finding
+
+During the 2026-05-25 to 2026-05-26 recovery window, `on-prem-bigbang` did
+not self-heal after the generated `valuesFrom` ConfigMap changed to remove the
+bad Alloy value placement.
+
+Observed facts:
+
+- `HelmRelease/bigbang` reached `metadata.generation=60`
+- `status.observedGeneration=60`
+- the live `valuesFrom` ConfigMap no longer contained the bad root
+  `alloy.enableReporting` value
+- the `HelmRelease` still reported the earlier schema failure until an
+  explicit forced reconcile was run
+
+Recovery command:
+
+**Requires cluster access:**
+
+```bash
+flux reconcile helmrelease bigbang -n bigbang --force
+```
+
+Result:
+
+- Helm produced release `bigbang.v84`
+- the upgrade succeeded immediately after the forced reconcile
+
+Operator meaning:
+
+- corrected generated values did not automatically converge the failed release
+- forcing a fresh Helm reconcile did
+- this behavior is now part of the control-plane stabilization work tracked in
+  `gitops#240`
 
 ## Execution Anchors
 
 - `zavestudios/gitops#190`
 - `zavestudios/mia#30`
 - `zavestudios/platform-docs#79`
+- `zavestudios/gitops#240`
 - [alloy-receiver-troubleshooting-notes-2026-05.md](/Users/xavierlopez/Dev/gitops/docs/alloy-receiver-troubleshooting-notes-2026-05.md)
