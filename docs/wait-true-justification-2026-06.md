@@ -1,0 +1,72 @@
+# `wait: true` Justification Table
+
+**Date:** 2026-06-01
+
+**Purpose:** Classify the current top-level `wait: true` settings in the
+`on-prem` Flux graph so `gitops#240` can distinguish load-bearing health gates
+from default gating posture.
+
+**Owning issue:** `zavestudios/gitops#240`
+
+## Scope
+
+This review covers the current top-level Flux `Kustomization` objects under:
+
+- `clusters/on-prem/platform-core-kustomization.yaml`
+- `clusters/on-prem/keycloak-secrets-kustomization.yaml`
+- `clusters/on-prem/bigbang-kustomization.yaml`
+- `clusters/on-prem/platform-runtime-kustomization.yaml`
+- `clusters/on-prem/platform-services-kustomization.yaml`
+
+## Classification Legend
+
+- `Required`: current downstream behavior appears to depend on child health, not
+  just apply ordering
+- `Provisional`: there may be a real health-gating need, but the current repo
+  evidence does not prove it cleanly
+- `Remove candidate`: current repo evidence favors apply ordering over strict
+  health gating
+
+## Current Table
+
+| Kustomization | Current `wait: true` | Classification | Reasoning | Proposed action |
+| --- | --- | --- | --- | --- |
+| `on-prem-platform-core` | Yes | Provisional | This unit is foundational, but the current scope is mostly namespaces, default serviceaccounts, sealed-secrets, and Cloudflare resources. The repo evidence does not yet show that downstream units require full health before they can safely apply. | Re-test whether `dependsOn` without `wait: true` preserves correct ordering for `keycloak-secrets` and `bigbang`. |
+| `on-prem-keycloak-secrets` | Yes | Provisional | The inline comment says Big Bang requires Keycloak secrets first, which suggests a real prerequisite. But the unit mostly manages namespace and `ExternalSecret` wiring, and the repo does not yet prove that Big Bang must wait for full health rather than existence of the secret-producing resources. | Define the exact contract: is Big Bang blocked on secret objects existing, external secret sync completing, or application-level Keycloak readiness? Keep gated until that is explicit. |
+| `on-prem-bigbang` | Yes | Required | This is a broad shared-platform tier centered on a `HelmRelease`, and the recent incident showed that downstream runtime and services behavior is materially coupled to whether this unit reaches a good state. Removing the gate before decomposition would trade a legible blocker for less predictable downstream failure. | Keep `wait: true` in place for now; make this the first structural split target. |
+| `on-prem-platform-runtime` | Yes | Remove candidate | This unit currently bundles Alloy receiver/hook support, Vault, Kyverno, and ArgoCD platform resources. That scope is too broad for one hard health gate, and the repo evidence does not show that all downstream services need the entire bundle healthy before they can apply. The current gate likely amplifies blast radius more than it protects correctness. | First preference: split the unit. Short of that, test whether the gate can be relaxed to apply ordering only. |
+| `on-prem-platform-services` | No | N/A | This leaf tier already avoids `wait: true` and is the healthiest pattern in the current graph. | Preserve this default unless a specific service family proves a real health-gating need. |
+
+## Immediate Conclusions
+
+1. `on-prem-bigbang` is the only current top-level unit whose `wait: true`
+   setting is clearly justified by present evidence.
+2. `on-prem-platform-core` and `on-prem-keycloak-secrets` may have legitimate
+   prerequisites, but the contract is still too implicit.
+3. `on-prem-platform-runtime` is the strongest `wait: true` removal candidate in
+   the current graph, though splitting it is preferable to simply dropping the
+   gate blindly.
+4. The current graph uses health gating as a default control-plane posture more
+   often than the repo evidence supports.
+
+## Follow-Up Questions for `gitops#240`
+
+1. What exact runtime property is each gated unit protecting:
+   - resource existence
+   - controller reconciliation
+   - secret materialization
+   - application readiness
+2. Which downstream units truly fail if upstream health is absent, versus merely
+   needing upstream manifests applied first?
+3. Can `on-prem-keycloak-secrets` be reduced to a narrower prerequisite
+   contract, so Big Bang is not blocked on more health than it actually needs?
+4. Should `on-prem-platform-runtime` be decomposed before any `wait: true`
+   change, so that gating decisions are made on smaller, coherent units?
+
+## Suggested Next Step
+
+Use this table to drive the next artifact in `gitops#240`:
+
+1. a target-state proposal for splitting `on-prem-bigbang`
+2. a second-pass review of whether `on-prem-platform-runtime` should be split by
+   policy, secrets/identity, observability, or app-delivery substrate
