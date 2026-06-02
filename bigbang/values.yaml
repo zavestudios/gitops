@@ -222,10 +222,10 @@ twistlock:
 
 # Istio - enabled with public images via values overrides
 istioCRDs:
-  enabled: true
+  enabled: false  # Moved to bigbang-foundation release
 
 istiod:
-  enabled: true
+  enabled: false  # Moved to bigbang-foundation release
   postRenderers:
     - kustomize:
         patches:
@@ -260,7 +260,7 @@ istiod:
           memory: 512Mi
 
 istioGateway:
-  enabled: true
+  enabled: false  # Moved to bigbang-foundation release
   postRenderers:
     - kustomize:
         patches:
@@ -307,7 +307,7 @@ addons:
     enabled: false
 
   externalSecrets:
-    enabled: true
+    enabled: false  # Moved to bigbang-foundation release
     postRenderers:
       - kustomize:
           patches:
@@ -348,7 +348,7 @@ addons:
           imagePullSecrets: []
 
   vault:
-    enabled: true
+    enabled: false  # Moved to bigbang-foundation release
     postRenderers:
       - kustomize:
           patches:
@@ -463,7 +463,7 @@ addons:
             app.kubernetes.io/version: "1.7.0"
 
   keycloak:
-    enabled: true
+    enabled: false  # Moved to bigbang-foundation release
     hostname: sso-on-prem  # Overrides default 'keycloak' prefix → sso-on-prem.zavestudios.com
     ingress:
       gateway: "public"
@@ -560,7 +560,7 @@ addons:
                         - name: private-registry
 
   argocd:
-    enabled: true
+    enabled: false  # Moved to bigbang-foundation release
     postRenderers:
       - kustomize:
           patches:
@@ -698,7 +698,7 @@ monitoring:
 
 # Kiali - service mesh observability
 kiali:
-  enabled: true
+  enabled: false  # Moved to bigbang-foundation release
   postRenderers:
     - kustomize:
         patches:
