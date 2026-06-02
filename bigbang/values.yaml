@@ -15,7 +15,7 @@ bbctl:
   enabled: false
 
 kyverno:
-  enabled: true
+  enabled: false  # Moved to bigbang-policy release
   postRenderers:
     - kustomize:
         patches:
@@ -111,7 +111,7 @@ kyverno:
           tag: v1.34.3
 
 kyvernoReporter:
-  enabled: true
+  enabled: false  # Moved to bigbang-policy release
   values:
     istio:
       kyvernoReporter:
@@ -137,7 +137,7 @@ kyvernoReporter:
             tag: "0.5.3"
 
 kyvernoPolicies:
-  enabled: true
+  enabled: false  # Moved to bigbang-policy release
   values:
     waitJob:
       enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
@@ -626,7 +626,7 @@ addons:
 
 # Monitoring stack with public images via values overrides
 monitoring:
-  enabled: true
+  enabled: false  # Moved to bigbang-observability release
   values:
     istio:
       prometheus:
@@ -736,7 +736,7 @@ kiali:
 
 # Standalone Grafana
 grafana:
-  enabled: true
+  enabled: false  # Moved to bigbang-observability release
   values:
     global:
       imageRegistry: ""  # Disable registry prepending
@@ -762,7 +762,7 @@ grafana:
 
 # Tempo - distributed tracing
 tempo:
-  enabled: true
+  enabled: false  # Moved to bigbang-observability release
   values:
     waitJob:
       enabled: false  # Disable wait job - gluon uses hardcoded Iron Bank kubectl image
@@ -773,7 +773,7 @@ tempo:
 
 # Alloy - unified observability collector
 alloy:
-  enabled: true
+  enabled: false  # Moved to bigbang-observability release
   flux:
     install:
       disableHooks: true
@@ -1003,7 +1003,7 @@ alloy:
 
 # Loki - log aggregation storage
 loki:
-  enabled: true
+  enabled: false  # Moved to bigbang-observability release
   values:
     routes:
       inbound:
