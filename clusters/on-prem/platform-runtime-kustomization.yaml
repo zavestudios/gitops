@@ -5,7 +5,9 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: on-prem-bigbang
+    - name: on-prem-bigbang-foundation
+    - name: on-prem-bigbang-policy
+    - name: on-prem-bigbang-observability
   interval: 10m
   path: ./platform/runtime
   prune: true

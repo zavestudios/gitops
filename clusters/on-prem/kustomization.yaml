@@ -6,6 +6,8 @@ resources:
   - keycloak-secrets-kustomization.yaml
   - bigbang-source-kustomization.yaml
   - bigbang-foundation-kustomization.yaml
+  - bigbang-policy-kustomization.yaml
+  - bigbang-observability-kustomization.yaml
   - bigbang-kustomization.yaml
   - platform-runtime-kustomization.yaml
   - platform-services-kustomization.yaml
