@@ -1,0 +1,408 @@
+# Big Bang observability values for on-prem environment
+
+domain: zavestudios.com
+
+gatekeeper:
+  enabled: false
+
+bbctl:
+  enabled: false
+
+kyverno:
+  enabled: false
+
+kyvernoReporter:
+  enabled: false
+
+kyvernoPolicies:
+  enabled: false
+
+eckOperator:
+  enabled: false
+
+elasticsearchKibana:
+  enabled: false
+
+fluentbit:
+  enabled: false
+
+neuvector:
+  enabled: false
+
+twistlock:
+  enabled: false
+
+istioCRDs:
+  enabled: false
+
+istiod:
+  enabled: false
+
+istioGateway:
+  enabled: false
+
+addons:
+  gitlab:
+    enabled: false
+  gitlabRunner:
+    enabled: false
+  externalSecrets:
+    enabled: false
+  vault:
+    enabled: false
+  keycloak:
+    enabled: false
+  argocd:
+    enabled: false
+
+monitoring:
+  enabled: true
+  values:
+    istio:
+      prometheus:
+        hosts:
+          - prometheus-on-prem.zavestudios.com
+      alertmanager:
+        hosts:
+          - alertmanager-on-prem.zavestudios.com
+    upstream:
+      global:
+        imageRegistry: ""
+      prometheusOperator:
+        serviceAccount:
+          automountServiceAccountToken: false
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-operator
+        prometheusConfigReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+        admissionWebhooks:
+          enabled: true
+          patch:
+            image:
+              registry: registry.k8s.io
+              repository: ingress-nginx/kube-webhook-certgen
+              tag: v1.6.5
+              pullPolicy: IfNotPresent
+      prometheus:
+        prometheusSpec:
+          image:
+            registry: quay.io
+            repository: prometheus/prometheus
+          serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
+          automountServiceAccountToken: true
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 1000m
+          retention: 12h
+      alertmanager:
+        alertmanagerSpec:
+          image:
+            registry: quay.io
+            repository: prometheus/alertmanager
+      prometheus-node-exporter:
+        image:
+          registry: quay.io
+          repository: prometheus/node-exporter
+      kube-state-metrics:
+        automountServiceAccountToken: true
+        image:
+          registry: registry.k8s.io
+          repository: kube-state-metrics/kube-state-metrics
+      grafana:
+        automountServiceAccountToken: false
+        image:
+          registry: docker.io
+          repository: grafana/grafana
+        sidecar:
+          image:
+            registry: quay.io
+            repository: kiwigrid/k8s-sidecar
+
+kiali:
+  enabled: false
+
+grafana:
+  enabled: true
+  values:
+    global:
+      imageRegistry: ""
+    istio:
+      grafana:
+        hosts:
+          - grafana-on-prem.zavestudios.com
+    upstream:
+      image:
+        registry: docker.io
+        repository: grafana/grafana
+        tag: "12.3.1"
+      sidecar:
+        image:
+          registry: quay.io
+          repository: kiwigrid/k8s-sidecar
+          tag: "2.2.3"
+      initChownData:
+        enabled: false
+      grafana.ini:
+        server:
+          root_url: https://grafana-on-prem.zavestudios.com
+
+tempo:
+  enabled: true
+  values:
+    waitJob:
+      enabled: false
+    upstream:
+      tempo:
+        registry: docker.io
+        repository: grafana/tempo
+
+alloy:
+  enabled: true
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: alloy
+              name: alloy-alloy-operator
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: alloy-alloy-operator
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "1.5.2"
+                  spec:
+                    automountServiceAccountToken: true
+          - target:
+              group: apps
+              version: v1
+              kind: DaemonSet
+              namespace: alloy
+              name: alloy-alloy-logs
+            patch: |
+              apiVersion: apps/v1
+              kind: DaemonSet
+              metadata:
+                name: alloy-alloy-logs
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "v1.12.2"
+          - target:
+              group: batch
+              version: v1
+              kind: Job
+              namespace: alloy
+              name: alloy-upstream-add-finalizer
+            patch: |
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                name: alloy-upstream-add-finalizer
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/version: "0.1.2"
+                      sidecar.istio.io/inject: "true"
+                    annotations:
+                      sidecar.istio.io/inject: "true"
+                  spec:
+                    automountServiceAccountToken: false
+                    imagePullSecrets: []
+                    volumes:
+                      - name: k8s-api-access
+                        projected:
+                          defaultMode: 420
+                          sources:
+                            - serviceAccountToken:
+                                audience: https://kubernetes.default.svc
+                                expirationSeconds: 3600
+                                path: token
+                            - configMap:
+                                items:
+                                  - key: ca.crt
+                                    path: ca.crt
+                                name: kube-root-ca.crt
+                            - downwardAPI:
+                                items:
+                                  - fieldRef:
+                                      apiVersion: v1
+                                      fieldPath: metadata.namespace
+                                    path: namespace
+                    containers:
+                      - name: add-finalizers
+                        image: ghcr.io/grafana/helm-chart-toolbox-kubectl:0.1.2
+                        volumeMounts:
+                          - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                            name: k8s-api-access
+                            readOnly: true
+                    serviceAccountName: alloy-upstream-add-finalizer
+          - target:
+              group: v1
+              version: v1
+              kind: ServiceAccount
+              namespace: alloy
+              name: alloy-upstream-add-finalizer
+            patch: |
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: alloy-upstream-add-finalizer
+                labels:
+                  app.kubernetes.io/version: "0.1.2"
+              automountServiceAccountToken: false
+  values:
+    alloy-operator:
+      waitForAlloyRemoval:
+        image:
+          registry: ghcr.io
+          repository: grafana/helm-chart-toolbox-kubectl
+          tag: "0.1.2"
+        podAnnotations:
+          sidecar.istio.io/inject: "true"
+        podLabels:
+          sidecar.istio.io/inject: "true"
+    applicationObservability:
+      enabled: true
+      collector: alloy-receiver
+      receivers:
+        otlp:
+          grpc:
+            enabled: true
+            port: 4317
+          http:
+            enabled: true
+            port: 4318
+    global:
+      imageRegistry: ""
+      imagePullSecrets: []
+      image:
+        registry: ""
+        pullSecrets: []
+    collectors:
+      alloy-receiver:
+        presets:
+          - deployment
+    k8s-monitoring:
+      alloy-logs:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      alloy-operator:
+        waitForAlloyRemoval:
+          image:
+            registry: ghcr.io
+            repository: grafana/helm-chart-toolbox-kubectl
+            tag: "0.1.2"
+        image:
+          registry: ghcr.io
+          repository: grafana/alloy-operator
+          tag: "1.5.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      alloy-metrics:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      alloy-receiver:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      integrations:
+        alloy:
+          image:
+            registry: docker.io
+            repository: grafana/alloy
+            tag: "v1.12.2"
+    upstream:
+      alloy-operator:
+        waitForAlloyRemoval:
+          image:
+            registry: ghcr.io
+            repository: grafana/helm-chart-toolbox-kubectl
+            tag: "0.1.2"
+        image:
+          registry: ghcr.io
+          repository: grafana/alloy-operator
+          tag: "1.5.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      alloy-logs:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: "v1.12.2"
+        configReloader:
+          image:
+            registry: quay.io
+            repository: prometheus-operator/prometheus-config-reloader
+            tag: "v0.77.2"
+      destinations:
+        - name: loki
+          type: loki
+          url: http://logging-loki.logging.svc.cluster.local:3100/loki/api/v1/push
+        - name: tempo
+          type: otlp
+          protocol: grpc
+          url: tempo-tempo.tempo.svc.cluster.local:4317
+          traces:
+            enabled: true
+
+loki:
+  enabled: true
+  values:
+    routes:
+      inbound:
+        loki:
+          enabled: true
+          hosts:
+            - loki-on-prem.zavestudios.com
+    loki:
+      image:
+        registry: docker.io
+        repository: grafana/loki
+        tag: "3.5.7"

@@ -1,0 +1,256 @@
+# Big Bang policy values for on-prem environment
+
+domain: zavestudios.com
+
+gatekeeper:
+  enabled: false
+
+bbctl:
+  enabled: false
+
+kyverno:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-background-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-background-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-cleanup-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-cleanup-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kyverno
+              name: kyverno-reports-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kyverno-reports-controller
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+  flux:
+    install:
+      replace: true
+  values:
+    global:
+      image:
+        registry: ""
+    upstream:
+      admissionController:
+        container:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyverno
+            tag: v1.16.3
+        initContainer:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyvernopre
+            tag: v1.16.3
+      backgroundController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/background-controller
+          tag: v1.16.3
+      cleanupController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/cleanup-controller
+          tag: v1.16.3
+      reportsController:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/reports-controller
+          tag: v1.16.3
+      crds:
+        migration:
+          image:
+            defaultRegistry: ghcr.io
+            repository: kyverno/kyverno-cli
+            tag: v1.16.3
+      webhooksCleanup:
+        image:
+          registry: registry.k8s.io
+          repository: kubectl
+          tag: v1.34.3
+
+kyvernoReporter:
+  enabled: true
+  values:
+    istio:
+      kyvernoReporter:
+        hosts:
+          - policyreporter-on-prem.zavestudios.com
+    upstream:
+      image:
+        registry: ghcr.io
+        repository: kyverno/policy-reporter
+        tag: "3.7.2"
+      ui:
+        enabled: true
+        image:
+          registry: ghcr.io
+          repository: kyverno/policy-reporter-ui
+          tag: "2.5.1"
+      plugin:
+        kyverno:
+          enabled: true
+          image:
+            registry: ghcr.io
+            repository: kyverno/policy-reporter/kyverno-plugin
+            tag: "0.5.3"
+
+kyvernoPolicies:
+  enabled: true
+  values:
+    waitJob:
+      enabled: false
+    bbtests:
+      enabled: false
+      scripts:
+        image: registry.k8s.io/kubectl:v1.34.3
+    policies:
+      update-automountserviceaccounttokens:
+        enabled: false
+      update-automountserviceaccounttokens-default:
+        enabled: false
+      restrict-image-registries:
+        parameters:
+          allow:
+            - registry1.dso.mil/
+            - ghcr.io/
+            - quay.io/
+            - docker.io/
+            - index.docker.io/
+            - registry.k8s.io/
+            - public.ecr.aws/
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - alloy
+                names:
+                  - alloy-upstream-add-finalizer*
+      disallow-auto-mount-service-account-token:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - alloy
+                names:
+                  - alloy-upstream-add-finalizer*
+            - resources:
+                namespaces:
+                  - alloy
+                kinds:
+                  - Deployment
+                names:
+                  - alloy-alloy-operator
+                  - alloy-receiver
+            - resources:
+                namespaces:
+                  - kiali
+                kinds:
+                  - Deployment
+                names:
+                  - kiali-kiali-kiali-operator
+            - resources:
+                namespaces:
+                  - monitoring
+                kinds:
+                  - Deployment
+                names:
+                  - monitoring-monitoring-kube-state-metrics
+            - resources:
+                namespaces:
+                  - alloy
+                kinds:
+                  - ServiceAccount
+                names:
+                  - alloy-upstream-add-finalizer
+
+eckOperator:
+  enabled: false
+
+elasticsearchKibana:
+  enabled: false
+
+fluentbit:
+  enabled: false
+
+neuvector:
+  enabled: false
+
+twistlock:
+  enabled: false
+
+istioCRDs:
+  enabled: false
+
+istiod:
+  enabled: false
+
+istioGateway:
+  enabled: false
+
+addons:
+  gitlab:
+    enabled: false
+  gitlabRunner:
+    enabled: false
+  externalSecrets:
+    enabled: false
+  vault:
+    enabled: false
+  keycloak:
+    enabled: false
+  argocd:
+    enabled: false
+
+monitoring:
+  enabled: false
+
+kiali:
+  enabled: false
+
+grafana:
+  enabled: false
+
+tempo:
+  enabled: false
+
+alloy:
+  enabled: false
+
+loki:
+  enabled: false

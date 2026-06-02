@@ -1,0 +1,480 @@
+# Big Bang foundation values for on-prem environment
+# Mesh, ingress, secrets, identity, app delivery, and Kiali stay together in
+# the first split so downstream dependencies remain narrow but legible.
+
+domain: zavestudios.com
+
+gatekeeper:
+  enabled: false
+
+bbctl:
+  enabled: false
+
+kyverno:
+  enabled: false
+
+kyvernoReporter:
+  enabled: false
+
+kyvernoPolicies:
+  enabled: false
+
+eckOperator:
+  enabled: false
+
+elasticsearchKibana:
+  enabled: false
+
+fluentbit:
+  enabled: false
+
+neuvector:
+  enabled: false
+
+twistlock:
+  enabled: false
+
+istioCRDs:
+  enabled: true
+
+istiod:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: istio-system
+              name: istiod
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: istiod
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: true
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
+  values:
+    upstream:
+      global:
+        hub: docker.io/istio
+        tag: 1.28.3
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+
+istioGateway:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: ServiceAccount
+              namespace: istio-gateway
+              name: public-ingressgateway-ingressgateway-service-account
+            patch: |
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: public-ingressgateway-ingressgateway-service-account
+              automountServiceAccountToken: false
+  flux:
+    install:
+      disableHooks: true
+    upgrade:
+      disableHooks: true
+  values:
+    gateways:
+      public:
+        gateway:
+          servers:
+            - hosts:
+                - '*.zavestudios.com'
+              port:
+                name: http
+                number: 8080
+                protocol: HTTP
+              tls:
+                httpsRedirect: false
+        upstream:
+          global:
+            hub: docker.io/istio
+            tag: 1.28.3
+      passthrough: {}
+
+addons:
+  gitlab:
+    enabled: false
+  gitlabRunner:
+    enabled: false
+  externalSecrets:
+    enabled: true
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: external-secrets
+                name: external-secrets
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: external-secrets
+                spec:
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/version: "1.2.1"
+    values:
+      waitJob: false
+      upstream:
+        podLabels:
+          vault-ingress: "true"
+        image:
+          repository: ghcr.io/external-secrets/external-secrets
+          tag: v1.2.1
+        imagePullSecrets: []
+        webhook:
+          image:
+            repository: ghcr.io/external-secrets/external-secrets
+            tag: v1.2.1
+          imagePullSecrets: []
+        certController:
+          image:
+            repository: ghcr.io/external-secrets/external-secrets
+            tag: v1.2.1
+          imagePullSecrets: []
+  vault:
+    enabled: true
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: networking.istio.io
+                version: v1
+                kind: VirtualService
+                namespace: keycloak
+                name: keycloak
+              patch: |
+                - op: remove
+                  path: /spec/tls
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: vault
+                name: vault-vault
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: vault-vault
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
+    values:
+      global:
+        imageRegistry: ""
+      istio:
+        vault:
+          hosts:
+            - vault-on-prem.zavestudios.com
+      autoInit:
+        enabled: false
+      upstream:
+        server:
+          ha:
+            apiAddr: "http://vault.vault.svc.cluster.local:8200"
+          image:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+          standalone:
+            config: |
+              ui = true
+              api_addr = "http://vault.vault.svc.cluster.local:8200"
+
+              seal "awskms" {
+                region     = "us-west-2"
+                kms_key_id = "alias/zavestudios-onprem-vault-auto-unseal"
+              }
+
+              listener "tcp" {
+                tls_disable = 1
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+              }
+
+              telemetry {
+                prometheus_retention_time = "24h"
+                disable_hostname = true
+                unauthenticated_metrics_access = true
+              }
+
+              storage "file" {
+                path = "/vault/data"
+              }
+          serviceAccount:
+            create: true
+            automountServiceAccountToken: false
+          extraSecretEnvironmentVars:
+            - envName: AWS_ACCESS_KEY_ID
+              secretName: vault-aws-auto-unseal
+              secretKey: AWS_ACCESS_KEY_ID
+            - envName: AWS_SECRET_ACCESS_KEY
+              secretName: vault-aws-auto-unseal
+              secretKey: AWS_SECRET_ACCESS_KEY
+          statefulSet:
+            annotations:
+              kyverno.io/ignore: "false"
+          extraLabels:
+            app.kubernetes.io/version: "1.21.2"
+        injector:
+          enabled: false
+          image:
+            repository: docker.io/hashicorp/vault-k8s
+            tag: 1.7.3
+          agentImage:
+            repository: docker.io/hashicorp/vault
+            tag: 1.21.2
+          authDelegator:
+            enabled: false
+          serviceAccount:
+            create: true
+          automountServiceAccountToken: false
+          extraLabels:
+            app.kubernetes.io/version: "1.7.3"
+        csi:
+          enabled: false
+          image:
+            repository: docker.io/hashicorp/vault-csi-provider
+            tag: 1.7.0
+          serviceAccount:
+            create: true
+          automountServiceAccountToken: false
+          extraLabels:
+            app.kubernetes.io/version: "1.7.0"
+  keycloak:
+    enabled: true
+    hostname: sso-on-prem
+    ingress:
+      gateway: "public"
+      cert: ""
+      key: ""
+    values:
+      postgresql:
+        enabled: false
+      global:
+        imageRegistry: ""
+      istio:
+        keycloak:
+          hosts:
+            - sso-on-prem.zavestudios.com
+      upstream:
+        image:
+          repository: ghcr.io/zavestudios/keycloak
+          tag: bootstrap
+        podLabels:
+          app.kubernetes.io/version: "26.4.7"
+        automountServiceAccountToken: false
+        serviceAccount:
+          automountServiceAccountToken: false
+        args:
+          - start
+          - --optimized
+          - --http-enabled=true
+          - --proxy-headers=forwarded
+          - --hostname=https://sso-on-prem.zavestudios.com/auth
+          - --hostname-strict=false
+        replicas: 1
+        database:
+          vendor: postgres
+          hostname: "192.168.122.20"
+          port: 5432
+          database: "db_keycloak"
+          username: "keycloak_app"
+          existingSecret: "keycloak-postgres-credentials"
+          existingSecretKey: "KC_DB_PASSWORD"
+        extraEnvFrom: |
+          - secretRef:
+              name: keycloak-postgres-credentials
+          - secretRef:
+              name: keycloak-admin-credentials
+        extraVolumes: |
+          - name: keycloak-data
+            emptyDir: {}
+          - name: tmp
+            emptyDir: {}
+        extraVolumeMounts: |
+          - name: keycloak-data
+            mountPath: /opt/keycloak/data
+          - name: tmp
+            mountPath: /tmp
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: keycloak
+                labelSelector: app.kubernetes.io/instance=keycloak
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
+                      imagePullSecrets:
+                        - name: private-registry
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: keycloak
+                labelSelector: app.kubernetes.io/instance=keycloak
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
+                      imagePullSecrets:
+                        - name: private-registry
+  argocd:
+    enabled: true
+    postRenderers:
+      - kustomize:
+          patches:
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                labelSelector: app.kubernetes.io/instance=argocd-argocd
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: argocd
+                labelSelector: app.kubernetes.io/instance=argocd-argocd
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: not-used
+                spec:
+                  template:
+                    spec:
+                      automountServiceAccountToken: false
+    values:
+      istio:
+        argocd:
+          hosts:
+            - argocd-on-prem.zavestudios.com
+      upgradeJob:
+        enabled: false
+      global:
+        image:
+          repository: quay.io/argoproj/argocd
+      upstream:
+        dex:
+          image:
+            repository: ghcr.io/dexidp/dex
+      redis-bb:
+        cleanUpgrade:
+          enabled: false
+        upstream:
+          global:
+            imageRegistry: ""
+          image:
+            registry: public.ecr.aws
+            repository: docker/library/redis
+          metrics:
+            image:
+              registry: ghcr.io
+              repository: oliver006/redis_exporter
+            command:
+              - /redis_exporter
+
+monitoring:
+  enabled: false
+
+# Kiali remains with foundation in the first split because it is tightly tied to
+# mesh topology and ingress behavior.
+kiali:
+  enabled: true
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              namespace: kiali
+              name: kiali-kiali-kiali-operator
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: kiali-kiali-kiali-operator
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: true
+  values:
+    routes:
+      inbound:
+        kiali:
+          hosts:
+            - kiali-on-prem.zavestudios.com
+    waitJob:
+      enabled: false
+    upstream:
+      allowAdHocKialiImage: true
+      image:
+        repo: quay.io/kiali/kiali-operator
+      cr:
+        spec:
+          deployment:
+            image_name: quay.io/kiali/kiali
+
+grafana:
+  enabled: false
+
+tempo:
+  enabled: false
+
+alloy:
+  enabled: false
+
+loki:
+  enabled: false
