@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - platform-core-kustomization.yaml
   - keycloak-secrets-kustomization.yaml
+  - bigbang-source-kustomization.yaml
   - bigbang-kustomization.yaml
   - platform-runtime-kustomization.yaml
   - platform-services-kustomization.yaml
