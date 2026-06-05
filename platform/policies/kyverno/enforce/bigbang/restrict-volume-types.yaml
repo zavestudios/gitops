@@ -36,6 +36,13 @@ spec:
       - resources:
           namespaces:
           - kube-system
+      - resources:
+          namespaces:
+          - monitoring
+          kinds:
+          - DaemonSet
+          names:
+          - monitoring-monitoring-prometheus-node-exporter
     match:
       all:
       - resources:
