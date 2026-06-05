@@ -9,6 +9,7 @@ spec:
   interval: 2m
   path: ./platform/services
   prune: true
+  force: true
   sourceRef:
     kind: GitRepository
     name: flux-system
