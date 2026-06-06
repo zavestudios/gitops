@@ -138,6 +138,14 @@ addons:
                     metadata:
                       labels:
                         app.kubernetes.io/version: "1.2.1"
+                    spec:
+                      automountServiceAccountToken: false
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 65532
+                        runAsGroup: 65532
+                        seccompProfile:
+                          type: RuntimeDefault
     values:
       waitJob: false
       upstream:
@@ -380,6 +388,12 @@ addons:
                   template:
                     spec:
                       automountServiceAccountToken: false
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 999
+                        runAsGroup: 999
+                        seccompProfile:
+                          type: RuntimeDefault
             - target:
                 group: apps
                 version: v1
@@ -395,6 +409,12 @@ addons:
                   template:
                     spec:
                       automountServiceAccountToken: false
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 999
+                        runAsGroup: 999
+                        seccompProfile:
+                          type: RuntimeDefault
     values:
       istio:
         argocd:
