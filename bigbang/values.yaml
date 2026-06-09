@@ -590,8 +590,17 @@ addons:
                   name: not-used
                 spec:
                   template:
+                    metadata:
+                      annotations:
+                        sidecar.istio.io/inject: "false"
                     spec:
                       automountServiceAccountToken: false
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 999
+                        runAsGroup: 999
+                        seccompProfile:
+                          type: RuntimeDefault
             - target:
                 group: apps
                 version: v1
@@ -605,8 +614,17 @@ addons:
                   name: not-used
                 spec:
                   template:
+                    metadata:
+                      annotations:
+                        sidecar.istio.io/inject: "false"
                     spec:
                       automountServiceAccountToken: false
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 999
+                        runAsGroup: 999
+                        seccompProfile:
+                          type: RuntimeDefault
             - target:
                 group: apps
                 version: v1
