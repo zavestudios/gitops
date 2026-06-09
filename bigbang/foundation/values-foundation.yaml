@@ -123,6 +123,17 @@ addons:
       - kustomize:
           patches:
             - target:
+                version: v1
+                kind: ServiceAccount
+                namespace: external-secrets
+                name: external-secrets
+              patch: |
+                apiVersion: v1
+                kind: ServiceAccount
+                metadata:
+                  name: external-secrets
+                automountServiceAccountToken: false
+            - target:
                 group: apps
                 version: v1
                 kind: Deployment
@@ -149,6 +160,8 @@ addons:
     values:
       waitJob: false
       upstream:
+        serviceAccount:
+          automountServiceAccountToken: false
         podLabels:
           vault-ingress: "true"
         image:
