@@ -152,7 +152,7 @@ addons:
                       labels:
                         app.kubernetes.io/version: "1.2.1"
                     spec:
-                      automountServiceAccountToken: false
+                      automountServiceAccountToken: true
                       securityContext:
                         runAsNonRoot: true
                         runAsUser: 65532
