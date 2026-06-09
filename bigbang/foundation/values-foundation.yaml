@@ -351,6 +351,9 @@ addons:
                       automountServiceAccountToken: false
                       imagePullSecrets:
                         - name: private-registry
+                      containers:
+                        - name: keycloak
+                          image: ghcr.io/zavestudios/keycloak@sha256:ae0cfe0050552e2341cdb0c14d03614dba3d6719c6ecc603ef62050233417c17
             - target:
                 group: apps
                 version: v1
