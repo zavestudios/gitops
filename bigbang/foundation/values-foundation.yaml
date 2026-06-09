@@ -402,6 +402,9 @@ addons:
                   name: not-used
                 spec:
                   template:
+                    metadata:
+                      annotations:
+                        sidecar.istio.io/inject: "false"
                     spec:
                       automountServiceAccountToken: false
                       securityContext:
@@ -423,6 +426,9 @@ addons:
                   name: not-used
                 spec:
                   template:
+                    metadata:
+                      annotations:
+                        sidecar.istio.io/inject: "false"
                     spec:
                       automountServiceAccountToken: false
                       securityContext:
