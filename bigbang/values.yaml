@@ -340,6 +340,8 @@ addons:
                         sidecar.istio.io/inject: "false"
                       labels:
                         app.kubernetes.io/version: "1.2.1"
+                    spec:
+                      automountServiceAccountToken: true
     values:
       waitJob: false
       upstream:
