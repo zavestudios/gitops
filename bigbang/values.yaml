@@ -654,6 +654,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
@@ -679,6 +707,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
@@ -704,6 +760,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
@@ -729,6 +813,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
@@ -754,6 +866,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
@@ -779,6 +919,34 @@ addons:
                     capabilities:
                       drop:
                         - ALL
+                - op: add
+                  path: /spec/template/spec/volumes
+                  value:
+                    - name: k8s-api-access
+                      projected:
+                        defaultMode: 420
+                        sources:
+                          - serviceAccountToken:
+                              audience: https://kubernetes.default.svc
+                              expirationSeconds: 3600
+                              path: token
+                          - configMap:
+                              items:
+                                - key: ca.crt
+                                  path: ca.crt
+                              name: kube-root-ca.crt
+                          - downwardAPI:
+                              items:
+                                - fieldRef:
+                                    apiVersion: v1
+                                    fieldPath: metadata.namespace
+                                  path: namespace
+                - op: add
+                  path: /spec/template/spec/containers/0/volumeMounts
+                  value:
+                    - name: k8s-api-access
+                      mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                      readOnly: true
             - target:
                 group: apps
                 version: v1
