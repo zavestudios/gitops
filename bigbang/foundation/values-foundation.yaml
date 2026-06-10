@@ -395,6 +395,246 @@ addons:
                   template:
                     spec:
                       automountServiceAccountToken: false
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                name: argocd-argocd-applicationset-controller
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-argocd-applicationset-controller
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: applicationset-controller
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                name: argocd-argocd-server
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-argocd-server
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: server
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                name: argocd-argocd-repo-server
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-argocd-repo-server
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: repo-server
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                name: argocd-argocd-dex-server
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-argocd-dex-server
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: dex-server
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
+            - target:
+                group: apps
+                version: v1
+                kind: Deployment
+                namespace: argocd
+                name: argocd-argocd-notifications-controller
+              patch: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-argocd-notifications-controller
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: notifications-controller
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
+            - target:
+                group: apps
+                version: v1
+                kind: StatefulSet
+                namespace: argocd
+                name: argocd-argocd-application-controller
+              patch: |
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: argocd-argocd-application-controller
+                spec:
+                  template:
+                    spec:
+                      volumes:
+                        - name: k8s-api-access
+                          projected:
+                            defaultMode: 420
+                            sources:
+                              - serviceAccountToken:
+                                  audience: https://kubernetes.default.svc
+                                  expirationSeconds: 3600
+                                  path: token
+                              - configMap:
+                                  items:
+                                    - key: ca.crt
+                                      path: ca.crt
+                                  name: kube-root-ca.crt
+                              - downwardAPI:
+                                  items:
+                                    - fieldRef:
+                                        apiVersion: v1
+                                        fieldPath: metadata.namespace
+                                      path: namespace
+                      containers:
+                        - name: application-controller
+                          volumeMounts:
+                            - name: k8s-api-access
+                              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+                              readOnly: true
     values:
       istio:
         argocd:
