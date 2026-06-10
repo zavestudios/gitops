@@ -75,6 +75,8 @@ spec:
           const cfg = JSON.parse(fs.readFileSync(path, 'utf8'));
 
           cfg.gateway = cfg.gateway || {};
+          // Backfill legacy PVC configs that predate the OpenClaw gateway.mode field.
+          cfg.gateway.mode = cfg.gateway.mode || 'local';
           cfg.gateway.auth = cfg.gateway.auth || {};
           cfg.gateway.auth.mode = 'token';
           cfg.gateway.auth.token = {
