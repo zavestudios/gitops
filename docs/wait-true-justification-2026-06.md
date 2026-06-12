@@ -31,7 +31,7 @@ This review covers the current top-level Flux `Kustomization` objects under:
 
 | Kustomization | Current `wait: true` | Classification | Reasoning | Proposed action |
 | --- | --- | --- | --- | --- |
-| `on-prem-platform-core` | Yes | Provisional | This unit is foundational, but the current scope is mostly namespaces, default serviceaccounts, sealed-secrets, and Cloudflare resources. The repo evidence does not yet show that downstream units require full health before they can safely apply. | Re-test whether `dependsOn` without `wait: true` preserves correct ordering for `keycloak-secrets` and `bigbang`. |
+| `on-prem-platform-core` | No | Resolved | Health gating here created a bootstrap deadlock: `platform-core` waited on `cloudflared-credentials`, which waited on `vault-kv`, which could not recover until the updated `external-secrets` controller came through `bigbang`. Apply ordering remains explicit via `dependsOn`; child health should not block the graph at this layer. | Keep `wait` disabled unless a specific downstream prerequisite proves it must be reintroduced. |
 | `on-prem-keycloak-secrets` | Yes | Provisional | The inline comment says Big Bang requires Keycloak secrets first, which suggests a real prerequisite. But the unit mostly manages namespace and `ExternalSecret` wiring, and the repo does not yet prove that Big Bang must wait for full health rather than existence of the secret-producing resources. | Define the exact contract: is Big Bang blocked on secret objects existing, external secret sync completing, or application-level Keycloak readiness? Keep gated until that is explicit. |
 | `on-prem-bigbang` | Yes | Required | This is a broad shared-platform tier centered on a `HelmRelease`, and the recent incident showed that downstream runtime and services behavior is materially coupled to whether this unit reaches a good state. Removing the gate before decomposition would trade a legible blocker for less predictable downstream failure. | Keep `wait: true` in place for now; make this the first structural split target. |
 | `on-prem-platform-runtime` | Yes | Remove candidate | This unit currently bundles Alloy receiver/hook support, Vault, Kyverno, and ArgoCD platform resources. That scope is too broad for one hard health gate, and the repo evidence does not show that all downstream services need the entire bundle healthy before they can apply. The current gate likely amplifies blast radius more than it protects correctness. | First preference: split the unit. Short of that, test whether the gate can be relaxed to apply ordering only. |
@@ -41,12 +41,14 @@ This review covers the current top-level Flux `Kustomization` objects under:
 
 1. `on-prem-bigbang` is the only current top-level unit whose `wait: true`
    setting is clearly justified by present evidence.
-2. `on-prem-platform-core` and `on-prem-keycloak-secrets` may have legitimate
-   prerequisites, but the contract is still too implicit.
-3. `on-prem-platform-runtime` is the strongest `wait: true` removal candidate in
+2. `on-prem-platform-core` no longer health-gates the graph; the bootstrap
+   deadlock it created is now removed.
+3. `on-prem-keycloak-secrets` may still have a legitimate prerequisite, but the
+   contract is still too implicit.
+4. `on-prem-platform-runtime` is the strongest `wait: true` removal candidate in
    the current graph, though splitting it is preferable to simply dropping the
    gate blindly.
-4. The current graph uses health gating as a default control-plane posture more
+5. The current graph uses health gating as a default control-plane posture more
    often than the repo evidence supports.
 
 ## Follow-Up Questions for `gitops#240`
