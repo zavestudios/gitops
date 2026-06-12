@@ -83,14 +83,16 @@ ExternalSecret from deadlocking the controller update path.
 **FluxCD Name:** `on-prem-keycloak-secrets`
 **Path:** `./platform/keycloak`
 **Dependencies:** `on-prem-platform-core`
-**Wait:** Yes
+**Wait:** No
 **Interval:** 10m
 
 **Owns:**
 - `platform/keycloak/namespace.yaml` - Keycloak namespace
 - `platform/keycloak/*.external-secret.yaml` - ExternalSecrets for Keycloak credentials
 
-**Purpose:** Ensure Keycloak secrets exist before BigBang deploys Keycloak. Depends on platform-core for Vault and External Secrets Operator.
+**Purpose:** Ensure Keycloak secret resources are applied before BigBang
+deploys Keycloak. Dependency ordering stays explicit via `dependsOn`, but
+child health does not block the graph here.
 
 ---
 
@@ -136,7 +138,7 @@ ExternalSecret from deadlocking the controller update path.
 ## Reconciliation Behavior
 
 ### Wait Semantics
-All kustomizations have `wait: true`, meaning FluxCD will:
+Health-gated kustomizations have `wait: true`, meaning FluxCD will:
 1. Apply all resources
 2. Wait for all resources to become Ready
 3. Only then mark the kustomization as Ready
