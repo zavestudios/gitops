@@ -64,7 +64,7 @@ This is installed during cluster bootstrap with `flux bootstrap` and manages the
 **FluxCD Name:** `on-prem-platform-core`
 **Path:** `./platform/core`
 **Dependencies:** None (first application-layer kustomization)
-**Wait:** Yes
+**Wait:** No
 **Interval:** 10m
 
 **Owns:**
@@ -73,7 +73,9 @@ This is installed during cluster bootstrap with `flux bootstrap` and manages the
 - `platform/sealed-secrets/` - Sealed Secrets controller
 - `platform/cloudflare/` - Cloudflared tunnel (credentials from Vault)
 
-**Purpose:** Bootstrap essential infrastructure that other components depend on.
+**Purpose:** Bootstrap essential infrastructure that other components depend on
+without blocking the graph on child health. This prevents the cloudflared
+ExternalSecret from deadlocking the controller update path.
 
 ---
 

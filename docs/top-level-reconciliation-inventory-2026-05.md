@@ -45,7 +45,7 @@ Structural observations:
 
 | Kustomization | Path | Depends On | Interval | Timeout | `wait: true` | Current Scope | Blast Radius if Stalled |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `on-prem-platform-core` | `./platform/core` | none | `10m` | default | Yes | namespaces, default serviceaccounts, sealed-secrets, cloudflare | blocks both `keycloak-secrets` and `bigbang` |
+| `on-prem-platform-core` | `./platform/core` | none | `10m` | default | No | namespaces, default serviceaccounts, sealed-secrets, cloudflare | no longer blocks downstream units on child health; still supplies foundational manifests |
 | `on-prem-keycloak-secrets` | `./platform/keycloak` | `on-prem-platform-core` | `10m` | default | Yes | keycloak namespace, headless service, ExternalSecrets | blocks `bigbang` because Big Bang expects Keycloak secrets first |
 | `on-prem-bigbang` | `./bigbang` | `on-prem-platform-core`, `on-prem-keycloak-secrets` | `10m` | `20m` | Yes | Big Bang GitRepository, HelmRelease, generated values, shared platform stack | blocks all downstream runtime and services work |
 | `on-prem-platform-runtime` | `./platform/runtime` | `on-prem-bigbang` | `10m` | `20m` | Yes | Alloy receiver, Alloy hook support, Vault, Kyverno, ArgoCD platform resources | blocks `platform-services`; also delays shared runtime remediation outside Big Bang |
