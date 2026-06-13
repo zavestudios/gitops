@@ -34,10 +34,11 @@ on-prem-platform-core
 
 Structural observations:
 
-- four of five top-level units use `wait: true`
+- three of five top-level units use `wait: true`
 - `on-prem-bigbang` is the central health gate for downstream runtime and
   services work
-- `on-prem-platform-services` is the only top-level unit without `wait: true`
+- `on-prem-platform-core`, `on-prem-keycloak-secrets`, and
+  `on-prem-platform-services` do not health-gate the graph
 - the graph currently optimizes for ordered convergence, but it does so by
   concentrating failure blast radius in `on-prem-bigbang`
 
@@ -46,7 +47,7 @@ Structural observations:
 | Kustomization | Path | Depends On | Interval | Timeout | `wait: true` | Current Scope | Blast Radius if Stalled |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `on-prem-platform-core` | `./platform/core` | none | `10m` | default | No | namespaces, default serviceaccounts, sealed-secrets, cloudflare | no longer blocks downstream units on child health; still supplies foundational manifests |
-| `on-prem-keycloak-secrets` | `./platform/keycloak` | `on-prem-platform-core` | `10m` | default | Yes | keycloak namespace, headless service, ExternalSecrets | blocks `bigbang` because Big Bang expects Keycloak secrets first |
+| `on-prem-keycloak-secrets` | `./platform/keycloak` | `on-prem-platform-core` | `10m` | default | No | keycloak namespace, headless service, ExternalSecrets | no longer blocks `bigbang` on child health; still preserves apply ordering |
 | `on-prem-bigbang` | `./bigbang` | `on-prem-platform-core`, `on-prem-keycloak-secrets` | `10m` | `20m` | Yes | Big Bang GitRepository, HelmRelease, generated values, shared platform stack | blocks all downstream runtime and services work |
 | `on-prem-platform-runtime` | `./platform/runtime` | `on-prem-bigbang` | `10m` | `20m` | Yes | Alloy receiver, Alloy hook support, Vault, Kyverno, ArgoCD platform resources | blocks `platform-services`; also delays shared runtime remediation outside Big Bang |
 | `on-prem-platform-services` | `./platform/services` | `on-prem-platform-runtime` | `2m` | `25m` | No | Airflow platform service | isolated leaf tier; currently blocked entirely by upstream runtime gate |
@@ -87,14 +88,14 @@ Assessment:
 - this is a narrow prerequisite unit
 - it exists only to ensure Keycloak-related secrets and service wiring are
   present before Big Bang
-- the scope is small enough that a stall here is legible, but it still blocks
-  `on-prem-bigbang`
+- health gating here was not needed for apply ordering and participated in the
+  same bootstrap deadlock as `on-prem-platform-core`
 
 Open question:
 
 - should this remain a separate unit, or should the dependency be modeled
-  differently so Keycloak secret readiness does not hold the entire Big Bang
-  tier hostage?
+  differently so Keycloak secret readiness is represented more explicitly than
+  a top-level health gate?
 
 ### `on-prem-bigbang`
 
@@ -189,8 +190,6 @@ Open question:
 Recommended first-pass targets for `gitops#240`:
 
 1. Audit whether `wait: true` is actually load-bearing for:
-   - `on-prem-platform-core`
-   - `on-prem-keycloak-secrets`
    - `on-prem-platform-runtime`
 
 2. Define the first `on-prem-bigbang` split proposal.
