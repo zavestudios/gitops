@@ -339,7 +339,7 @@ addons:
                       labels:
                         app.kubernetes.io/version: "1.2.1"
                     spec:
-                      automountServiceAccountToken: true
+                      automountServiceAccountToken: false
     values:
       waitJob: false
       upstream:
