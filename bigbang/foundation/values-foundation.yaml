@@ -147,6 +147,8 @@ addons:
                 spec:
                   template:
                     metadata:
+                      annotations:
+                        sidecar.istio.io/inject: "true"
                       labels:
                         app.kubernetes.io/version: "1.2.1"
                     spec:
