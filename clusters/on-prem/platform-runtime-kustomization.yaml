@@ -14,5 +14,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
   timeout: 20m
