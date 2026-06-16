@@ -5,3 +5,4 @@ resources:
   - vault-aws-auto-unseal.sealed-secret.yaml
   - vault-reader-serviceaccount.yaml
   - clustersecretstore.yaml
+  - peer-authentication.yaml
