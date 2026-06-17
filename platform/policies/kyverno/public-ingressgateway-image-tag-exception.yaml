@@ -1,0 +1,21 @@
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: public-ingressgateway-image-tag
+  namespace: istio-gateway
+spec:
+  exceptions:
+    - policyName: disallow-image-tags
+      ruleNames:
+        - require-image-tag
+        - autogen-require-image-tag
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+            - Deployment
+          namespaces:
+            - istio-gateway
+          names:
+            - public-ingressgateway*
