@@ -364,6 +364,8 @@ addons:
                   template:
                     spec:
                       automountServiceAccountToken: false
+                      securityContext:
+                        runAsGroup: 1000
                       imagePullSecrets:
                         - name: private-registry
                       containers:
