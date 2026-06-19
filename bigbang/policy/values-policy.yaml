@@ -171,6 +171,17 @@ kyvernoPolicies:
                   - DaemonSet
                 names:
                   - monitoring-monitoring-prometheus-node-exporter
+      disallow-image-tags:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - istio-gateway
+                kinds:
+                  - Pod
+                  - Deployment
+                names:
+                  - public-ingressgateway*
       require-non-root-group:
         exclude:
           any:

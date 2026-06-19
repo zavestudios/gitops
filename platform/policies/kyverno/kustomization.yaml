@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - require-signed-ghcr-images.yaml
   - inject-required-labels.yaml
-  - public-ingressgateway-image-tag-exception.yaml
   - ghcr-secret.external-secret.yaml
