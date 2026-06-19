@@ -171,6 +171,24 @@ kyvernoPolicies:
                   - DaemonSet
                 names:
                   - monitoring-monitoring-prometheus-node-exporter
+      require-non-root-group:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - keycloak
+      require-non-root-user:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - keycloak
+      restrict-capabilities:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - keycloak
       disallow-auto-mount-service-account-token:
         exclude:
           any:
