@@ -879,8 +879,6 @@ kiali:
                   spec:
                     automountServiceAccountToken: true
   values:
-    serviceAccount:
-      automountServiceAccountToken: false
     routes:
       inbound:
         kiali:

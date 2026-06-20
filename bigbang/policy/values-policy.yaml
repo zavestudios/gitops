@@ -223,6 +223,7 @@ kyvernoPolicies:
                   - Deployment
                 names:
                   - kiali-kiali-kiali-operator
+                  - kiali
             - resources:
                 namespaces:
                   - monitoring
