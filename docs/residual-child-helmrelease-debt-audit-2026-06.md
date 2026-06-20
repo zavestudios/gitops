@@ -8,6 +8,11 @@ what must be cleaned now from what can be tracked as managed follow-up.
 
 **Owning issue:** `zavestudios/gitops#255`
 
+**Current status:** As of 2026-06-20, follow-up issues `#261`, `#262`, and
+`#263` are closed. The June Vault recovery incident in `#274` has also been
+resolved, so `#255` is complete and closed as the parent audit for the
+residual child-release debt pass.
+
 ## Scope
 
 This audit is intentionally narrower than the full `#240` incident summary.

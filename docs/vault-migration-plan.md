@@ -55,6 +55,8 @@ Current status:
 Remaining caution:
 
 - issue `#54` still matters for documenting lifecycle and durability expectations in the current environment
+- the June 2026 Vault recovery incident tracked in `#274` is resolved
+- `gitops#275` now tracks the root-cause investigation and prevention work for the Vault state-loss incident
 - broader migration can now resume deliberately, but it should still follow staged rollout rather than blind bulk cutover
 
 Tracked follow-up work:
@@ -82,6 +84,7 @@ What this means:
 - Vault now returns unsealed after pod restart with AWS KMS auto-unseal
 - `vault-kv` recovers without manual unseal after restart
 - the remaining work is cleanup, documentation, and deciding how broadly to continue migration from here
+- Vault state continuity has been restored after the June recovery incident, so the current blocker is documentation and operating discipline rather than missing data
 
 ## Completed Migration Order
 
