@@ -652,7 +652,7 @@ addons:
                   value:
                     name: k8s-api-access
                     mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-                      readOnly: true
+                    readOnly: true
             - target:
                 group: apps
                 version: v1
