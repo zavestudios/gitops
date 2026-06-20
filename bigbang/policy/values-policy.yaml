@@ -188,18 +188,21 @@ kyvernoPolicies:
             - resources:
                 namespaces:
                   - keycloak
+                  - kiali
       require-non-root-user:
         exclude:
           any:
             - resources:
                 namespaces:
                   - keycloak
+                  - kiali
       restrict-capabilities:
         exclude:
           any:
             - resources:
                 namespaces:
                   - keycloak
+                  - kiali
       disallow-auto-mount-service-account-token:
         exclude:
           any:
