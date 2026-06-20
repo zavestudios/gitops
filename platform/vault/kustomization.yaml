@@ -6,3 +6,4 @@ resources:
   - vault-reader-serviceaccount.yaml
   - clustersecretstore.yaml
   - peer-authentication.yaml
+  - local-path-retain.storageclass.yaml
