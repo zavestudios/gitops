@@ -6,6 +6,7 @@ Related issues:
 
 - `gitops#54` Harden Vault persistence and lifecycle behavior for the current environment
 - `gitops#55` Rename the current environment and introduce a true local sandbox
+- `gitops#275` Investigate and prevent recurrence of Vault state loss on local-path storage
 
 ## Purpose
 
@@ -21,7 +22,7 @@ Recent recovery work established that:
 - External Secrets Operator can be installed and wired structurally to Vault
 - Vault can advertise the correct in-cluster API address
 
-However, namespace/release churn also produced a fresh Vault instance that returned:
+However, an earlier recovery incident temporarily produced a fresh Vault instance that returned:
 
 - `Initialized: false`
 
@@ -31,7 +32,7 @@ At the time of inspection:
 - `/vault/data` was mounted but empty
 - old unseal keys were no longer applicable
 
-That means the current environment can recreate Vault, but continuity of Vault state is not yet trustworthy enough for broader migration.
+That showed the environment could recreate Vault, but it also proved that Vault state continuity needs explicit operational boundaries.
 
 ## Current Findings
 
@@ -99,7 +100,23 @@ Operational conclusion:
 Implication:
 
 - Vault hardening should be treated as persistent-environment platform work
-- broader secret migration should remain paused until this model is understood
+- broader secret migration should continue to respect these lifecycle boundaries
+
+### 6. A later recovery incident was resolved by restoring Vault state
+
+During the June 2026 recovery incident tracked in `gitops#274`, the Vault
+storage path itself was still correct, but the backing file-storage contents had
+been absent at the time of the incident. Vault and its data were later
+recovered.
+
+Implication:
+
+- this was not a mount-path or render-path problem
+- the blocker was state continuity on the backing volume, not further
+  GitOps/chart edits
+- the incident is a durable warning about destructive lifecycle boundaries,
+  not a standing Vault outage
+- RCA and recurrence-prevention work for that incident is tracked in `gitops#275`
 
 ## Candidate Causes To Validate
 

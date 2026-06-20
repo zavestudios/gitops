@@ -5,6 +5,7 @@ Status: Phases 1-3 complete; Phase 4 not started
 Related issues:
 
 - `gitops#54` Document accepted and destructive Vault lifecycle boundaries for the current environment
+- `gitops#275` Investigate and prevent recurrence of Vault state loss on local-path storage
 - `gitops#55` Rename the current environment and introduce a true local sandbox
 
 ## Summary
