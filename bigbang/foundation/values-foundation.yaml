@@ -225,6 +225,10 @@ addons:
           image:
             repository: docker.io/hashicorp/vault
             tag: 1.21.2
+          dataStorage:
+            storageClass: local-path-retain
+          auditStorage:
+            storageClass: local-path-retain
           standalone:
             config: |
               ui = true
