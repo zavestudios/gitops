@@ -5,6 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    # Owns the platform namespace used by the vault-reader ServiceAccount.
+    - name: on-prem-platform-core
+    # Own package namespaces consumed by runtime glue: vault/argocd,
+    # kyverno CRDs, and alloy respectively.
     - name: on-prem-bigbang-foundation
     - name: on-prem-bigbang-policy
     - name: on-prem-bigbang-observability
