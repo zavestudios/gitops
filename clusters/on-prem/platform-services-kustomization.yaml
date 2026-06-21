@@ -5,6 +5,9 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    # Owns the platform namespace where shared services are reconciled.
+    - name: on-prem-platform-core
+    # Supplies runtime capabilities consumed by shared services.
     - name: on-prem-platform-runtime
   interval: 2m
   path: ./platform/services
