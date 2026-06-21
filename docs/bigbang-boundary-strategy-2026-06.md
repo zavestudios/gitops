@@ -4,7 +4,7 @@
 
 **Owning issue:** `zavestudios/gitops#258`
 
-**Status:** Recommendation pending review
+**Status:** Accepted; execution begins with `zavestudios/gitops#300`
 
 ## Decision Question
 
