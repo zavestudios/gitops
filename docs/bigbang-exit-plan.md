@@ -1,9 +1,11 @@
 # Big Bang Exit Plan
 
-Status: open
+Status: direction refined by `docs/bigbang-boundary-strategy-2026-06.md`;
+execution not started
 
 Related issues:
 
+- `zavestudios/gitops#258`: decide umbrella versus package-level ownership
 - create epic: Exit Big Bang in favor of directly owned GitOps primitives
 - follow-up issue: Stabilize current Big Bang deployment and bound remaining policy noise
 
