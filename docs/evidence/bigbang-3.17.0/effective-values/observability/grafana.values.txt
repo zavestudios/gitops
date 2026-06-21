@@ -1,0 +1,181 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    enabled: false
+    grafana:
+      enabled: true
+      gateways:
+      - istio-gateway/public-ingressgateway
+      hosts:
+      - grafana-on-prem.zavestudios.com
+    hardened:
+      enabled: false
+    injection: enabled
+  networkPolicies:
+    egress:
+      definitions:
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        '*':
+          to:
+            k8s:
+              tempo/tempo:9411: true
+              thanos:9090: false
+        grafana:
+          to:
+            k8s:
+              authservice/authservice:10003: false
+    enabled: true
+    ingress:
+      to:
+        grafana:3000:
+          from:
+            definition:
+              gateway: false
+            k8s:
+              backstage/backstage: false
+              kiali/kiali: false
+    prependReleaseName: true
+  sso:
+    enabled: false
+defaults:
+  |-
+    domain: zavestudios.com
+    flux:
+      enabled: true
+    hostname: zavestudios.com
+    istio:
+      enabled: false
+      grafana:
+        enabled: true
+        gateways:
+        - istio-gateway/public-ingressgateway
+      hardened:
+        enabled: false
+      injection: enabled
+    networkPolicies:
+      egress:
+        definitions:
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          '*':
+            to:
+              k8s:
+                tempo/tempo:9411: true
+                thanos:9090: false
+          grafana:
+            to:
+              k8s:
+                authservice/authservice:10003: false
+      enabled: true
+      ingress:
+        to:
+          grafana:3000:
+            from:
+              definition:
+                gateway: false
+              k8s:
+                backstage/backstage: false
+                kiali/kiali: false
+      prependReleaseName: true
+    openshift: false
+    sso:
+      enabled: false
+    upstream:
+      datasources:
+        datasourcesbb.yaml:
+          apiVersion: 1
+          datasources:
+          - access: proxy
+            editable: true
+            name: Prometheus
+            type: prometheus
+            uid: prometheus
+            url: http://monitoring-monitoring-kube-prometheus.monitoring.svc:9090
+          - access: proxy
+            editable: true
+            jsonData:
+              derivedFields:
+              - datasourceName: Tempo
+                datasourceUid: tempo
+                matcherRegex: traceID=(\w+)
+                name: TraceID
+                url: $${__value.raw}
+            name: Loki
+            type: loki
+            url: http://logging-loki.logging.svc.cluster.local:3100
+          - access: proxy
+            editable: true
+            isDefault: false
+            jsonData:
+              httpMethod: GET
+              lokiSearch:
+                datasourceUid: Loki
+              nodeGraph:
+                enabled: true
+              search:
+                hide: false
+              serviceMap:
+                datasourceUid: prometheus
+              tracesToLogs:
+                datasourceUid: Loki
+                filterBySpanID: false
+                filterByTraceID: false
+                mapTagNamesEnabled: false
+                mappedTags:
+                - key: service.name
+                  value: service
+                spanEndTimeShift: 1h
+                spanStartTimeShift: 1h
+                tags:
+                - job
+                - instance
+                - pod
+                - namespace
+            name: Tempo
+            orgId: 1
+            type: tempo
+            uid: tempo
+            url: http://tempo-tempo.tempo.svc:3200
+      env:
+        GF_FEATURE_TOGGLES_ENABLE: traceqlEditor tempoSearch tempoServiceGraph
+      grafana.ini:
+        auth.generic_oauth:
+          enabled: false
+          name: SSO
+      image:
+        pullPolicy: IfNotPresent
+        pullSecrets:
+        - private-registry
+      serviceMonitor:
+        enabled: true
+      sidecar:
+        imagePullPolicy: IfNotPresent
+overlays: |
+  global:
+    imageRegistry: ""
+  istio:
+    grafana:
+      hosts:
+      - grafana-on-prem.zavestudios.com
+  upstream:
+    grafana.ini:
+      server:
+        root_url: https://grafana-on-prem.zavestudios.com
+    image:
+      registry: docker.io
+      repository: grafana/grafana
+      tag: 12.3.1
+    initChownData:
+      enabled: false
+    sidecar:
+      image:
+        registry: quay.io
+        repository: kiwigrid/k8s-sidecar
+        tag: 2.2.3

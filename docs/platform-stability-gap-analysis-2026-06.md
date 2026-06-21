@@ -198,8 +198,8 @@ ownership begins.
 
 ### 5. Deployed Tool and Application Inventory
 
-**Tracking:** no single canonical issue; discoveries must be routed to existing
-repo issues or a new bounded inventory issue
+**Tracking:** `#304` for platform controller and service runtime evidence;
+`#305` for tenant workload readiness
 
 **Gap:** The repository lists intended tools and tenants, but does not yet
 provide one current inventory that maps each surface to:
@@ -218,7 +218,8 @@ manifests.
 
 ### 6. Application Development Readiness
 
-**Tracking examples:** `#135`, `#136`, `#190`, and app-specific issues
+**Tracking:** `#305`, with workload failures routed to `#135`, `#136`, `#190`,
+or other app-specific issues as appropriate
 
 **Gap:** Repository onboarding and runtime readiness are not consistently
 distinguished. Some applications have GitOps representation but still require

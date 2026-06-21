@@ -1,0 +1,815 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    alertmanager:
+      enabled: true
+      gateways:
+      - istio-gateway/public-ingressgateway
+      hosts:
+      - alertmanager-on-prem.zavestudios.com
+    clusterWideHardenedEnabled: false
+    enabled: false
+    hardened:
+      alloy:
+        enabled: false
+      enabled: false
+      loki:
+        enabled: false
+    injection: enabled
+    prometheus:
+      enabled: true
+      gateways:
+      - istio-gateway/public-ingressgateway
+      hosts:
+      - prometheus-on-prem.zavestudios.com
+  networkPolicies:
+    egress:
+      definitions:
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        '*':
+          to:
+            k8s:
+              tempo/tempo:9411: true
+        admission-create-job:
+          to:
+            k8s:
+              udp://kube-system/coredns:53:
+                enabled: true
+                metadata:
+                  annotations:
+                    helm.sh/hook: pre-install,pre-upgrade
+                podSelector:
+                  matchLabels:
+                    k8s-app: kube-dns
+        alertmanager:
+          to:
+            k8s:
+              authservice/authservice:10003: false
+        helm-test:
+          podSelector:
+            matchLabels:
+              helm-test: enabled
+          to:
+            cidr:
+              0.0.0.0/0: true
+        prometheus:
+          to:
+            k8s:
+              authservice/authservice:10003: false
+        prometheus-blackbox-exporter:
+          to:
+            k8s:
+              headlamp/headlamp:4466: false
+    enabled: true
+    ingress:
+      to:
+        alertmanager:9093:
+          from:
+            definition:
+              gateway: false
+            k8s:
+              alloy/alloy-logs: true
+              authservice/haproxy:
+              logging/logging-loki: true
+        grafana:3000:
+          from:
+            definition:
+              gateway: false
+            k8s:
+              kiali/kiali: false
+        kube-prometheus-stack-prometheus-operator:10250:
+          from:
+            cidr:
+              0.0.0.0/0: true
+        prometheus:9090:
+          from:
+            definition:
+              gateway: false
+            k8s:
+              alloy/alloy-logs: true
+              authservice/haproxy:
+              kiali/kiali: false
+              logging/logging-loki: true
+              tempo/tempo: true
+        prometheus:10901:
+          from:
+            k8s:
+              thanos/thanos: false
+  sso:
+    enabled: false
+defaults:
+  |-
+    anchoreEnterprise:
+      enabled: false
+    domain: zavestudios.com
+    flux:
+      enabled: true
+    gitlabRunner:
+      enabled: false
+    global:
+      imagePullSecrets:
+      - name: private-registry
+    hostname: zavestudios.com
+    istio:
+      alertmanager:
+        enabled: true
+        gateways:
+        - istio-gateway/public-ingressgateway
+      clusterWideHardenedEnabled: false
+      enabled: false
+      hardened:
+        alloy:
+          enabled: false
+        enabled: false
+        loki:
+          enabled: false
+      injection: enabled
+      prometheus:
+        enabled: true
+        gateways:
+        - istio-gateway/public-ingressgateway
+    kiali:
+      enabled: false
+    loki:
+      enabled: true
+    minioOperator:
+      enabled: false
+    networkPolicies:
+      egress:
+        definitions:
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          '*':
+            to:
+              k8s:
+                tempo/tempo:9411: true
+          admission-create-job:
+            to:
+              k8s:
+                udp://kube-system/coredns:53:
+                  enabled: true
+                  metadata:
+                    annotations:
+                      helm.sh/hook: pre-install,pre-upgrade
+                  podSelector:
+                    matchLabels:
+                      k8s-app: kube-dns
+          alertmanager:
+            to:
+              k8s:
+                authservice/authservice:10003: false
+          helm-test:
+            podSelector:
+              matchLabels:
+                helm-test: enabled
+            to:
+              cidr:
+                0.0.0.0/0: true
+          prometheus:
+            to:
+              k8s:
+                authservice/authservice:10003: false
+          prometheus-blackbox-exporter:
+            to:
+              k8s:
+                headlamp/headlamp:4466: false
+      enabled: true
+      ingress:
+        to:
+          alertmanager:9093:
+            from:
+              definition:
+                gateway: false
+              k8s:
+                alloy/alloy-logs: true
+                authservice/haproxy:
+                logging/logging-loki: true
+          grafana:3000:
+            from:
+              definition:
+                gateway: false
+              k8s:
+                kiali/kiali: false
+          kube-prometheus-stack-prometheus-operator:10250:
+            from:
+              cidr:
+                0.0.0.0/0: true
+          prometheus:9090:
+            from:
+              definition:
+                gateway: false
+              k8s:
+                alloy/alloy-logs: true
+                authservice/haproxy:
+                kiali/kiali: false
+                logging/logging-loki: true
+                tempo/tempo: true
+          prometheus:10901:
+            from:
+              k8s:
+                thanos/thanos: false
+    openshift: false
+    sso:
+      enabled: false
+    tempo:
+      enabled: true
+    upstream:
+      alertmanager:
+        alertmanagerSpec:
+          containers:
+          - imagePullPolicy: IfNotPresent
+            name: alertmanager
+          - imagePullPolicy: IfNotPresent
+            name: config-reloader
+      defaultRules:
+        additionalRuleLabels:
+          cluster: logging-loki
+      kube-state-metrics:
+        customResourceState:
+          config:
+            spec:
+              resources:
+              - groupVersionKind:
+                  group: kustomize.toolkit.fluxcd.io
+                  kind: Kustomization
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux Kustomization resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - lastAppliedRevision
+                    source_name:
+                    - spec
+                    - sourceRef
+                    - name
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: helm.toolkit.fluxcd.io
+                  kind: HelmRelease
+                  version: v2
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux HelmRelease resource.
+                  labelsFromPath:
+                    chart_app_version:
+                    - status
+                    - history
+                    - "0"
+                    - appVersion
+                    chart_name:
+                    - status
+                    - history
+                    - "0"
+                    - chartName
+                    chart_ref_name:
+                    - spec
+                    - chartRef
+                    - name
+                    chart_source_name:
+                    - spec
+                    - chart
+                    - spec
+                    - sourceRef
+                    - name
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - history
+                    - "0"
+                    - chartVersion
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  kind: GitRepository
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux GitRepository resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - artifact
+                    - revision
+                    suspended:
+                    - spec
+                    - suspend
+                    url:
+                    - spec
+                    - url
+                  name: resource_info
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  kind: Bucket
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux Bucket resource.
+                  labelsFromPath:
+                    bucket_name:
+                    - spec
+                    - bucketName
+                    endpoint:
+                    - spec
+                    - endpoint
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - artifact
+                    - revision
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  kind: HelmRepository
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux HelmRepository resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - artifact
+                    - revision
+                    suspended:
+                    - spec
+                    - suspend
+                    url:
+                    - spec
+                    - url
+                  name: resource_info
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  kind: HelmChart
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux HelmChart resource.
+                  labelsFromPath:
+                    chart_name:
+                    - spec
+                    - chart
+                    chart_version:
+                    - spec
+                    - version
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - artifact
+                    - revision
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  kind: OCIRepository
+                  version: v1beta2
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux OCIRepository resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    revision:
+                    - status
+                    - artifact
+                    - revision
+                    suspended:
+                    - spec
+                    - suspend
+                    url:
+                    - spec
+                    - url
+                  name: resource_info
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  kind: Alert
+                  version: v1beta3
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux Alert resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  kind: Provider
+                  version: v1beta3
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux Provider resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: notification.toolkit.fluxcd.io
+                  kind: Receiver
+                  version: v1
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux Receiver resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    suspended:
+                    - spec
+                    - suspend
+                    webhook_path:
+                    - status
+                    - webhookPath
+                  name: resource_info
+              - groupVersionKind:
+                  group: image.toolkit.fluxcd.io
+                  kind: ImageRepository
+                  version: v1beta2
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux ImageRepository resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    image:
+                    - spec
+                    - image
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: image.toolkit.fluxcd.io
+                  kind: ImagePolicy
+                  version: v1beta2
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux ImagePolicy resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    source_name:
+                    - spec
+                    - imageRepositoryRef
+                    - name
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+              - groupVersionKind:
+                  group: image.toolkit.fluxcd.io
+                  kind: ImageUpdateAutomation
+                  version: v1beta2
+                metricNamePrefix: gotk
+                metrics:
+                - each:
+                    info:
+                      labelsFromPath:
+                        name:
+                        - metadata
+                        - name
+                    type: Info
+                  help: The current state of a Flux ImageUpdateAutomation resource.
+                  labelsFromPath:
+                    exported_namespace:
+                    - metadata
+                    - namespace
+                    ready:
+                    - status
+                    - conditions
+                    - '[type=Ready]'
+                    - status
+                    source_name:
+                    - spec
+                    - sourceRef
+                    - name
+                    suspended:
+                    - spec
+                    - suspend
+                  name: resource_info
+          enabled: true
+        image:
+          pullPolicy: IfNotPresent
+        prometheus:
+          monitor:
+            relabelings:
+            - action: replace
+              replacement: logging-loki
+              targetLabel: cluster
+            - sourceLabels:
+              - __meta_kubernetes_pod_node_name
+              targetLabel: instance
+        rbac:
+          extraRules:
+          - apiGroups:
+            - source.toolkit.fluxcd.io
+            - kustomize.toolkit.fluxcd.io
+            - helm.toolkit.fluxcd.io
+            - notification.toolkit.fluxcd.io
+            - image.toolkit.fluxcd.io
+            resources:
+            - gitrepositories
+            - buckets
+            - helmrepositories
+            - helmcharts
+            - ocirepositories
+            - kustomizations
+            - helmreleases
+            - alerts
+            - providers
+            - receivers
+            - imagerepositories
+            - imagepolicies
+            - imageupdateautomations
+            verbs:
+            - list
+            - watch
+      kubelet:
+        serviceMonitor:
+          cAdvisorRelabelings:
+          - action: replace
+            replacement: logging-loki
+            targetLabel: cluster
+          - sourceLabels:
+            - __metrics_path__
+            targetLabel: metrics_path
+          - sourceLabels:
+            - __meta_kubernetes_pod_node_name
+            targetLabel: instance
+      prometheus:
+        prometheusSpec:
+          containers:
+          - imagePullPolicy: IfNotPresent
+            name: prometheus
+          - imagePullPolicy: IfNotPresent
+            name: config-reloader
+          enableRemoteWriteReceiver: true
+          podMetadata:
+            labels:
+              app: prometheus
+      prometheus-node-exporter:
+        image:
+          pullPolicy: IfNotPresent
+        prometheus:
+          monitor:
+            relabelings:
+            - action: replace
+              replacement: logging-loki
+              targetLabel: cluster
+            - sourceLabels:
+              - __meta_kubernetes_pod_node_name
+              targetLabel: instance
+      prometheusOperator:
+        admissionWebhooks:
+          patch:
+            image:
+              pullPolicy: IfNotPresent
+        image:
+          pullPolicy: IfNotPresent
+    vault:
+      enabled: false
+      tlsDisable: true
+overlays: |
+  istio:
+    alertmanager:
+      hosts:
+      - alertmanager-on-prem.zavestudios.com
+    prometheus:
+      hosts:
+      - prometheus-on-prem.zavestudios.com
+  upstream:
+    alertmanager:
+      alertmanagerSpec:
+        image:
+          registry: quay.io
+          repository: prometheus/alertmanager
+    global:
+      imageRegistry: ""
+    grafana:
+      automountServiceAccountToken: false
+      image:
+        registry: docker.io
+        repository: grafana/grafana
+      sidecar:
+        image:
+          registry: quay.io
+          repository: kiwigrid/k8s-sidecar
+    kube-state-metrics:
+      automountServiceAccountToken: true
+      image:
+        registry: registry.k8s.io
+        repository: kube-state-metrics/kube-state-metrics
+    prometheus:
+      prometheusSpec:
+        automountServiceAccountToken: true
+        image:
+          registry: quay.io
+          repository: prometheus/prometheus
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        retention: 12h
+        serviceAccountName: prometheus-monitoring-monitoring-kube-prometheus
+    prometheus-node-exporter:
+      image:
+        registry: quay.io
+        repository: prometheus/node-exporter
+    prometheusOperator:
+      admissionWebhooks:
+        enabled: true
+        patch:
+          image:
+            pullPolicy: IfNotPresent
+            registry: registry.k8s.io
+            repository: ingress-nginx/kube-webhook-certgen
+            tag: v1.6.5
+      image:
+        registry: quay.io
+        repository: prometheus-operator/prometheus-operator
+      prometheusConfigReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+      serviceAccount:
+        automountServiceAccountToken: false

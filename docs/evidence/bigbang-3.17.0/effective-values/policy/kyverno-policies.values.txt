@@ -1,0 +1,434 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  bbtests:
+    enabled: false
+    scripts:
+      image: registry.k8s.io/kubectl:v1.34.3
+  istio:
+    enabled: false
+  waitJob:
+    enabled: false
+defaults:
+  |-
+    istio:
+      enabled: false
+    policies:
+      add-default-capability-drop:
+        enabled: true
+        exclude:
+          any: null
+      add-default-securitycontext:
+        enabled: true
+      disallow-auto-mount-service-account-token:
+        enabled: true
+        exclude:
+          any: null
+        validationFailureAction: Audit
+      disallow-image-tags:
+        enabled: true
+        exclude:
+          any: null
+        validationFailureAction: Enforce
+      disallow-istio-injection-bypass:
+        enabled: false
+        exclude:
+          any:
+          - resources:
+              namespaces:
+              - istio-system
+              - istio-gateway
+      disallow-namespaces:
+        enabled: true
+        parameters:
+          disallow:
+          - bigbang
+          - default
+        validationFailureAction: Enforce
+      disallow-nodeport-services:
+        validationFailureAction: Enforce
+      require-drop-all-capabilities:
+        exclude:
+          any: null
+        validationFailureAction: Enforce
+      require-image-signature:
+        enabled: false
+        validationFailureAction: Audit
+      require-istio-on-namespaces:
+        enabled: false
+        exclude:
+          any:
+          - resources:
+              namespaces:
+              - kube-node-lease
+              - kube-public
+              - kube-system
+              - bigbang
+              - default
+              - flux-system
+              - istio-system
+              - istio-gateway
+      require-labels:
+        enabled: true
+        parameters:
+          require:
+          - app.kubernetes.io/name
+          - app.kubernetes.io/version
+        validationFailureAction: Audit
+      require-non-root-group:
+        validationFailureAction: Enforce
+      require-non-root-user:
+        exclude:
+          any:
+          - resources:
+              namespaces:
+              - kube-system
+        validationFailureAction: Enforce
+      restrict-capabilities:
+        parameters:
+          allow:
+          - NET_BIND_SERVICE
+        validationFailureAction: Enforce
+      restrict-host-path-mount:
+        validationFailureAction: Enforce
+      restrict-host-path-mount-pv:
+        validationFailureAction: Enforce
+      restrict-host-path-write:
+        validationFailureAction: Enforce
+      restrict-image-registries:
+        exclude:
+          any: null
+        parameters:
+          allow:
+          - registry1.dso.mil
+          - registry.dso.mil
+        validationFailureAction: Enforce
+      update-automountserviceaccounttokens:
+        enabled: true
+        namespaces:
+        - namespace: istio-system
+          pods:
+            allow:
+            - istiod-*
+            - passthrough-ingressgateway-*
+            - public-ingressgateway-*
+        - namespace: twistlock
+          pods:
+            allow:
+            - twistlock-twistlock-wait-job-*
+            - twistlock-init-*
+            - twistlock-volume-upgrade-job
+            - twistlock-defender-ds-*
+            - bb-twistlock-twistlock-upgrade-job-*
+            - twistlock-twistlock-script-test
+        - namespace: logging
+          pods:
+            allow:
+            - logging-loki-minio-*
+            - logging-ek-wait-job-*
+            - logging-loki-script-test
+            deny:
+            - logging-ek-es-data*
+            - logging-ek-es-master*
+            - logging-ek-kb*
+            - logging-ek-metrics*
+        - namespace: fluentbit
+          pods:
+            allow:
+            - fluentbit-script-test
+        - namespace: minio-operator
+          pods:
+            allow:
+            - console-*
+            - minio-operator-*
+            - bb-minio-operator-minio-operator-tenant-patch
+        - namespace: minio
+          pods:
+            allow:
+            - minio-minio-minio-instance-*
+            - minio-minio-wait-job-*
+            - minio-minio-script-test
+        - namespace: kyverno
+          pods:
+            allow:
+            - kyverno-reports-controller-*
+            - kyverno-admission-controller-*
+            - kyverno-cleanup-controller-*
+            - kyverno-cleanup-admission-reports-*
+            - kyverno-admission-controller-*
+            - kyverno-background-controller-*
+            - kyverno-admission-controller-*
+            - kyverno-cleanup-cluster-admission-reports-*
+            - kyverno-cleanup-cluster-ephemeral-reports-*
+            - kyverno-cleanup-update-requests-*
+            - kyverno-clean-reports-*
+        - namespace: velero
+          pods:
+            allow:
+            - velero-cleanup-crds-*
+            - velero-velero-*
+            - node-agent-*
+            - velero-label-namespace-*
+            - velero-backup-restore-test
+        - namespace: neuvector
+          pods:
+            allow:
+            - neuvector-manager-pod-*
+            - neuvector-scanner-pod-*
+            - neuvector-cert-upgrader-job-*
+            - neuvector-controller-pod-*
+            - neuvector-enforcer-pod-*
+            - neuvector-updater-pod-*
+            - neuvector-prometheus-exporter-pod-*
+            - neuvector-registry-adapter-pod-*
+        - namespace: kiali
+          pods:
+            allow:
+            - kiali-*
+        - namespace: argocd
+          pods:
+            allow:
+            - argocd-argocd-application-controller-*
+            - argocd-argocd-dex-server-*
+            - argocd-upgrade-job-*
+            - argocd-argocd-server-*
+            - argocd-argocd-repo-server-*
+            - argocd-argocd-applicationset-controller-*
+            - argocd-argocd-notifications-controller-*
+            - argocd-argocd-script-test
+        - namespace: harbor
+          pods:
+            allow:
+            - harbor-script-test
+        - namespace: authservice
+          pods:
+            allow:
+            - authservice-authservice-redis-bb-*
+            - authservice-haproxy-sso-*
+        - namespace: monitoring
+          pods:
+            allow:
+            - monitoring-grafana*
+            - monitoring-monitoring-kube-admission-patch*
+            - monitoring-monitoring-kube-admission-create*
+            - monitoring-monitoring-kube-state-metrics*
+            - monitoring-operator*
+            - prometheus-monitoring-prometheus*
+        - namespace: alloy
+          pods:
+            allow:
+            - alloy-*
+        - namespace: mimir
+          pods:
+            allow:
+            - mimir-mimir-rollout-operator-*
+            - mimir-mimir-minio*
+            - mimir-mimir-script-test*
+        - namespace: anchore
+          pods:
+            allow:
+            - anchore-ui-redis-*
+            - redis-clean-upgrade-*
+        - namespace: fortify
+        - namespace: vault
+          pods:
+            allow:
+            - vault-vault-*
+            - vault-vault-agent-injector-*
+            - vault-vault-job-init-*
+        - namespace: fluentbit
+          pods:
+            allow:
+            - fluentbit-fluent-bit-*
+        - namespace: eck-operator
+          pods:
+            allow:
+            - elastic-operator-*
+        - namespace: nexus-repository-manager
+          pods:
+            allow:
+            - nexus-repository-manager-*
+        - namespace: thanos
+          pods:
+            allow:
+            - thanos-minio-*
+            deny:
+            - thanos-query-frontend-*
+            - thanos-storegateway*
+            - thanos-query*
+        - namespace: mattermost
+          pods:
+            allow:
+            - default-minio-bucket-creation-*
+            - mattermost-minio-*
+            - mattermost-wait-job-*
+        - namespace: mattermost-operator
+          pods:
+            allow:
+            - mattermost-operator-*
+        - namespace: keycloak
+          pods:
+            allow:
+            - keycloak-*
+        - namespace: gitlab
+          pods:
+            allow:
+            - gitlab-shared-secrets*
+            - gitlab-script-test
+        - namespace: gitlab-runner
+          pods:
+            allow:
+            - gitlab-runner-*
+        - namespace: headlamp
+          pods:
+            allow:
+            - headlamp-*
+      update-automountserviceaccounttokens-default:
+        enabled: true
+        namespaces:
+        - istio-system
+        - twistlock
+        - argocd
+        - logging
+        - velero
+        - minio
+        - minio-operator
+        - kyverno-reporter
+        - kyverno
+        - velero
+        - neuvector
+        - kiali
+        - harbor
+        - authservice
+        - anchore
+        - fortify
+        - vault
+        - fluentbit
+        - eck-operator
+        - nexus-repository-manager
+        - thanos
+        - mattermost
+        - mattermost-operator
+        - bigbang
+        - flux-system
+        - keycloak
+        - monitoring
+        - gitlab
+        - gitlab-runner
+        - headlamp
+    waitforready:
+      imagePullSecrets:
+      - name: private-registry
+overlays: |
+  bbtests:
+    enabled: false
+    scripts:
+      image: registry.k8s.io/kubectl:v1.34.3
+  policies:
+    disallow-auto-mount-service-account-token:
+      exclude:
+        any:
+        - resources:
+            names:
+            - alloy-upstream-add-finalizer*
+            namespaces:
+            - alloy
+        - resources:
+            kinds:
+            - Deployment
+            names:
+            - alloy-alloy-operator
+            - alloy-receiver
+            namespaces:
+            - alloy
+        - resources:
+            kinds:
+            - Deployment
+            names:
+            - kiali-kiali-kiali-operator
+            - kiali
+            namespaces:
+            - kiali
+        - resources:
+            kinds:
+            - Deployment
+            names:
+            - monitoring-monitoring-kube-state-metrics
+            namespaces:
+            - monitoring
+        - resources:
+            kinds:
+            - ServiceAccount
+            names:
+            - alloy-upstream-add-finalizer
+            namespaces:
+            - alloy
+    disallow-image-tags:
+      exclude:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            - Deployment
+            names:
+            - public-ingressgateway*
+            namespaces:
+            - istio-gateway
+    require-non-root-group:
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - keycloak
+            - kiali
+    require-non-root-user:
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
+        - resources:
+            namespaces:
+            - keycloak
+            - kiali
+    restrict-capabilities:
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - keycloak
+            - kiali
+    restrict-image-registries:
+      exclude:
+        any:
+        - resources:
+            names:
+            - alloy-upstream-add-finalizer*
+            namespaces:
+            - alloy
+      parameters:
+        allow:
+        - registry1.dso.mil
+        - registry.dso.mil
+        - registry1.dso.mil/
+        - ghcr.io/
+        - quay.io/
+        - docker.io/
+        - index.docker.io/
+        - registry.k8s.io/
+        - public.ecr.aws/
+    restrict-volume-types:
+      exclude:
+        any:
+        - resources:
+            kinds:
+            - DaemonSet
+            names:
+            - monitoring-monitoring-prometheus-node-exporter
+            namespaces:
+            - monitoring
+    update-automountserviceaccounttokens:
+      enabled: false
+    update-automountserviceaccounttokens-default:
+      enabled: false
+  waitJob:
+    enabled: false

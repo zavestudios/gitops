@@ -1,0 +1,251 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    enabled: false
+  networkPolicies:
+    egress:
+      definitions:
+        database-subnets:
+          ports:
+          - port: 5432
+            protocol: TCP
+          to:
+          - ipBlock:
+              cidr: 192.168.0.0/16
+          - ipBlock:
+              cidr: 172.16.0.0/12
+          - ipBlock:
+              cidr: 10.0.0.0/8
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+              except:
+              - 169.254.169.254/32
+        private-registry:
+          ports:
+          - port: 443
+            protocol: TCP
+          to:
+          - ipBlock:
+              cidr: 15.205.173.153/32
+        sso:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+        storage-subnets:
+          ports:
+          - port: 443
+            protocol: TCP
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        kyverno-admission-controller:
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: admission-controller
+          to:
+            definition:
+              kubeAPI: true
+              private-registry: false
+        kyverno-background-controller:
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: background-controller
+          to:
+            definition:
+              kubeAPI: true
+        kyverno-cleanup-controller:
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: cleanup-controller
+          to:
+            definition:
+              kubeAPI: true
+        kyverno-reports-controller:
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: reports-controller
+          to:
+            definition:
+              kubeAPI: true
+    enabled: true
+    hbonePortInjection:
+      enabled: false
+    ingress:
+      definitions:
+        load-balancer-subnets:
+          from:
+          - ipBlock:
+              cidr: 192.168.0.0/16
+          - ipBlock:
+              cidr: 172.16.0.0/12
+          - ipBlock:
+              cidr: 10.0.0.0/8
+      to:
+        kyverno:8000:
+          from:
+            k8s:
+              monitoring/prometheus: false
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: kyverno-kyverno
+defaults:
+  |-
+    istio:
+      enabled: false
+    networkPolicies:
+      egress:
+        definitions:
+          database-subnets:
+            ports:
+            - port: 5432
+              protocol: TCP
+            to:
+            - ipBlock:
+                cidr: 192.168.0.0/16
+            - ipBlock:
+                cidr: 172.16.0.0/12
+            - ipBlock:
+                cidr: 10.0.0.0/8
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+                except:
+                - 169.254.169.254/32
+          private-registry:
+            ports:
+            - port: 443
+              protocol: TCP
+            to:
+            - ipBlock:
+                cidr: 15.205.173.153/32
+          sso:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+          storage-subnets:
+            ports:
+            - port: 443
+              protocol: TCP
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          kyverno-admission-controller:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/component: admission-controller
+            to:
+              definition:
+                kubeAPI: true
+                private-registry: false
+          kyverno-background-controller:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/component: background-controller
+            to:
+              definition:
+                kubeAPI: true
+          kyverno-cleanup-controller:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/component: cleanup-controller
+            to:
+              definition:
+                kubeAPI: true
+          kyverno-reports-controller:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/component: reports-controller
+            to:
+              definition:
+                kubeAPI: true
+      enabled: true
+      hbonePortInjection:
+        enabled: false
+      ingress:
+        definitions:
+          load-balancer-subnets:
+            from:
+            - ipBlock:
+                cidr: 192.168.0.0/16
+            - ipBlock:
+                cidr: 172.16.0.0/12
+            - ipBlock:
+                cidr: 10.0.0.0/8
+        to:
+          kyverno:8000:
+            from:
+              k8s:
+                monitoring/prometheus: false
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/instance: kyverno-kyverno
+    openshift: false
+    upstream:
+      admissionController:
+        serviceMonitor:
+          enabled: false
+      backgroundController:
+        serviceMonitor:
+          enabled: false
+      cleanupController:
+        serviceMonitor:
+          enabled: false
+      fullnameOverride: kyverno-kyverno
+      grafana:
+        enabled: false
+        namespace: monitoring
+      image:
+        pullPolicy: IfNotPresent
+        pullSecrets:
+        - name: private-registry
+      replicaCount: 3
+      reportsController:
+        serviceMonitor:
+          enabled: false
+overlays: |
+  global:
+    image:
+      registry: ""
+  upstream:
+    admissionController:
+      container:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/kyverno
+          tag: v1.16.3
+      initContainer:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/kyvernopre
+          tag: v1.16.3
+    backgroundController:
+      image:
+        defaultRegistry: ghcr.io
+        repository: kyverno/background-controller
+        tag: v1.16.3
+    cleanupController:
+      image:
+        defaultRegistry: ghcr.io
+        repository: kyverno/cleanup-controller
+        tag: v1.16.3
+    crds:
+      migration:
+        image:
+          defaultRegistry: ghcr.io
+          repository: kyverno/kyverno-cli
+          tag: v1.16.3
+    reportsController:
+      image:
+        defaultRegistry: ghcr.io
+        repository: kyverno/reports-controller
+        tag: v1.16.3
+    webhooksCleanup:
+      image:
+        registry: registry.k8s.io
+        repository: kubectl
+        tag: v1.34.3

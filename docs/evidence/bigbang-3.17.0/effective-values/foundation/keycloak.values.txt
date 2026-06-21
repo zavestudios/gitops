@@ -1,0 +1,187 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    enabled: true
+    hardened:
+      enabled: false
+    injection: enabled
+    keycloak:
+      enabled: true
+      gateways:
+      - istio-gateway/public-ingressgateway
+      hosts:
+      - sso-on-prem.zavestudios.com
+  networkPolicies:
+    egress:
+      defaults:
+        allowIstiod:
+          enabled: true
+      definitions:
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        keycloak:
+          to:
+            k8s:
+              tempo/tempo:9411: false
+    enabled: true
+    ingress:
+      defaults:
+        allowPrometheusToIstioSidecar:
+          enabled: false
+      to:
+        keycloak:9000:
+          from:
+            k8s:
+              monitoring/prometheus: false
+    ingressLabels:
+      app: public-ingressgateway
+      istio: ingressgateway
+    istioNamespaceSelector:
+      egress: istio-system
+      ingress: istio-gateway
+defaults:
+  |-
+    domain: zavestudios.com
+    istio:
+      enabled: true
+      hardened:
+        enabled: false
+      injection: enabled
+      keycloak:
+        enabled: true
+        gateways:
+        - istio-gateway/public-ingressgateway
+    networkPolicies:
+      egress:
+        defaults:
+          allowIstiod:
+            enabled: true
+        definitions:
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          keycloak:
+            to:
+              k8s:
+                tempo/tempo:9411: false
+      enabled: true
+      ingress:
+        defaults:
+          allowPrometheusToIstioSidecar:
+            enabled: false
+        to:
+          keycloak:9000:
+            from:
+              k8s:
+                monitoring/prometheus: false
+      ingressLabels:
+        app: public-ingressgateway
+        istio: ingressgateway
+      istioNamespaceSelector:
+        egress: istio-system
+        ingress: istio-gateway
+    postgresql:
+      enabled: false
+      primary:
+        annotations:
+          bigbang.dev/istioVersion: 1.28.3
+      readReplicas:
+        annotations:
+          bigbang.dev/istioVersion: 1.28.3
+    upstream:
+      database:
+        database: keycloak
+        existingSecret: ""
+        existingSecretKey: ""
+        hostname: keycloak-postgresql
+        password: keycloak
+        port: 5432
+        username: keycloak
+        vendor: postgres
+      extraEnv: |
+        - name: KC_HTTPS_CLIENT_AUTH
+          value: request
+        - name: KC_TRUSTSTORE_PATHS
+          value: /etc/ssl/certs/
+        - name: KC_HOSTNAME
+          value: keycloak.zavestudios.com
+        - name: KC_HOSTNAME_STRICT
+          value: "true"
+      http:
+        internalScheme: HTTP
+      image:
+        pullPolicy: IfNotPresent
+      imagePullSecrets:
+      - name: private-registry
+      podAnnotations:
+        bigbang.dev/istioVersion: 1.28.3
+      podLabels:
+        service.istio.io/canonical-name: keycloak-keycloak
+      replicas: 1
+      serviceHeadless:
+        extraPorts:
+        - name: jgroups
+          port: 7800
+          protocol: TCP
+          targetPort: 7800
+        - name: jgroups-fd
+          port: 57800
+          protocol: TCP
+          targetPort: 57800
+      serviceMonitor:
+        enabled: false
+        scheme: https
+overlays: |
+  global:
+    imageRegistry: ""
+  istio:
+    keycloak:
+      hosts:
+      - sso-on-prem.zavestudios.com
+  postgresql:
+    enabled: false
+  upstream:
+    args:
+    - start
+    - --optimized
+    - --http-enabled=true
+    - --proxy-headers=forwarded
+    - --hostname=https://sso-on-prem.zavestudios.com/auth
+    - --hostname-strict=false
+    automountServiceAccountToken: false
+    database:
+      database: db_keycloak
+      existingSecret: keycloak-postgres-credentials
+      existingSecretKey: KC_DB_PASSWORD
+      hostname: 192.168.122.20
+      port: 5432
+      username: keycloak_app
+      vendor: postgres
+    extraEnvFrom: |
+      - secretRef:
+          name: keycloak-postgres-credentials
+      - secretRef:
+          name: keycloak-admin-credentials
+    extraVolumeMounts: |
+      - name: keycloak-data
+        mountPath: /opt/keycloak/data
+      - name: tmp
+        mountPath: /tmp
+    extraVolumes: |
+      - name: keycloak-data
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+    image:
+      repository: ghcr.io/zavestudios/keycloak
+      tag: bootstrap
+    podLabels:
+      app.kubernetes.io/version: 26.4.7
+    replicas: 1
+    serviceAccount:
+      automountServiceAccountToken: false

@@ -1,0 +1,150 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    argocd:
+      gateways:
+      - istio-gateway/public-ingressgateway
+      hosts:
+      - argocd-on-prem.zavestudios.com
+    enabled: true
+    hardened:
+      enabled: false
+    injection: enabled
+  networkPolicies:
+    controlPlaneCidr: 0.0.0.0/0
+    enabled: true
+    ingressLabels:
+      app: public-ingressgateway
+      istio: ingressgateway
+    istioNamespaceSelector:
+      egress: istio-system
+      ingress: istio-gateway
+    vpcCidr: 0.0.0.0/0
+defaults:
+  |-
+    createNamespace: false
+    domain: zavestudios.com
+    global:
+      domain: argocd-on-prem.zavestudios.com
+      image:
+        imagePullPolicy: IfNotPresent
+      imagePullSecrets:
+      - name: private-registry
+      podAnnotations:
+        bigbang.dev/istioVersion: 1.28.3
+      podLabels:
+        service.istio.io/canonical-name: argocd-argocd
+    hostname: zavestudios.com
+    istio:
+      argocd:
+        gateways:
+        - istio-gateway/public-ingressgateway
+      enabled: true
+      hardened:
+        enabled: false
+      injection: enabled
+    monitoring:
+      enabled: false
+    networkPolicies:
+      controlPlaneCidr: 0.0.0.0/0
+      enabled: true
+      ingressLabels:
+        app: public-ingressgateway
+        istio: ingressgateway
+      istioNamespaceSelector:
+        egress: istio-system
+        ingress: istio-gateway
+      vpcCidr: 0.0.0.0/0
+    redis-bb:
+      enabled: true
+      image:
+        pullPolicy: IfNotPresent
+      networkPolicy:
+        enabled: true
+      upstream:
+        auth:
+          enabled: false
+        master:
+          podAnnotations:
+            bigbang.dev/istioVersion: 1.28.3
+        replica:
+          podAnnotations:
+            bigbang.dev/istioVersion: 1.28.3
+    upstream:
+      controller:
+        image:
+          imagePullPolicy: IfNotPresent
+        imagePullSecrets:
+        - name: private-registry
+        metrics:
+          serviceMonitor:
+            scheme: https
+            tlsConfig:
+              caFile: /etc/prom-certs/root-cert.pem
+              certFile: /etc/prom-certs/cert-chain.pem
+              insecureSkipVerify: true
+              keyFile: /etc/prom-certs/key.pem
+      dex:
+        image:
+          imagePullPolicy: IfNotPresent
+        imagePullSecrets:
+        - name: private-registry
+      openshift:
+        enabled: false
+      repoServer:
+        autoscaling:
+          enabled: true
+        image:
+          imagePullPolicy: IfNotPresent
+        metrics:
+          serviceMonitor:
+            scheme: https
+            tlsConfig:
+              caFile: /etc/prom-certs/root-cert.pem
+              certFile: /etc/prom-certs/cert-chain.pem
+              insecureSkipVerify: true
+              keyFile: /etc/prom-certs/key.pem
+      server:
+        autoscaling:
+          enabled: true
+        config:
+          kustomize.buildOptions: --enable-alpha-plugins
+        image:
+          imagePullPolicy: IfNotPresent
+        metrics:
+          serviceMonitor:
+            scheme: https
+            tlsConfig:
+              caFile: /etc/prom-certs/root-cert.pem
+              certFile: /etc/prom-certs/cert-chain.pem
+              insecureSkipVerify: true
+              keyFile: /etc/prom-certs/key.pem
+overlays: |
+  global:
+    image:
+      repository: quay.io/argoproj/argocd
+  istio:
+    argocd:
+      hosts:
+      - argocd-on-prem.zavestudios.com
+  redis-bb:
+    cleanUpgrade:
+      enabled: false
+    upstream:
+      global:
+        imageRegistry: ""
+      image:
+        registry: public.ecr.aws
+        repository: docker/library/redis
+      metrics:
+        command:
+        - /redis_exporter
+        image:
+          registry: ghcr.io
+          repository: oliver006/redis_exporter
+  upgradeJob:
+    enabled: false
+  upstream:
+    dex:
+      image:
+        repository: ghcr.io/dexidp/dex

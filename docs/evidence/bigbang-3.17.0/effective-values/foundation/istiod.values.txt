@@ -1,0 +1,76 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  networkPolicies:
+    controlPlaneCIDRs:
+    - 0.0.0.0/0
+    egress:
+      definitions:
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+        sso:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        istiod:
+          to:
+            definition:
+              sso: false
+    enabled: true
+    ingress:
+      to:
+        istiod:15014:
+          from:
+            k8s:
+              kiali/kiali: true
+              monitoring/prometheus: false
+defaults:
+  |-
+    authservice:
+      enabled: false
+    monitoring:
+      enabled: false
+    networkPolicies:
+      controlPlaneCIDRs:
+      - 0.0.0.0/0
+      egress:
+        definitions:
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+          sso:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          istiod:
+            to:
+              definition:
+                sso: false
+      enabled: true
+      ingress:
+        to:
+          istiod:15014:
+            from:
+              k8s:
+                kiali/kiali: true
+                monitoring/prometheus: false
+    upstream:
+      cni:
+        enabled: false
+      global:
+        imagePullPolicy: IfNotPresent
+        imagePullSecrets:
+        - private-registry
+overlays: |
+  upstream:
+    global:
+      hub: docker.io/istio
+      tag: 1.28.3
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi

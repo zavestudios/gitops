@@ -1,0 +1,251 @@
+# Offline-rendered Big Bang effective values; not a Kubernetes resource.
+common: |
+  istio:
+    authorizationPolicies:
+      enabled: false
+      generateFromNetpol: false
+    enabled: false
+    sidecar:
+      enabled: false
+  networkPolicies:
+    egress:
+      definitions:
+        kubeAPI:
+          to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+      from:
+        alloy:
+          to:
+            tempo/tempo:4317: true
+        alloy-logs:
+          to:
+            k8s:
+              logging/logging-loki:3100: true
+    enabled: true
+    hbonePortInjection:
+      enabled: false
+    ingress:
+      to:
+        alloy-logs:12345:
+          from:
+            k8s:
+              alloy-alloy-metrics@alloy/alloy-metrics: true
+              monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+        alloy-metrics:12345:
+          from:
+            k8s:
+              monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+        alloy-receiver:12345:
+          from:
+            k8s:
+              alloy-alloy-metrics@alloy/alloy-metrics: true
+              monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+defaults:
+  |-
+    istio:
+      authorizationPolicies:
+        enabled: false
+        generateFromNetpol: false
+      enabled: false
+      sidecar:
+        enabled: false
+    monitoring:
+      enabled: true
+    networkPolicies:
+      egress:
+        definitions:
+          kubeAPI:
+            to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+        from:
+          alloy:
+            to:
+              tempo/tempo:4317: true
+          alloy-logs:
+            to:
+              k8s:
+                logging/logging-loki:3100: true
+      enabled: true
+      hbonePortInjection:
+        enabled: false
+      ingress:
+        to:
+          alloy-logs:12345:
+            from:
+              k8s:
+                alloy-alloy-metrics@alloy/alloy-metrics: true
+                monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+          alloy-metrics:12345:
+            from:
+              k8s:
+                monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+          alloy-receiver:12345:
+            from:
+              k8s:
+                alloy-alloy-metrics@alloy/alloy-metrics: true
+                monitoring-monitoring-kube-prometheus@monitoring/prometheus: true
+    serviceMonitors:
+    - additionalLabels:
+        app.kubernetes.io/instance: alloy
+        app.kubernetes.io/name: alloy-logs
+      name: alloy-alloy-logs
+      selectorLabels:
+        app.kubernetes.io/instance: alloy-alloy-logs
+        app.kubernetes.io/name: alloy-logs
+    upstream:
+      alloy-logs:
+        enabled: true
+      destinations:
+      - name: loki
+        type: loki
+        url: http://logging-loki.logging.svc.cluster.local:3100/loki/api/v1/push
+      podLogs:
+        collector: alloy-logs
+        destinations:
+        - loki
+        enabled: true
+        labelsToKeep:
+        - app.kubernetes.io/name
+        - container
+        - instance
+        - job
+        - level
+        - namespace
+        - service.name
+        - service.namespace
+        - deployment.environment
+        - deployment.environment.name
+        - k8s.namespace.name
+        - k8s.deployment.name
+        - k8s.statefulset.name
+        - k8s.daemonset.name
+        - k8s.cronjob.name
+        - k8s.job.name
+        - k8s.node.name
+        - k8s.pod.name
+        - pod
+        structuredMetadata:
+          k8s.pod.name: null
+          pod: null
+overlays: |
+  alloy-operator:
+    waitForAlloyRemoval:
+      image:
+        registry: ghcr.io
+        repository: grafana/helm-chart-toolbox-kubectl
+        tag: 0.1.2
+      podAnnotations:
+        sidecar.istio.io/inject: "true"
+      podLabels:
+        sidecar.istio.io/inject: "true"
+  applicationObservability:
+    collector: alloy-receiver
+    enabled: true
+    receivers:
+      otlp:
+        grpc:
+          enabled: true
+          port: 4317
+        http:
+          enabled: true
+          port: 4318
+  collectors:
+    alloy-receiver:
+      presets:
+      - deployment
+  global:
+    image:
+      pullSecrets: []
+      registry: ""
+    imagePullSecrets: []
+    imageRegistry: ""
+  k8s-monitoring:
+    alloy-logs:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: docker.io
+        repository: grafana/alloy
+        tag: v1.12.2
+    alloy-metrics:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: docker.io
+        repository: grafana/alloy
+        tag: v1.12.2
+    alloy-operator:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: ghcr.io
+        repository: grafana/alloy-operator
+        tag: 1.5.2
+      waitForAlloyRemoval:
+        image:
+          registry: ghcr.io
+          repository: grafana/helm-chart-toolbox-kubectl
+          tag: 0.1.2
+    alloy-receiver:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: docker.io
+        repository: grafana/alloy
+        tag: v1.12.2
+    integrations:
+      alloy:
+        image:
+          registry: docker.io
+          repository: grafana/alloy
+          tag: v1.12.2
+  upstream:
+    alloy-logs:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: docker.io
+        repository: grafana/alloy
+        tag: v1.12.2
+    alloy-operator:
+      configReloader:
+        image:
+          registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          tag: v0.77.2
+      image:
+        registry: ghcr.io
+        repository: grafana/alloy-operator
+        tag: 1.5.2
+      waitForAlloyRemoval:
+        image:
+          registry: ghcr.io
+          repository: grafana/helm-chart-toolbox-kubectl
+          tag: 0.1.2
+    destinations:
+    - name: loki
+      type: loki
+      url: http://logging-loki.logging.svc.cluster.local:3100/loki/api/v1/push
+    - name: tempo
+      protocol: grpc
+      traces:
+        enabled: true
+      type: otlp
+      url: tempo-tempo.tempo.svc.cluster.local:4317
