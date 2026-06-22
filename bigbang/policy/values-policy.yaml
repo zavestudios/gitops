@@ -164,6 +164,22 @@ kyvernoPolicies:
                   - alloy
                 names:
                   - alloy-upstream-add-finalizer*
+      disallow-tolerations:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - monitoring
+                names:
+                  - monitoring-monitoring-prometheus-node-exporter*
+      restrict-host-path-mount:
+        exclude:
+          any:
+            - resources:
+                namespaces:
+                  - monitoring
+                names:
+                  - monitoring-monitoring-prometheus-node-exporter*
       restrict-volume-types:
         exclude:
           any:
