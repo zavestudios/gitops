@@ -186,10 +186,8 @@ kyvernoPolicies:
             - resources:
                 namespaces:
                   - monitoring
-                kinds:
-                  - DaemonSet
                 names:
-                  - monitoring-monitoring-prometheus-node-exporter
+                  - monitoring-monitoring-prometheus-node-exporter*
       disallow-image-tags:
         exclude:
           any:

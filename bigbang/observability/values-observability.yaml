@@ -86,6 +86,7 @@ monitoring:
         admissionWebhooks:
           enabled: true
           patch:
+            enabled: true
             image:
               registry: registry.k8s.io
               repository: ingress-nginx/kube-webhook-certgen
