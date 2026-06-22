@@ -124,6 +124,8 @@ spec:
           runAsNonRoot: true
           fsGroup: 65534
         container:
+          runAsUser: 65534
+          runAsGroup: 65534
           runAsNonRoot: true
           allowPrivilegeEscalation: false
           capabilities:
@@ -148,6 +150,8 @@ spec:
             memory: 128Mi
         securityContexts:
           container:
+            runAsUser: 50000
+            runAsGroup: 50000
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
@@ -185,6 +189,8 @@ spec:
         runAsNonRoot: true
         fsGroup: 50000
       containers:
+        runAsUser: 50000
+        runAsGroup: 50000
         runAsNonRoot: true
         allowPrivilegeEscalation: false
         capabilities:

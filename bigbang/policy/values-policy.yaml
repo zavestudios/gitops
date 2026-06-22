@@ -203,6 +203,21 @@ kyvernoPolicies:
                 namespaces:
                   - keycloak
                   - kiali
+            # Kubernetes omits an explicitly empty capabilities.add list. The
+            # upstream policy treats that secure representation as a failure.
+            - resources:
+                namespaces:
+                  - platform
+                names:
+                  - airflow-*
+                  - listings-ingest-*
+            - resources:
+                namespaces:
+                  - listings-ingest
+                names:
+                  - extract-validate-*
+                  - load-postgres-*
+                  - dq-assertions-*
       disallow-auto-mount-service-account-token:
         exclude:
           any:
