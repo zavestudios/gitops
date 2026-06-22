@@ -10,6 +10,9 @@ gatekeeper:
 bbctl:
   enabled: false
 
+prometheusOperatorCRDs:
+  enabled: false
+
 kyverno:
   enabled: false
 
@@ -113,6 +116,8 @@ istioGateway:
       passthrough: {}
 
 addons:
+  metricsServer:
+    enabled: false
   gitlab:
     enabled: false
   gitlabRunner:
