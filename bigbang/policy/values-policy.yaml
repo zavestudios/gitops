@@ -189,6 +189,19 @@ kyvernoPolicies:
                 namespaces:
                   - keycloak
                   - kiali
+            - resources:
+                namespaces:
+                  - platform
+                names:
+                  - airflow-*
+                  - listings-ingest-*
+            - resources:
+                namespaces:
+                  - listings-ingest
+                names:
+                  - extract-validate-*
+                  - load-postgres-*
+                  - dq-assertions-*
       require-non-root-user:
         exclude:
           any:
@@ -196,6 +209,19 @@ kyvernoPolicies:
                 namespaces:
                   - keycloak
                   - kiali
+            - resources:
+                namespaces:
+                  - platform
+                names:
+                  - airflow-*
+                  - listings-ingest-*
+            - resources:
+                namespaces:
+                  - listings-ingest
+                names:
+                  - extract-validate-*
+                  - load-postgres-*
+                  - dq-assertions-*
       restrict-capabilities:
         exclude:
           any:
