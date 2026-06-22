@@ -76,20 +76,6 @@ spec:
         ports:
           - name: http
             port: 8080
-      securityContexts:
-        container:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
-      waitForMigrations:
-        securityContexts:
-          container:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-
     # Scheduler configuration
     scheduler:
       replicas: 1
@@ -108,19 +94,6 @@ spec:
         limits:
           cpu: 1000m
           memory: 1Gi
-      securityContexts:
-        container:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
-      waitForMigrations:
-        securityContexts:
-          container:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
       logGroomerSidecar:
         enabled: false
 
@@ -139,21 +112,24 @@ spec:
         limits:
           cpu: 500m
           memory: 1Gi
-      securityContexts:
-        container:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
-      waitForMigrations:
-        securityContexts:
-          container:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
       logGroomerSidecar:
         enabled: false
+
+    # StatsD does not inherit the chart's global security contexts.
+    statsd:
+      securityContexts:
+        pod:
+          runAsUser: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          fsGroup: 65534
+        container:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            add: []
+            drop:
+              - ALL
 
     # DAG git-sync configuration
     dags:
@@ -172,8 +148,10 @@ spec:
             memory: 128Mi
         securityContexts:
           container:
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
+              add: []
               drop:
                 - ALL
 
@@ -203,9 +181,14 @@ spec:
     securityContexts:
       pod:
         runAsUser: 50000
+        runAsGroup: 50000
+        runAsNonRoot: true
+        fsGroup: 50000
       containers:
+        runAsNonRoot: true
         allowPrivilegeEscalation: false
         capabilities:
+          add: []
           drop:
             - ALL
 
