@@ -14,6 +14,9 @@ gatekeeper:
 bbctl:
   enabled: false
 
+prometheusOperatorCRDs:
+  enabled: false
+
 kyverno:
   enabled: false  # Moved to bigbang-policy release
   postRenderers:
@@ -301,6 +304,8 @@ istioGateway:
 
 # Addons
 addons:
+  metricsServer:
+    enabled: false
   gitlab:
     enabled: false
   gitlabRunner:
