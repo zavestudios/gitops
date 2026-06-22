@@ -1,7 +1,0 @@
-# Offline-rendered Big Bang effective values; not a Kubernetes resource.
-common: |
-  {}
-defaults:
-  '{}'
-overlays: |
-  {}
