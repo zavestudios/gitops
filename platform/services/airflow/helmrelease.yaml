@@ -43,6 +43,8 @@ spec:
         value: "listings-ingest"
       - name: ETL_IMAGE
         value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:f7ef312a5db7379af01c0dcbbaf789373465434621a73454edd26bfaeaa42dff"
+      - name: ETL_INPUT_PATH
+        value: "s3://listings-ingest/input/listings.csv"
 
     # External PostgreSQL configuration
     postgresql:
