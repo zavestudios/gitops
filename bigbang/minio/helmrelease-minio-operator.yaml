@@ -6,6 +6,7 @@ metadata:
   namespace: bigbang
 spec:
   interval: 10m
+  targetNamespace: minio-operator
   driftDetection:
     mode: enabled
   chart:
