@@ -225,6 +225,10 @@ addons:
         enabled: false
       upstream:
         server:
+          dataStorage:
+            storageClass: local-path-retain
+          auditStorage:
+            storageClass: local-path-retain
           ha:
             apiAddr: "http://vault.vault.svc.cluster.local:8200"
           image:
