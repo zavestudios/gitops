@@ -9,6 +9,7 @@ spec:
     - name: minio-operator
       namespace: bigbang
   interval: 10m
+  targetNamespace: minio
   driftDetection:
     mode: enabled
   chart:
