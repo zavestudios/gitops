@@ -219,6 +219,11 @@ kyvernoPolicies:
                   - extract-validate-*
                   - load-postgres-*
                   - dq-assertions-*
+            - resources:
+                namespaces:
+                  - vault
+                names:
+                  - vault-vault-*
       require-non-root-user:
         exclude:
           any:
@@ -239,6 +244,11 @@ kyvernoPolicies:
                   - extract-validate-*
                   - load-postgres-*
                   - dq-assertions-*
+            - resources:
+                namespaces:
+                  - vault
+                names:
+                  - vault-vault-*
       restrict-capabilities:
         exclude:
           any:
@@ -261,6 +271,11 @@ kyvernoPolicies:
                   - extract-validate-*
                   - load-postgres-*
                   - dq-assertions-*
+            - resources:
+                namespaces:
+                  - vault
+                names:
+                  - vault-vault-*
       disallow-auto-mount-service-account-token:
         exclude:
           any:
@@ -299,6 +314,13 @@ kyvernoPolicies:
                   - ServiceAccount
                 names:
                   - alloy-upstream-add-finalizer
+            - resources:
+                namespaces:
+                  - vault
+                kinds:
+                  - ServiceAccount
+                names:
+                  - vault-vault
 
 eckOperator:
   enabled: false
