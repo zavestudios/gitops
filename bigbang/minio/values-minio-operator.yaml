@@ -1,6 +1,6 @@
 # MinIO Operator values for on-prem environment
-# Images override BigBang defaults to avoid registry1.dso.mil dependency.
-# render-parity: image tags must be confirmed against BigBang 3.17.0 package output.
+# Images override BigBang 3.17.0 defaults (registry1.dso.mil/ironbank/opensource/minio/operator:v7.1.1)
+# to avoid registry1.dso.mil dependency. Intentional parity difference.
 
 istio:
   enabled: false
@@ -9,6 +9,5 @@ upstream:
   operator:
     image:
       repository: quay.io/minio/operator
-      # render-parity: confirm tag from BigBang 3.17.0 minio-operator package
-      tag: RENDER_PARITY_REQUIRED
+      tag: v7.1.1
     imagePullSecrets: []

@@ -8,5 +8,4 @@ spec:
   interval: 10m
   url: https://repo1.dso.mil/big-bang/product/packages/minio-operator.git
   ref:
-    # render-parity: confirm tag from BigBang 3.17.0 addons.minioOperator package before activating
-    tag: RENDER_PARITY_REQUIRED
+    tag: 7.1.1-bb.4
