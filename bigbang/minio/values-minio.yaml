@@ -1,0 +1,27 @@
+# MinIO tenant values for on-prem environment
+# Provisions a single-tenant MinIO instance with the listings-ingest bucket.
+# Images override BigBang defaults to avoid registry1.dso.mil dependency.
+# render-parity: image tags must be confirmed against BigBang 3.17.0 package output.
+
+istio:
+  enabled: false
+
+upstream:
+  tenant:
+    image:
+      repository: quay.io/minio/minio
+      # render-parity: confirm tag from BigBang 3.17.0 minio package
+      tag: RENDER_PARITY_REQUIRED
+    imagePullSecrets: []
+    name: listings-ingest-tenant
+    namespace: minio
+    pools:
+      - name: pool-0
+        servers: 1
+        volumesPerServer: 1
+        size: 10Gi
+        storageClassName: local-path
+    buckets:
+      - name: listings-ingest
+    configSecret:
+      name: minio-root-credentials
