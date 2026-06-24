@@ -2,6 +2,7 @@
 # Provisions a single-tenant MinIO instance with the listings-ingest bucket.
 # Images override BigBang 3.17.0 defaults (registry1.dso.mil/ironbank/opensource/minio/minio:RELEASE.2025-10-15T17-29-55Z)
 # to avoid registry1.dso.mil dependency. Intentional parity difference.
+# RELEASE.2025-10-15T17-29-55Z is IronBank-only; using latest public release from Docker Hub.
 
 istio:
   enabled: false
@@ -9,8 +10,8 @@ istio:
 upstream:
   tenant:
     image:
-      repository: quay.io/minio/minio
-      tag: RELEASE.2025-10-15T17-29-55Z
+      repository: docker.io/minio/minio
+      tag: RELEASE.2025-09-07T16-13-09Z
     imagePullSecrets: []
     name: listings-ingest-tenant
     namespace: minio
