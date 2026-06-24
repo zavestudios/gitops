@@ -24,3 +24,4 @@ upstream:
       - name: listings-ingest
     configSecret:
       name: minio-root-credentials
+      existingSecret: true
