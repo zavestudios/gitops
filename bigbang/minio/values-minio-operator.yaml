@@ -14,5 +14,5 @@ upstream:
       tag: v7.1.1
     sidecarImage:
       repository: quay.io/minio/operator-sidecar
-      tag: v7.1.1
+      tag: v7.1.0
     imagePullSecrets: []
