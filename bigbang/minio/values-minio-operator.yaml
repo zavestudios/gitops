@@ -1,7 +1,7 @@
 # MinIO Operator values for on-prem environment
 # Images override BigBang 3.17.0 defaults to avoid registry1.dso.mil dependency. Intentional parity differences:
 #   operator:     registry1.dso.mil/.../operator:v7.1.1      -> quay.io/minio/operator:v7.1.1
-#   sidecarImage: registry1.dso.mil/.../operator-sidecar:v7.0.1 -> quay.io/minio/operator:v7.0.1
+#   sidecarImage: registry1.dso.mil/.../operator-sidecar:v7.0.1 -> quay.io/minio/operator:v7.1.1 (v7.0.1 missing validate subcommand)
 
 istio:
   enabled: false
@@ -13,5 +13,5 @@ upstream:
       tag: v7.1.1
     sidecarImage:
       repository: quay.io/minio/operator
-      tag: v7.0.1
+      tag: v7.1.1
     imagePullSecrets: []
