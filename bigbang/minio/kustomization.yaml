@@ -7,7 +7,6 @@ resources:
   - helmrelease-minio-operator.yaml
   - helmrelease-minio.yaml
   - minio-root-credentials.externalsecret.yaml
-  - private-registry.externalsecret.yaml
 
 configurations:
   - kustomizeconfig.yaml

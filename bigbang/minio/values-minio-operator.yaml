@@ -1,10 +1,8 @@
 # MinIO Operator values for on-prem environment
-# Operator image overrides BigBang 3.17.0 default to avoid registry1.dso.mil dependency:
-#   operator: registry1.dso.mil/.../operator:v7.1.1 -> quay.io/minio/operator:v7.1.1
-#
-# Sidecar uses the IronBank image — upstream quay.io/minio/operator binary does not include
-# the validate subcommand that the validate-arguments init container requires.
-# Requires private-registry imagePullSecret in the minio namespace (platform/registry1 in Vault).
+# Images override BigBang 3.17.0 defaults (registry1.dso.mil) to avoid registry1 dependency.
+# Intentional parity differences:
+#   operator:     registry1.dso.mil/.../operator:v7.1.1         -> quay.io/minio/operator:v7.1.1
+#   sidecarImage: registry1.dso.mil/.../operator-sidecar:v7.0.1 -> quay.io/minio/operator-sidecar:v7.1.1
 
 istio:
   enabled: false
@@ -15,7 +13,6 @@ upstream:
       repository: quay.io/minio/operator
       tag: v7.1.1
     sidecarImage:
-      repository: registry1.dso.mil/ironbank/opensource/minio/operator-sidecar
-      tag: v7.0.1
-    imagePullSecrets:
-      - name: private-registry
+      repository: quay.io/minio/operator-sidecar
+      tag: v7.1.1
+    imagePullSecrets: []
