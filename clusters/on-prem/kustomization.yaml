@@ -8,7 +8,6 @@ resources:
   - bigbang-foundation-kustomization.yaml
   - bigbang-policy-kustomization.yaml
   - bigbang-observability-kustomization.yaml
-  - bigbang-minio-kustomization.yaml
   - bigbang-kustomization.yaml
   - platform-runtime-kustomization.yaml
   - platform-services-kustomization.yaml
