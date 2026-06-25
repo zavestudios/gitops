@@ -42,7 +42,7 @@ spec:
       - name: AIRFLOW_RUN_NAMESPACE
         value: "listings-ingest"
       - name: ETL_IMAGE
-        value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:b9158e9696b8c5253a863546e3d16fa755d92d28dc0bb580f195ecad54e85da9"
+        value: "ghcr.io/zavestudios/zavestudios-etl-runner@sha256:b36ce8987f822e1fba5eae424da9fd2280ca6f176d818835eab88cf51dfa3c17"
       - name: ETL_INPUT_PATH
         value: "s3://listings-ingest/input/listings.csv"
 
