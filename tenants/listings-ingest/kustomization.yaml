@@ -6,3 +6,4 @@ resources:
   - ghcr-secret.external-secret.yaml
   - listings-ingest-db.externalsecret.yaml
   - listings-ingest-storage.externalsecret.yaml
+  - postgres-statefulset.yaml
