@@ -4,7 +4,7 @@ metadata:
   name: mia
   namespace: mia
   labels:
-    app.kubernetes.io/version: sha-74f9121
+    app.kubernetes.io/version: sha-dac0d60
     app: mia
     zave.io/workload: mia
 spec:
@@ -23,7 +23,7 @@ spec:
       labels:
         app: mia
         app.kubernetes.io/name: mia
-        app.kubernetes.io/version: sha-74f9121
+        app.kubernetes.io/version: sha-dac0d60
         zave.io/workload: mia
     spec:
       automountServiceAccountToken: false
@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       initContainers:
       - name: seed-config
-        image: ghcr.io/zavestudios/mia@sha256:dbcb7b72daac80d4de37f1a00872d11de14a445e7fde85ff482a7e605e04c040
+        image: ghcr.io/zavestudios/mia@sha256:f715e38346724db86ab117204bc709df634d3084de1ef0a324fd86d6a0557a7b
         command:
         - sh
         - -c
@@ -50,7 +50,7 @@ spec:
         - name: data
           mountPath: /data
       - name: reconcile-openclaw-config
-        image: ghcr.io/zavestudios/mia@sha256:dbcb7b72daac80d4de37f1a00872d11de14a445e7fde85ff482a7e605e04c040
+        image: ghcr.io/zavestudios/mia@sha256:f715e38346724db86ab117204bc709df634d3084de1ef0a324fd86d6a0557a7b
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -105,7 +105,7 @@ spec:
       - name: mia
         securityContext:
           runAsNonRoot: true
-        image: ghcr.io/zavestudios/mia@sha256:dbcb7b72daac80d4de37f1a00872d11de14a445e7fde85ff482a7e605e04c040
+        image: ghcr.io/zavestudios/mia@sha256:f715e38346724db86ab117204bc709df634d3084de1ef0a324fd86d6a0557a7b
         startupProbe:
           tcpSocket:
             port: 18789
