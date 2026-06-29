@@ -46,6 +46,11 @@ spec:
           else
             echo "Config already exists on persistent volume, skipping seed"
           fi
+
+          mkdir -p /data/npm/node_modules/@openclaw
+          rm -rf /data/npm/node_modules/@openclaw/whatsapp
+          cp -R /home/node/.openclaw/npm/node_modules/@openclaw/whatsapp /data/npm/node_modules/@openclaw/whatsapp
+          echo "Reconciled WhatsApp plugin to persistent volume"
         volumeMounts:
         - name: data
           mountPath: /data
@@ -92,6 +97,7 @@ spec:
           NODE
 
           openclaw config validate
+          openclaw plugins registry --refresh
         env:
         - name: OPENCLAW_OWNER_ALLOW_FROM
           valueFrom:
