@@ -20,8 +20,9 @@ The reference `mia` deployment should be treated as an internal/operator-accesse
 
 - PersistentVolumeClaim for OpenClaw data directory
 - initContainer to seed default configuration on first boot
+- initContainer reconciliation for image-baked plugin assets required by existing PVCs
 - volumeMount mapping OpenClaw config directory to PVC
-- WhatsApp disabled in default image config (safe first boot)
+- WhatsApp enabled only when pairing credentials and allowlists are operationally managed
 
 **Persistence structure:**
 
@@ -31,6 +32,8 @@ The reference `mia` deployment should be treated as an internal/operator-accesse
 │   └── whatsapp/
 │       └── <account-id>/       # Session files (~800+ files)
 ├── openclaw.json               # Runtime config
+├── npm/node_modules/@openclaw/whatsapp/
+│                               # WhatsApp plugin backfilled from the image
 └── [other OpenClaw directories]
 ```
 
@@ -69,10 +72,19 @@ initContainers:
     else
       echo "Config already exists on persistent volume, skipping seed"
     fi
+
+    mkdir -p /data/npm/node_modules/@openclaw
+    rm -rf /data/npm/node_modules/@openclaw/whatsapp
+    cp -R /home/node/.openclaw/npm/node_modules/@openclaw/whatsapp /data/npm/node_modules/@openclaw/whatsapp
+    echo "Reconciled WhatsApp plugin to persistent volume"
   volumeMounts:
   - name: data
     mountPath: /data
 ```
+
+The plugin backfill is required because mounting the PVC at `/home/node/.openclaw`
+masks the image-layer OpenClaw home. Existing PVCs otherwise keep credentials and
+config but can miss newly baked plugin assets.
 
 **Container volumeMount:**
 
