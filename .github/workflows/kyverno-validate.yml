@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'platform/services/**/helmrelease.yaml'
+      - 'platform/runtime/**/*.yaml'
       - 'platform/policies/kyverno/enforce/**'
       - 'tenants/**/*.yaml'
 
@@ -36,12 +37,19 @@ jobs:
             | grep -E '^tenants/.*\.yaml$' \
             | grep -v 'kustomization\.yaml' || true)
 
+          platform_manifests=$(git diff --name-only "${base_ref}...HEAD" \
+            | grep -E '^platform/runtime/.*\.yaml$' \
+            | grep -v 'kustomization\.yaml' || true)
+
           {
             echo "helmreleases<<EOF"
             echo "$helmreleases"
             echo "EOF"
             echo "tenant_manifests<<EOF"
             echo "$tenant_manifests"
+            echo "EOF"
+            echo "platform_manifests<<EOF"
+            echo "$platform_manifests"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -85,6 +93,18 @@ jobs:
             mkdir -p "$dest"
             cp "$manifest" "$dest/"
           done <<< "${{ steps.changed.outputs.tenant_manifests }}"
+
+      - name: Stage platform runtime manifests
+        if: steps.changed.outputs.platform_manifests != ''
+        run: |
+          mkdir -p rendered-manifests
+
+          while IFS= read -r manifest; do
+            [[ -z "$manifest" ]] && continue
+            dest="rendered-manifests/$(dirname "$manifest")"
+            mkdir -p "$dest"
+            cp "$manifest" "$dest/"
+          done <<< "${{ steps.changed.outputs.platform_manifests }}"
 
       - name: Check for staged manifests
         id: check

@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-mia-otlp-to-alloy-receiver
+  namespace: alloy
+  labels:
+    app.kubernetes.io/name: alloy-receiver
+    app.kubernetes.io/part-of: alloy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: alloy-receiver
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mia
+          podSelector:
+            matchLabels:
+              app: mia
+      ports:
+        - port: 4317
+          protocol: TCP
+        - port: 4318
+          protocol: TCP
