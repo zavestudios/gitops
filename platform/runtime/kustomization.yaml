@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - grafana-virtualservice.yaml
+  - grafana-networkpolicy.yaml
   - alloy-receiver/
   - alloy-hook-support/
   - ../vault/
