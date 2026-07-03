@@ -93,6 +93,28 @@ spec:
           cfg.commands = cfg.commands || {};
           cfg.commands.ownerAllowFrom = JSON.parse(process.env.OPENCLAW_OWNER_ALLOW_FROM);
 
+          cfg.plugins = cfg.plugins || {};
+          cfg.plugins.allow = Array.from(new Set([
+            ...(Array.isArray(cfg.plugins.allow) ? cfg.plugins.allow : []),
+            'diagnostics-otel',
+          ]));
+          cfg.plugins.entries = cfg.plugins.entries || {};
+          cfg.plugins.entries['diagnostics-otel'] = {
+            ...(cfg.plugins.entries['diagnostics-otel'] || {}),
+            enabled: true,
+          };
+
+          cfg.diagnostics = cfg.diagnostics || {};
+          cfg.diagnostics.enabled = true;
+          cfg.diagnostics.otel = {
+            ...(cfg.diagnostics.otel || {}),
+            enabled: true,
+            protocol: 'http/protobuf',
+            traces: true,
+            metrics: true,
+            logs: true,
+          };
+
           fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
           NODE
 
