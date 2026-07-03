@@ -94,15 +94,18 @@ spec:
           cfg.commands.ownerAllowFrom = JSON.parse(process.env.OPENCLAW_OWNER_ALLOW_FROM);
 
           cfg.plugins = cfg.plugins || {};
+          const requiredPlugins = ['anthropic', 'diagnostics-otel', 'ollama', 'whatsapp'];
           cfg.plugins.allow = Array.from(new Set([
             ...(Array.isArray(cfg.plugins.allow) ? cfg.plugins.allow : []),
-            'diagnostics-otel',
+            ...requiredPlugins,
           ]));
           cfg.plugins.entries = cfg.plugins.entries || {};
-          cfg.plugins.entries['diagnostics-otel'] = {
-            ...(cfg.plugins.entries['diagnostics-otel'] || {}),
-            enabled: true,
-          };
+          for (const plugin of requiredPlugins) {
+            cfg.plugins.entries[plugin] = {
+              ...(cfg.plugins.entries[plugin] || {}),
+              enabled: true,
+            };
+          }
 
           cfg.diagnostics = cfg.diagnostics || {};
           cfg.diagnostics.enabled = true;
