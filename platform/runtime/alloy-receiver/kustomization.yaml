@@ -5,4 +5,6 @@ resources:
   - configmap.yaml
   - alloy.yaml
   - networkpolicy-mia-otlp.yaml
+  - networkpolicy-prometheus-scrape.yaml
   - networkpolicy-tempo-export.yaml
+  - servicemonitor.yaml
