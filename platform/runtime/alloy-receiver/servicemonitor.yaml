@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alloy-receiver
+  namespace: alloy
+  labels:
+    app.kubernetes.io/name: alloy-receiver
+    app.kubernetes.io/part-of: alloy
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alloy-receiver
+  namespaceSelector:
+    matchNames:
+      - alloy
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      interval: 30s
