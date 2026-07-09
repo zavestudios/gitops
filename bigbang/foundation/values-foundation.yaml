@@ -4,6 +4,10 @@
 
 domain: zavestudios.com
 
+sso:
+  name: Keycloak
+  url: https://sso-on-prem.zavestudios.com/auth/realms/zavestudios
+
 gatekeeper:
   enabled: false
 
@@ -399,6 +403,13 @@ addons:
                         - name: private-registry
   argocd:
     enabled: true
+    sso:
+      enabled: true
+      client_id: argocd
+      client_secret: "$argocd-keycloak-oidc:clientSecret"
+      groups: |
+        g, zave-platform-admins, role:admin
+        g, zave-platform-operators, role:readonly
     postRenderers:
       - kustomize:
           patches:
