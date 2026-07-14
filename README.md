@@ -92,6 +92,7 @@ Reconciliation order is managed by Flux `dependsOn` relationships under `cluster
 - `docs/platform-stability-gap-analysis-2026-06.md`: Pause-and-inventory plan for stabilizing the current platform baseline before deeper app work.
 - `docs/image-registry-mappings.md`: Public image mapping used for Big Bang sandbox deployments.
 - `docs/keycloak-recovery-notes.md`: Recovery notes for the Keycloak bring-up, including manual incident actions and durable follow-up fixes.
+- `docs/argocd-sso-keycloak-runbook.md`: Normal login, role mapping, break-glass, and rollback flow for ArgoCD SSO through Keycloak.
 - `docs/rabbitmq-capability-evaluation.md`: Cross-repo decision record for the OpenShift Local RabbitMQ proving exercise and the current defer-promote recommendation.
 - `docs/vault-hardening-plan.md`: Vault persistence, lifecycle, and recovery hardening plan for the current environment.
 - `docs/vault-migration-plan.md`: Vault, External Secrets Operator, and Sealed Secrets migration plan.
