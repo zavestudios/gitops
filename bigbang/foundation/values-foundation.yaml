@@ -407,7 +407,6 @@ addons:
       enabled: true
       client_id: argocd
       client_secret: "$argocd-keycloak-oidc:clientSecret"
-      requestedScopes: '["openid", "profile", "email", "groups"]'
       groups: |
         g, zave-platform-admins, role:admin
         g, zave-platform-operators, role:readonly
@@ -862,7 +861,7 @@ addons:
               issuer: https://sso-on-prem.zavestudios.com/auth/realms/zavestudios
               clientID: argocd
               clientSecret: $argocd-keycloak-oidc:clientSecret
-              requestedScopes: ["openid", "profile", "email", "groups"]
+              requestedScopes: ["openid", "profile", "email"]
         dex:
           image:
             repository: ghcr.io/dexidp/dex
