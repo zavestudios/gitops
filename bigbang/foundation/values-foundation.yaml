@@ -855,6 +855,14 @@ addons:
         image:
           repository: quay.io/argoproj/argocd
       upstream:
+        configs:
+          cm:
+            oidc.config: |
+              name: Keycloak
+              issuer: https://sso-on-prem.zavestudios.com/auth/realms/zavestudios
+              clientID: argocd
+              clientSecret: $argocd-keycloak-oidc:clientSecret
+              requestedScopes: ["openid", "profile", "email", "groups"]
         dex:
           image:
             repository: ghcr.io/dexidp/dex
