@@ -407,7 +407,6 @@ addons:
       enabled: true
       client_id: argocd
       client_secret: "$argocd-keycloak-oidc:clientSecret"
-      requestedScopes: '["openid", "profile", "email", "groups"]'
       groups: |
         g, zave-platform-admins, role:admin
         g, zave-platform-operators, role:readonly
