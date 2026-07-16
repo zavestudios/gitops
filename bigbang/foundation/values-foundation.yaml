@@ -861,7 +861,7 @@ addons:
               issuer: https://sso-on-prem.zavestudios.com/auth/realms/zavestudios
               clientID: argocd
               clientSecret: $argocd-keycloak-oidc:clientSecret
-              requestedScopes: ["openid", "profile", "email", "groups"]
+              requestedScopes: ["openid", "profile", "email"]
         dex:
           image:
             repository: ghcr.io/dexidp/dex
