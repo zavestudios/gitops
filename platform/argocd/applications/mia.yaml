@@ -6,6 +6,7 @@ metadata:
   labels:
     zave.io/workload: mia
     zave.io/tenant: "true"
+    zave.io/lifecycle: retired
 spec:
   project: default
   source:
