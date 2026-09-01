@@ -5,7 +5,7 @@ metadata:
   namespace: rigoberta
   labels:
     app: rigoberta
-    app.kubernetes.io/version: sha-2a634b0
+    app.kubernetes.io/version: sha-b9f8162
     zave.io/workload: rigoberta
 spec:
   replicas: 1
@@ -23,7 +23,7 @@ spec:
       labels:
         app: rigoberta
         app.kubernetes.io/name: rigoberta
-        app.kubernetes.io/version: sha-2a634b0
+        app.kubernetes.io/version: sha-b9f8162
         zave.io/workload: rigoberta
     spec:
       automountServiceAccountToken: false
@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: rigoberta
-          image: ghcr.io/zavestudios/rigoberta@sha256:e325cae614d68232e1c9322c0d549ba5c2260ab0a330b2aa5493c56b1575675b
+          image: ghcr.io/zavestudios/rigoberta@sha256:16583880b991be4b10035d9e7fe2d52afd09f9a243f05942b94cd3ffb2698419
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
