@@ -5,7 +5,7 @@ metadata:
   namespace: oracle
   labels:
     app: oracle
-    app.kubernetes.io/version: sha-b8ec1ac
+    app.kubernetes.io/version: sha-653d232
     zave.io/workload: oracle
 spec:
   replicas: 1
@@ -23,7 +23,7 @@ spec:
       labels:
         app: oracle
         app.kubernetes.io/name: oracle
-        app.kubernetes.io/version: sha-b8ec1ac
+        app.kubernetes.io/version: sha-653d232
         zave.io/workload: oracle
     spec:
       automountServiceAccountToken: false
@@ -58,7 +58,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: oracle
-        image: ghcr.io/zavestudios/oracle@sha256:fb2bc08c35fcb420199c34ab99e69ac513d0c630474345aa0eceebd860d80be5
+        image: ghcr.io/zavestudios/oracle@sha256:467946759d21a2e2d66f3102fdfb5b876d4e6c24f47a0cc2517357646dda0176
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
